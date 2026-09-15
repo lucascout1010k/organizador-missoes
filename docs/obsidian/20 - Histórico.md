@@ -4,6 +4,7 @@
 
 - 2026-09-15 — Etapa 0A implementada: fundação local, home mínima, documentação, Git local e controles básicos de segurança. Lint e build concluídos com sucesso.
 - 2026-09-15 — Etapa 0B concluída: identidade Git local configurada, branch `main`, baseline inicial publicado no repositório público `lucascout1010k/organizador-missoes` e segundo cérebro atualizado. Vercel e Supabase permanecem não configurados.
+- 2026-09-15 — O Agente 1 validou a Etapa 0B e o segundo cérebro foi sincronizado com o estado real antes do início da Etapa 1.
 
 ## Regras aprovadas
 

@@ -2,7 +2,9 @@
 
 ## Estado atual
 
-Etapa 0A: fundação local em Next.js, sem integrações externas nem funcionalidades de domínio.
+As Etapas 0A e 0B foram concluídas. A fundação local em Next.js está publicada no repositório GitHub público `lucascout1010k/organizador-missoes`, com a branch principal `main` e o baseline inicial disponível no remoto.
+
+Supabase e Vercel ainda não estão configurados. As funcionalidades de domínio ainda não foram implementadas.
 
 ## Regras aprovadas
 
