@@ -1,26 +1,52 @@
-import { logout } from "./actions";
+import Link from "next/link";
 
-export default function Home() {
+import { LocalDateTime } from "@/components/academic/local-date-time";
+import { getFacultyOverview } from "@/lib/academic/data";
+
+export default async function Home() {
+  const { upcomingExams, subjects } = await getFacultyOverview();
+  const subjectNames = new Map(subjects.map((subject) => [subject.id, subject.name]));
+
   return (
-    <main className="flex min-h-screen items-center justify-center px-6">
-      <section className="w-full max-w-2xl rounded-3xl border border-emerald-950/10 bg-white p-10 shadow-sm">
-        <p className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-emerald-700">
-          Organizador pessoal
-        </p>
-        <h1 className="text-4xl font-bold tracking-tight text-emerald-950">
-          Painel de Missões
-        </h1>
-        <p className="mt-4 text-lg text-slate-600">Sessão autenticada.</p>
+    <div className="page-wrap">
+      <header className="page-header">
+        <div>
+          <p className="eyebrow">Seu espaço de foco</p>
+          <h1>Hoje</h1>
+          <p>Organize o que importa e acompanhe sua vida acadêmica.</p>
+        </div>
+      </header>
 
-        <form action={logout} className="mt-8">
-          <button
-            className="rounded-xl border border-emerald-800 px-4 py-2 font-semibold text-emerald-900 transition hover:bg-emerald-50"
-            type="submit"
-          >
-            Sair
-          </button>
-        </form>
+      <section className="hero-card">
+        <div>
+          <span className="hero-kicker">Faculdade</span>
+          <h2>Seu semestre em uma visão clara.</h2>
+          <p>Cursos, períodos, matérias, aulas e provas em um só lugar.</p>
+        </div>
+        <Link className="button button-primary" href="/faculdade">Abrir Faculdade</Link>
       </section>
-    </main>
+
+      <section className="section-block">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">Agenda acadêmica</p>
+            <h2>Próximas provas</h2>
+          </div>
+        </div>
+        {upcomingExams.length ? (
+          <div className="card-grid">
+            {upcomingExams.slice(0, 3).map((exam) => (
+              <article className="data-card" key={exam.id}>
+                <p className="card-meta">{subjectNames.get(exam.subject_id) ?? "Matéria"}</p>
+                <h3>{exam.title}</h3>
+                <p><LocalDateTime value={exam.exam_date} /></p>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div className="empty-inline">Nenhuma prova futura cadastrada.</div>
+        )}
+      </section>
+    </div>
   );
 }

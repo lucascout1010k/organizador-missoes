@@ -12,6 +12,8 @@
 
 - 2026-09-16 — Usuário confirmou `MIGRATION APLICADA`. Etapa 1C validada pela integração real com sessão autenticada e publishable key: 81 checks aprovados de CRUD, triggers, RLS, negação anônima, constraints, origens acadêmicas e histórico arquivado. Seis registros fictícios removidos e limpeza confirmada; tela/action temporárias removidas. Sem conta adicional, chaves privilegiadas, IA, PDF, Storage ou Vercel. Segundo cérebro sincronizado; Etapa 1D não iniciada.
 
+- 2026-09-16 — Etapa 1D implementada e confirmada com `FACULDADE VALIDADA`: shell privado responsivo, home acadêmica e rotas de Faculdade para visão geral, histórico, períodos e matérias; criação, edição e status de curso, períodos, matérias, aulas e provas; datas locais convertidas para UTC e tópicos persistidos como lista. O fluxo real foi exercitado pela interface, incluindo histórico, recarga e prova futura na home. Fixtures removidos após a confirmação e estado vazio verificado; ação temporária de limpeza retirada. Sem migration, dependência, exclusão física permanente na UI, IA, PDF, Storage ou Vercel. Etapa 1E permanece bloqueada até autorização.
+
 ## Regras aprovadas
 
 Registrar mudanças relevantes sem incluir dados pessoais ou segredos.

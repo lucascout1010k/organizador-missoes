@@ -2,23 +2,25 @@
 
 ## Estado atual
 
-Etapa 1C implementada: migration aplicada manualmente no Supabase, com CRUD, negações de acesso, triggers e preservação do histórico após arquivamento verificados. Dados fictícios removidos após os testes. A interface da Faculdade não foi implementada.
+Etapa 1D implementada e validada. `/faculdade` mostra curso, período atual, matérias, próximas provas e períodos; `/faculdade/historico` reúne períodos concluídos ou arquivados; páginas de período e matéria oferecem gerenciamento contextual. Curso, períodos, matérias, aulas e provas podem ser criados e editados, com mudanças de status sem exclusão física pela interface.
+
+O fluxo CRUD real foi testado com dados fictícios, incluindo persistência após recarga, histórico de período concluído e exibição de prova futura na home. Após `FACULDADE VALIDADA`, todos os registros de teste foram removidos e o estado vazio foi confirmado.
 
 ## Regras aprovadas
 
 A organização acadêmica segue Curso → Períodos → Matérias → Aulas e Provas. `academic_courses` representa o curso; `academic_periods`, os períodos; `subjects`, as matérias; `class_sessions`, as aulas específicas; `exams`, as provas.
 
-Períodos concluídos permanecem no histórico. Períodos podem estar planejados, ativos, concluídos ou arquivados; matérias podem estar ativas, concluídas ou arquivadas. Alterar status não exclui nem altera automaticamente os registros relacionados. Criar, editar, concluir e arquivar serão ações da interface futura.
+Períodos concluídos permanecem no histórico. Períodos podem estar planejados, ativos, concluídos ou arquivados; matérias podem estar ativas, concluídas ou arquivadas. Alterar status não exclui nem altera automaticamente os registros relacionados. Criar, editar, concluir e arquivar são ações disponíveis na interface.
 
 Exemplo exclusivamente fictício: um curso com primeiro período concluído, segundo ativo e períodos seguintes planejados. Não registrar disciplinas, notas, horários ou outros dados acadêmicos reais no repositório público.
 
 Cada matéria pertence a um período; cada aula e prova pertence a uma matéria. Todos os registros pertencem a um usuário. As referências incluem `user_id` para impedir vínculos com dados de outro usuário, inclusive quando o cliente chama a API diretamente.
 
-Aulas e provas guardam horários com fuso (`timestamptz`); datas de início e fim de períodos usam `date`. Provas possuem tópicos em `text[]`. Excluir um pai com dependentes será bloqueado; arquivar é a operação indicada para preservar histórico.
+Aulas e provas guardam horários com fuso (`timestamptz`); datas de início e fim de períodos usam `date`. Formulários recebem a hora local do navegador e enviam ISO UTC, enquanto a apresentação volta ao fuso local. Provas possuem tópicos em `text[]`, editados como uma linha por tópico. Excluir um pai com dependentes é bloqueado; arquivar é a operação indicada para preservar histórico.
 
 ## Pendências
 
-Revisão externa da Etapa 1C. A interface completa fica para uma etapa autorizada posterior.
+Evoluções além do escopo acadêmico atual ficam para uma etapa autorizada posterior.
 
 ## Ideias futuras
 

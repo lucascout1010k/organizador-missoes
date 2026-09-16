@@ -8,6 +8,10 @@ A autenticação privada da Etapa 1B usa `/login` e uma Server Action com `signI
 
 O logout é uma Server Action com `signOut({ scope: "local" })`, seguida de revalidação do layout e redirecionamento para `/login`. Os redirecionamentos usam destinos fixos e preservam cookies atualizados pelo SSR. A área privada é renderizada dinamicamente, sem ISR.
 
+A Etapa 1D adicionou um shell privado responsivo compartilhado entre Hoje e Faculdade. Leituras acadêmicas ficam em Server Components e módulos `server-only`; mutações usam Server Actions autenticadas, validação no servidor, filtros explícitos por `user_id` e revalidação das rotas afetadas. Componentes client-side foram limitados ao estado de formulários e à conversão/apresentação de data e hora no fuso do navegador.
+
+Rotas acadêmicas atuais: `/faculdade`, `/faculdade/historico`, `/faculdade/periodos/[id]` e `/faculdade/materias/[id]`.
+
 ## Regras aprovadas
 
 ### Fundação acadêmica e missões — Etapa 1C implementada
@@ -20,7 +24,7 @@ Frontend responsivo. Backend com Supabase e PostgreSQL; Auth adotado na Etapa 1B
 
 ## Pendências
 
-Futuras páginas privadas devem pertencer ao grupo protegido; novas operações de dados e Server Actions deverão validar identidade e autorização no próprio ponto de acesso. Interface de domínio somente em etapa autorizada.
+Futuras páginas privadas devem pertencer ao grupo protegido; novas operações de dados e Server Actions deverão validar identidade e autorização no próprio ponto de acesso. Novos domínios somente em etapa autorizada.
 
 ## Ideias futuras
 

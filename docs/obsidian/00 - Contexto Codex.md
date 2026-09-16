@@ -2,11 +2,11 @@
 
 ## Estado atual
 
-As Etapas 0A, 0B, 1A e 1B foram concluídas. A fundação em Next.js está publicada no repositório GitHub público `lucascout1010k/organizador-missoes`, com a branch principal `main`.
+As Etapas 0A, 0B, 1A, 1B, 1C e 1D foram concluídas. A fundação em Next.js está publicada no repositório GitHub público `lucascout1010k/organizador-missoes`, com a branch principal `main`.
 
 O projeto Supabase está configurado localmente somente com Project URL e publishable key. A Etapa 1B implementou autenticação privada por e-mail e senha, sessão SSR, proteção de rotas e logout. O cadastro público está desabilitado externamente no Supabase e não foi implementado na aplicação. O uso atual é single-user, sem e-mail fixo no código, mantendo preparação para multi-user.
 
-A Etapa 1B foi validada pelo Agente 1. A fundação de dados da Etapa 1C está implementada: migration aplicada manualmente no Supabase, seis tabelas com RLS e grants explícitos e 81 checks de integração aprovados com sessão do usuário e publishable key. Todos os registros fictícios foram removidos e a limpeza verificada. A interface de domínio não foi implementada e a Vercel continua não configurada. A Etapa 1D não foi iniciada; a conclusão da Etapa 1C deve ser revisada pelo Agente 1.
+A fundação de dados da Etapa 1C está implementada: migration aplicada manualmente no Supabase, seis tabelas com RLS e grants explícitos e 81 checks de integração aprovados com sessão do usuário e publishable key. A Etapa 1D implementou e validou a interface funcional da Faculdade e a visão acadêmica da home. O fluxo real de curso, períodos, matérias, aulas e provas foi testado pela interface; os registros fictícios foram removidos após a confirmação `FACULDADE VALIDADA`, e a limpeza foi verificada no estado vazio. A Vercel continua não configurada e a Etapa 1E depende de autorização.
 
 ## Regras aprovadas
 

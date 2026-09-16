@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 
+import { AppShell } from "@/components/app-shell";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -14,5 +15,5 @@ export default async function ProtectedLayout({
     redirect("/login");
   }
 
-  return children;
+  return <AppShell>{children}</AppShell>;
 }

@@ -39,6 +39,16 @@ Nenhuma dependência adicional, tabela de domínio, migration, policy ou Edge Fu
 - Não adicionar dependências nem alterar o fluxo de autenticação nesta preparação. UI de domínio, PDF, IA, Storage, academia, projetos e Vercel ficam fora do escopo.
 - Manter o helper de integração sem endpoint público. A execução foi feita por uma action temporária restrita a desenvolvimento, com identidade validada, somente publishable key e limpeza por UUIDs da própria execução. A tela e a action foram removidas; 81 checks passaram. Não criar segunda conta para os testes sem autorização.
 
+### Interface acadêmica — Etapa 1D implementada e validada
+
+- Usar Server Components para leituras e Server Actions para mutações, mantendo o navegador sem acesso privilegiado e sem adicionar dependências.
+- Derivar a identidade da sessão em toda mutação e combinar RLS com filtros explícitos de proprietário e de relacionamento, sem aceitar `user_id` enviado por formulário.
+- Validar IDs, limites, status, datas e campos obrigatórios no servidor; retornar erros genéricos de persistência e mensagens específicas apenas para validação e ausência de recurso.
+- Preservar histórico por status. A interface não expõe exclusão física; a remoção pontual dos fixtures ocorreu somente após confirmação e o mecanismo temporário foi retirado.
+- Armazenar aulas e provas como ISO UTC em `timestamptz`, convertendo entradas locais no cliente e formatando a saída no fuso do navegador para evitar divergência de hidratação.
+- Representar tópicos de prova como linhas no formulário e `text[]` no banco.
+- Compartilhar um shell responsivo: sidebar em telas amplas e navegação inferior em telas pequenas, limitada a Hoje, Faculdade e Sair nesta etapa.
+
 ## Pendências
 
 Registrar decisões futuras com contexto, alternativas e consequências.
