@@ -6,6 +6,7 @@
 - 2026-09-15 — Etapa 0B concluída: identidade Git local configurada, branch `main`, baseline inicial publicado no repositório público `lucascout1010k/organizador-missoes` e segundo cérebro atualizado. Vercel e Supabase permanecem não configurados.
 - 2026-09-15 — O Agente 1 validou a Etapa 0B e o segundo cérebro foi sincronizado com o estado real antes do início da Etapa 1.
 - 2026-09-16 — Etapa 1A concluída: dependências Supabase fixadas, clients SSR, proxy de sessão e configuração local com publishable key validados. A comunicação pública com o Auth respondeu corretamente. Nenhuma tabela, migration, autenticação ou rota protegida foi criada.
+- 2026-09-16 — Etapa 1A validada pelo Agente 1. Etapa 1B implementada: login privado por e-mail e senha, cookies SSR, proteção por proxy e layout com JWT validado e logout da sessão atual. Cadastro público desabilitado no Supabase e ausente na aplicação; preparação multi-user preservada. Login manual confirmado pelo usuário e testes negativos de navegação, credenciais inválidas e logout concluídos. Bloqueio de rede do servidor local foi resolvido; diagnóstico temporário removido. Nenhuma tabela de domínio ou configuração Vercel criada. Segundo cérebro atualizado antes da Etapa 1C, que permanece não iniciada.
 
 ## Regras aprovadas
 

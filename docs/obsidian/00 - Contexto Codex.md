@@ -2,9 +2,11 @@
 
 ## Estado atual
 
-As Etapas 0A, 0B e 1A foram concluídas. A fundação em Next.js está publicada no repositório GitHub público `lucascout1010k/organizador-missoes`, com a branch principal `main`.
+As Etapas 0A, 0B, 1A e 1B foram concluídas. A fundação em Next.js está publicada no repositório GitHub público `lucascout1010k/organizador-missoes`, com a branch principal `main`.
 
-O projeto Supabase está configurado localmente somente com Project URL e publishable key. A infraestrutura SSR de clients e sessão está preparada, mas login, proteção de rotas, tabelas e funcionalidades de domínio ainda não foram implementados. A Vercel ainda não está configurada.
+O projeto Supabase está configurado localmente somente com Project URL e publishable key. A Etapa 1B implementou autenticação privada por e-mail e senha, sessão SSR, proteção de rotas e logout. O cadastro público está desabilitado externamente no Supabase e não foi implementado na aplicação. O uso atual é single-user, sem e-mail fixo no código, mantendo preparação para multi-user.
+
+Tabelas e funcionalidades de domínio ainda não foram implementadas. A Vercel ainda não está configurada. A Etapa 1C ainda não foi iniciada.
 
 ## Regras aprovadas
 

@@ -1,3 +1,5 @@
+import { logout } from "./actions";
+
 export default function Home() {
   return (
     <main className="flex min-h-screen items-center justify-center px-6">
@@ -8,7 +10,16 @@ export default function Home() {
         <h1 className="text-4xl font-bold tracking-tight text-emerald-950">
           Painel de Missões
         </h1>
-        <p className="mt-4 text-lg text-slate-600">Fundação do projeto configurada.</p>
+        <p className="mt-4 text-lg text-slate-600">Sessão autenticada.</p>
+
+        <form action={logout} className="mt-8">
+          <button
+            className="rounded-xl border border-emerald-800 px-4 py-2 font-semibold text-emerald-900 transition hover:bg-emerald-50"
+            type="submit"
+          >
+            Sair
+          </button>
+        </form>
       </section>
     </main>
   );
