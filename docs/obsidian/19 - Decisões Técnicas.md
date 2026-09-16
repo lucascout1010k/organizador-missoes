@@ -12,6 +12,10 @@ Evitar dependências e recursos experimentais sem necessidade. Arquitetar dados 
 
 O repositório público favorece portfólio, transparência do código e documentação pública. A identidade Git é configurada somente no repositório com endereço associado à conta GitHub; o endereço não deve ser registrado na documentação. Dados pessoais e segredos permanecem fora do repositório.
 
+### Chaves do Supabase
+
+Projetos novos usam Supabase publishable key para componentes públicos; nenhuma secret key será adicionada até existir necessidade server-side concreta e revisão específica do Agente 1. A configuração real permanece somente em `.env.local`.
+
 ## Pendências
 
 Registrar decisões futuras com contexto, alternativas e consequências.

@@ -2,7 +2,7 @@
 
 ## Estado atual
 
-Status: planejado / não implementado.
+Infraestrutura Supabase SSR preparada com clients de navegador e servidor, cookies e proxy de atualização de sessão. Login ainda não foi implementado e nenhuma rota está protegida.
 
 ## Regras aprovadas
 
@@ -10,7 +10,7 @@ Supabase Auth com autorização multi-user e testes específicos de autenticaç�
 
 ## Pendências
 
-Definir provedores, sessões e fluxos de recuperação.
+Definir o fluxo de autenticação na próxima etapa, incluindo provedores, sessões e recuperação.
 
 ## Ideias futuras
 

@@ -2,9 +2,9 @@
 
 ## Estado atual
 
-As Etapas 0A e 0B foram concluídas. A fundação local em Next.js está publicada no repositório GitHub público `lucascout1010k/organizador-missoes`, com a branch principal `main` e o baseline inicial disponível no remoto.
+As Etapas 0A, 0B e 1A foram concluídas. A fundação em Next.js está publicada no repositório GitHub público `lucascout1010k/organizador-missoes`, com a branch principal `main`.
 
-Supabase e Vercel ainda não estão configurados. As funcionalidades de domínio ainda não foram implementadas.
+O projeto Supabase está configurado localmente somente com Project URL e publishable key. A infraestrutura SSR de clients e sessão está preparada, mas login, proteção de rotas, tabelas e funcionalidades de domínio ainda não foram implementados. A Vercel ainda não está configurada.
 
 ## Regras aprovadas
 

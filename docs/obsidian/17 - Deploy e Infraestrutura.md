@@ -2,7 +2,7 @@
 
 ## Estado atual
 
-GitHub configurado com o repositório público `lucascout1010k/organizador-missoes`. A branch principal é `main` e o primeiro baseline foi publicado.
+GitHub configurado com o repositório público `lucascout1010k/organizador-missoes`. A branch principal é `main`. O projeto Supabase existe na região South America (São Paulo) e a aplicação possui configuração local com credenciais públicas.
 
 ## Regras aprovadas
 
@@ -10,7 +10,7 @@ O código-fonte público fica em `https://github.com/lucascout1010k/organizador-
 
 ## Pendências
 
-Status: planejado / não implementado para Vercel e Supabase. Definir ambientes, CI, domínio e processo de deploy em etapas autorizadas.
+Status: planejado / não implementado para Vercel. Definir ambientes, CI, domínio e processo de deploy em etapas autorizadas.
 
 ## Ideias futuras
 
