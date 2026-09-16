@@ -6,7 +6,7 @@ As Etapas 0A, 0B, 1A e 1B foram concluídas. A fundação em Next.js está publi
 
 O projeto Supabase está configurado localmente somente com Project URL e publishable key. A Etapa 1B implementou autenticação privada por e-mail e senha, sessão SSR, proteção de rotas e logout. O cadastro público está desabilitado externamente no Supabase e não foi implementado na aplicação. O uso atual é single-user, sem e-mail fixo no código, mantendo preparação para multi-user.
 
-Tabelas e funcionalidades de domínio ainda não foram implementadas. A Vercel ainda não está configurada. A Etapa 1C ainda não foi iniciada.
+A Etapa 1B foi validada pelo Agente 1. A fundação de dados da Etapa 1C está implementada: migration aplicada manualmente no Supabase, seis tabelas com RLS e grants explícitos e 81 checks de integração aprovados com sessão do usuário e publishable key. Todos os registros fictícios foram removidos e a limpeza verificada. A interface de domínio não foi implementada e a Vercel continua não configurada. A Etapa 1D não foi iniciada; a conclusão da Etapa 1C deve ser revisada pelo Agente 1.
 
 ## Regras aprovadas
 

@@ -2,11 +2,11 @@
 
 ## Estado atual
 
-O projeto Supabase e o banco existem. A Etapa 1B implementou autenticação privada; ainda não há tabelas de domínio. A aplicação usa somente Project URL e publishable key no client público. O repositório é público; dados privados nunca pertencem ao GitHub. `.env.local` não é versionado e `.env.example` contém somente nomes de variáveis e placeholders vazios.
+O projeto Supabase e o banco existem. A Etapa 1B implementou autenticação privada. A migration de domínio da Etapa 1C foi aplicada manualmente; CRUD próprio, negação anônima e rejeição de proprietário divergente foram verificados nas seis tabelas. A aplicação usa somente Project URL e publishable key no client público. O repositório é público; dados privados nunca pertencem ao GitHub. `.env.local` não é versionado e `.env.example` contém somente nomes de variáveis e placeholders vazios.
 
 ## Regras aprovadas
 
-Nunca expor `service_role` no navegador. Tabelas privadas futuras usarão RLS e autorização baseada no usuário autenticado. Usar dados fictícios na documentação, evitar PII em logs e manter segredos de produção nos provedores apropriados. Autenticação, autorização e RLS deverão ser testados. Se um agente detectar possível segredo, deverá interromper a tarefa.
+Nunca expor `service_role` no navegador; a Etapa 1C não utiliza essa chave nem solicita senha do banco ou connection string. Tabelas privadas devem usar RLS e autorização baseada no usuário autenticado. Usar dados fictícios na documentação, evitar PII em logs e manter segredos de produção nos provedores apropriados. Autenticação, autorização e RLS deverão ser testados. Se um agente detectar possível segredo, deverá interromper a tarefa.
 
 ## Pendências
 
@@ -66,11 +66,24 @@ A publishable key não é tratada como segredo. Ela identifica o cliente públic
 - Logout remove a sessão atual; redirecionamentos têm destinos fixos e a área privada usa renderização dinâmica.
 - Login válido confirmado manualmente; navegação sem sessão, credenciais fictícias inválidas, mensagem genérica, ausência de cadastro e bloqueio após logout verificados.
 
+### Controles da Etapa 1C — aplicação e integração verificadas
+
+- Seis tabelas privadas com `user_id NOT NULL` referenciando `auth.users(id)`.
+- RLS habilitada explicitamente e forçada; quatro policies por tabela, limitadas a `authenticated`, com comparação entre `auth.uid()` e `user_id`.
+- INSERT exige `WITH CHECK`; UPDATE exige `USING` e `WITH CHECK`, impedindo transferir registros para outro proprietário.
+- Privilégios anteriores revogados de `PUBLIC`, `anon` e `authenticated` nas novas tabelas; somente SELECT, INSERT, UPDATE e DELETE são concedidos a `authenticated`. Nenhum grant de TRUNCATE, REFERENCES ou TRIGGER para clientes.
+- FKs compostas validam proprietário e existência do curso, período, matéria, aula ou prova referenciados. A proteção não depende da interface.
+- Origens acadêmicas das missões usam colunas geradas e FKs reais; IDs de origens ainda não implementadas não são aceitos.
+- Trigger compartilhada em schema privado, `SECURITY INVOKER`, com `search_path` vazio e sem EXECUTE concedido a clientes. Não existe RPC administrativa ou função `SECURITY DEFINER` nesta migration.
+- Aplicação manual e integral pelo SQL Editor, em transação. Nenhum dado de usuário é inserido pela migration.
+
+RLS não limita papéis administrativos com `BYPASSRLS`, como o usado no SQL Editor. Os testes de aplicação usaram somente publishable key e sessão validada com `getUser()`, nunca o editor como prova de acesso autenticado. Nas seis tabelas, INSERT e UPDATE com proprietário divergente retornaram `42501`; operações anônimas também foram negadas. Sem segunda conta, a inspeção estática e a rejeição de `user_id` divergente não equivalem a um teste completo entre duas contas reais.
+
 ### Limites e verificações futuras
 
 `getClaims()` valida assinatura e expiração do JWT; não oferece revogação instantânea de uma cópia de access token já emitida. O logout foi validado no navegador atual, onde os cookies são removidos. Verificação remota adicional será avaliada para operações sensíveis futuras.
 
-Testes de acesso cruzado, policies, RLS, papéis e concorrência de dados dependem das etapas de domínio. Expiração natural de sessão e limitação de tentativas sob carga ainda não foram exercitadas. Antes de exposição em produção, revisar limites de Auth, controles web e configuração de HTTPS.
+Os 81 checks da Etapa 1C passaram e os seis registros fictícios foram removidos; consultas finais confirmaram a limpeza. Nenhuma conta foi criada ou alterada, nem credencial capturada em logs/documentação. A tela e a action temporárias foram removidas. Concorrência de dados, expiração natural de sessão e limitação de tentativas sob carga ainda não foram exercitadas. Antes de exposição em produção, revisar limites de Auth, controles web e configuração de HTTPS.
 
 ## Ideias futuras
 

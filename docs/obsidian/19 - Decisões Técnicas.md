@@ -26,6 +26,19 @@ O logout usa escopo `local` para encerrar apenas a sessão atual. O layout é re
 
 Nenhuma dependência adicional, tabela de domínio, migration, policy ou Edge Function foi criada na Etapa 1B. `AGENTS.md` e `CLAUDE.md`, gerados automaticamente pelo Next.js instalado ao iniciar o desenvolvimento, foram mantidos como instruções locais de trabalho.
 
+### Fundação de dados — Etapa 1C aplicada e verificada
+
+- Adicionar `academic_courses` às cinco tabelas mínimas para representar Curso → Períodos → Matérias → Aulas/Provas sem duplicar o curso em cada período. Não criar `profiles` sem necessidade.
+- Preservar períodos e matérias concluídos/arquivados. FKs de domínio com `NO ACTION` evitam apagar o histórico em cascata; exclusão administrativa da conta Auth remove seus registros por cascade.
+- Usar `user_id NOT NULL`, RLS por operação e FKs compostas por proprietário. Um ID válido de outro usuário não é referência válida para o usuário atual.
+- Grants explícitos somente de CRUD a `authenticated`, sem acesso anônimo às novas tabelas, independentemente dos defaults do projeto.
+- Estados em `text` com `CHECK`, evitando tipos enum adicionais nesta fundação. Mudanças futuras exigirão migration explícita.
+- Manter missão universal com `origin_type`/`origin_id`. Três colunas geradas com FKs compostas protegem origens acadêmicas; apenas um ID polimórfico sem FK permitiria referências inválidas. Tipos futuros ficam reservados sem IDs até terem sua própria modelagem.
+- Centralizar `updated_at` em uma função privada invoker, com `search_path` vazio, sem RPC administrativa. Preservar `created_at` em updates; não prometer auditoria imutável.
+- Aplicar a migration manualmente no SQL Editor, em transação, sem solicitar credenciais elevadas. Reconciliar histórico antes de adotar `db push` no futuro.
+- Não adicionar dependências nem alterar o fluxo de autenticação nesta preparação. UI de domínio, PDF, IA, Storage, academia, projetos e Vercel ficam fora do escopo.
+- Manter o helper de integração sem endpoint público. A execução foi feita por uma action temporária restrita a desenvolvimento, com identidade validada, somente publishable key e limpeza por UUIDs da própria execução. A tela e a action foram removidas; 81 checks passaram. Não criar segunda conta para os testes sem autorização.
+
 ## Pendências
 
 Registrar decisões futuras com contexto, alternativas e consequências.
