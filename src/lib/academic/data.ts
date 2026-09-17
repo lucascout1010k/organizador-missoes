@@ -62,6 +62,126 @@ export async function getFacultyOverview() {
   };
 }
 
+const FACULTY_TIME_ZONE = "America/Sao_Paulo";
+
+function getSaoPauloDateParts(date: Date) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    day: "2-digit",
+    month: "2-digit",
+    timeZone: FACULTY_TIME_ZONE,
+    weekday: "short",
+    year: "numeric",
+  }).formatToParts(date);
+  const read = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((part) => part.type === type)?.value ?? "";
+
+  return {
+    day: Number(read("day")),
+    month: Number(read("month")),
+    weekday: read("weekday"),
+    year: Number(read("year")),
+  };
+}
+
+function saoPauloMidnightUtc(year: number, month: number, day: number) {
+  const localNoon = new Date(Date.UTC(year, month - 1, day, 12));
+  const timeZoneName = new Intl.DateTimeFormat("en-US", {
+    timeZone: FACULTY_TIME_ZONE,
+    timeZoneName: "longOffset",
+  }).formatToParts(localNoon).find((part) => part.type === "timeZoneName")?.value;
+  const match = timeZoneName?.match(/GMT([+-])(\d{2}):(\d{2})/);
+  const offsetMinutes = match
+    ? (match[1] === "+" ? 1 : -1) * (Number(match[2]) * 60 + Number(match[3]))
+    : -180;
+
+  return new Date(Date.UTC(year, month - 1, day) - offsetMinutes * 60_000);
+}
+
+function getFacultyDateRanges() {
+  const now = new Date();
+  const local = getSaoPauloDateParts(now);
+  const weekdayIndex = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(local.weekday);
+  const localDate = new Date(Date.UTC(local.year, local.month - 1, local.day));
+  const daysSinceMonday = weekdayIndex < 0 ? 0 : (weekdayIndex + 6) % 7;
+  localDate.setUTCDate(localDate.getUTCDate() - daysSinceMonday);
+  const weekStart = saoPauloMidnightUtc(
+    localDate.getUTCFullYear(),
+    localDate.getUTCMonth() + 1,
+    localDate.getUTCDate(),
+  );
+  const weekEndDate = new Date(localDate);
+  weekEndDate.setUTCDate(weekEndDate.getUTCDate() + 7);
+  const weekEnd = saoPauloMidnightUtc(
+    weekEndDate.getUTCFullYear(),
+    weekEndDate.getUTCMonth() + 1,
+    weekEndDate.getUTCDate(),
+  );
+  const examsEnd = new Date(now);
+  examsEnd.setUTCDate(examsEnd.getUTCDate() + 30);
+
+  return {
+    examsEnd: examsEnd.toISOString(),
+    now: now.toISOString(),
+    weekEnd: weekEnd.toISOString(),
+    weekStart: weekStart.toISOString(),
+  };
+}
+
+export async function getFacultyHub() {
+  const { supabase, userId } = await getAuthenticatedAcademicClient();
+  const { examsEnd, now, weekEnd, weekStart } = getFacultyDateRanges();
+  const [coursesResult, periodsResult, subjectsResult, examsResult, classesResult] = await Promise.all([
+    supabase
+      .from("academic_courses")
+      .select("id,name,status,created_at,updated_at")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("academic_periods")
+      .select("id,course_id,name,period_number,year,term,status,start_date,end_date,created_at,updated_at")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("subjects")
+      .select("id,period_id,name,code,status,created_at,updated_at")
+      .eq("user_id", userId)
+      .order("name"),
+    supabase
+      .from("exams")
+      .select("id,subject_id,title,exam_date,topics,notes,status,created_at,updated_at")
+      .eq("user_id", userId)
+      .eq("status", "planned")
+      .gte("exam_date", now)
+      .lt("exam_date", examsEnd)
+      .order("exam_date"),
+    supabase
+      .from("class_sessions")
+      .select("id,subject_id,title,class_date,notes,status,created_at,updated_at")
+      .eq("user_id", userId)
+      .gte("class_date", weekStart)
+      .lt("class_date", weekEnd)
+      .order("class_date"),
+  ]);
+
+  if (
+    coursesResult.error ||
+    periodsResult.error ||
+    subjectsResult.error ||
+    examsResult.error ||
+    classesResult.error
+  ) {
+    throw new Error("Não foi possível carregar a central acadêmica.");
+  }
+
+  return {
+    classesThisWeek: classesResult.data as ClassSession[],
+    courses: coursesResult.data as AcademicCourse[],
+    periods: periodsResult.data as AcademicPeriod[],
+    upcomingExams: examsResult.data as Exam[],
+    subjects: subjectsResult.data as Subject[],
+  };
+}
+
 export async function getPeriodPage(periodId: string) {
   const { supabase, userId } = await getAuthenticatedAcademicClient();
   const [periodResult, subjectsResult] = await Promise.all([

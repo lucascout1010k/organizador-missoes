@@ -60,6 +60,18 @@ Nenhuma dependência adicional, tabela de domínio, migration, policy ou Edge Fu
 - Implementar microanimações CSS discretas e desativá-las com `prefers-reduced-motion`.
 - Manter autenticação, logout, RLS, schema, consultas de proprietário e rotas acadêmicas inalterados.
 
+### Faculdade visual — Etapa 2B implementada e validada
+
+- Manter a central `/faculdade` como Server Component e preservar as Server Actions e formulários da Etapa 1D.
+- Criar uma leitura acadêmica específica para a central sem alterar o contrato de `getFacultyOverview()`, evitando regressão no Dashboard.
+- Consultar apenas campos necessários com sessão validada, RLS e filtro explícito por `user_id`; nenhuma chave privilegiada, API pública, migration ou mutation foi adicionada.
+- Interpretar conclusão somente como matérias com status concluído divididas pelo total de matérias do período. Não inventar notas, frequência ou progresso individual.
+- Definir a semana acadêmica como segunda-feira a domingo em `America/Sao_Paulo`; continuar formatando horários persistidos em UTC no fuso do navegador.
+- Isolar o visual em `faculty-overview.module.css`, mantendo globals, AppShell, login e páginas acadêmicas internas sem acoplamento novo.
+- Usar âncoras e rotas existentes na navegação interna; nenhum controle clicável sem ação real.
+- Preservar a composição completa quando o banco estiver vazio, com métricas zero, mensagens honestas e criação de curso em posição secundária.
+- Validar desktop e mobile como composições próprias, incluindo 375px, 430px, 768px, 1024px e desktop amplo, sem overflow horizontal e com `prefers-reduced-motion`.
+
 ## Pendências
 
 Registrar decisões futuras com contexto, alternativas e consequências.

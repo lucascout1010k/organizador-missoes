@@ -2,9 +2,13 @@
 
 ## Estado atual
 
-Etapa 1D implementada e validada. `/faculdade` mostra curso, período atual, matérias, próximas provas e períodos; `/faculdade/historico` reúne períodos concluídos ou arquivados; páginas de período e matéria oferecem gerenciamento contextual. Curso, períodos, matérias, aulas e provas podem ser criados e editados, com mudanças de status sem exclusão física pela interface.
+Etapas 1D e 2B implementadas e validadas. `/faculdade` funciona como central acadêmica visual integrada ao AppShell da Etapa 2A: identifica curso e período atuais, apresenta métricas compactas, matérias do período, provas planejadas nos próximos 30 dias, aulas da semana atual e resumo de períodos. `/faculdade/historico` reúne períodos concluídos ou arquivados; páginas de período e matéria oferecem gerenciamento contextual. Curso, períodos, matérias, aulas e provas podem ser criados e editados, com mudanças de status sem exclusão física pela interface.
+
+A conclusão exibida na central significa exclusivamente `matérias concluídas / total de matérias do período`. Não representa nota, frequência, domínio de conteúdo ou progresso pedagógico. Dias até a prova são derivados da data real; aulas da semana usam o intervalo de segunda-feira a domingo em `America/Sao_Paulo`. Quando não existem registros, a composição completa permanece visível com métricas zero e estados vazios honestos, sem fixtures persistentes.
 
 O fluxo CRUD real foi testado com dados fictícios, incluindo persistência após recarga, histórico de período concluído e exibição de prova futura na home. Após `FACULDADE VALIDADA`, todos os registros de teste foram removidos e o estado vazio foi confirmado.
+
+O redesenho da Etapa 2B foi validado em 375px, 430px, 768px, 1024px e desktop amplo, sem overflow horizontal. O ajuste final garantiu altura integral do card de período atual em 375px e 430px. A navegação interna usa âncoras reais e a rota de histórico existente; criação e edição permanecem como ações secundárias nos formulários originais.
 
 ## Regras aprovadas
 

@@ -2,7 +2,7 @@
 
 ## Estado atual
 
-As Etapas 1A e 1B foram validadas pelo Agente 1. A Etapa 1C implementou a fundação acadêmica e de missões. A Etapa 1D implementou a interface funcional da Faculdade, foi validada pelo usuário e teve seus dados fictícios removidos. A Etapa 2A implementou e validou o Dashboard visual e o novo shell responsivo. A próxima etapa depende de autorização.
+As Etapas 1A e 1B foram validadas pelo Agente 1. A Etapa 1C implementou a fundação acadêmica e de missões. A Etapa 1D implementou a interface funcional da Faculdade, foi validada pelo usuário e teve seus dados fictícios removidos. A Etapa 2A implementou e validou o Dashboard visual e o novo shell responsivo. A Etapa 2B implementou e validou a central visual responsiva da Faculdade, sem fixtures persistentes ou mudanças de domínio. A próxima etapa depende de autorização.
 
 ## Regras aprovadas
 
