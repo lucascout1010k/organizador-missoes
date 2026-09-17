@@ -14,6 +14,8 @@
 
 - 2026-09-16 — Etapa 1D implementada e confirmada com `FACULDADE VALIDADA`: shell privado responsivo, home acadêmica e rotas de Faculdade para visão geral, histórico, períodos e matérias; criação, edição e status de curso, períodos, matérias, aulas e provas; datas locais convertidas para UTC e tópicos persistidos como lista. O fluxo real foi exercitado pela interface, incluindo histórico, recarga e prova futura na home. Fixtures removidos após a confirmação e estado vazio verificado; ação temporária de limpeza retirada. Sem migration, dependência, exclusão física permanente na UI, IA, PDF, Storage ou Vercel. Etapa 1E permanece bloqueada até autorização.
 
+- 2026-09-17 — Etapa 2A implementada e confirmada com `DASHBOARD VALIDADO`: identidade dark premium em navy, azul elétrico e verde; novo shell com sidebar, header, navegação móvel e destinos futuros marcados como `Em breve`; Dashboard com resumos acadêmicos reais, próximos compromissos, agenda de sete dias, panorama da Faculdade e estados planejados honestos para Academia e Projetos. A rodada de refinamento compactou estados vazios, elevou contraste e hierarquia e aproximou cards e densidade da referência oficial. Validação visual concluída em 375px, 430px, 768px, 1024px e desktop amplo, sem overflow ou erros de console. Lint, TypeScript, build e diff check aprovados. Nenhuma dependência, migration, alteração de Auth/RLS, dado fictício persistente, IA, PDF, PWA ou Vercel foi adicionada.
+
 ## Regras aprovadas
 
 Registrar mudanças relevantes sem incluir dados pessoais ou segredos.

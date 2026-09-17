@@ -49,6 +49,17 @@ Nenhuma dependência adicional, tabela de domínio, migration, policy ou Edge Fu
 - Representar tópicos de prova como linhas no formulário e `text[]` no banco.
 - Compartilhar um shell responsivo: sidebar em telas amplas e navegação inferior em telas pequenas, limitada a Hoje, Faculdade e Sair nesta etapa.
 
+### Dashboard visual — Etapa 2A implementada e validada
+
+- Manter o shell e o Dashboard como Server Components e isolar somente a identificação da rota ativa em um Client Component pequeno.
+- Usar CSS Modules para a nova identidade visual do shell e Dashboard, reduzindo risco de regressão nos estilos globais da Faculdade e do login.
+- Usar SVGs próprios para ícones, sem adicionar dependências.
+- Alimentar resumos e compromissos somente com dados acadêmicos reais já autorizados. Módulos sem backend são apresentados como `Em breve`, sem métricas inventadas ou escrita no banco.
+- Preservar destinos inexistentes como itens visuais não navegáveis, evitando rotas quebradas.
+- Adotar sidebar/header no desktop e navegação inferior no mobile, com safe area, alvos de toque adequados e ausência de overflow global.
+- Implementar microanimações CSS discretas e desativá-las com `prefers-reduced-motion`.
+- Manter autenticação, logout, RLS, schema, consultas de proprietário e rotas acadêmicas inalterados.
+
 ## Pendências
 
 Registrar decisões futuras com contexto, alternativas e consequências.

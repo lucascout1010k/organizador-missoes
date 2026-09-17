@@ -1,52 +1,57 @@
-import Link from "next/link";
-
-import { LocalDateTime } from "@/components/academic/local-date-time";
+import { DashboardHeader } from "@/components/dashboard/dashboard-header";
+import { DashboardSummary } from "@/components/dashboard/dashboard-summary";
+import { FacultySummaryCard, PlannedModuleCard } from "@/components/dashboard/ecosystem-cards";
+import styles from "@/components/dashboard/dashboard.module.css";
+import { UpcomingExams } from "@/components/dashboard/upcoming-exams";
+import { WeekAgenda } from "@/components/dashboard/week-agenda";
 import { getFacultyOverview } from "@/lib/academic/data";
 
 export default async function Home() {
-  const { upcomingExams, subjects } = await getFacultyOverview();
+  const { courses, periods, subjects, upcomingExams } = await getFacultyOverview();
+  const currentCourse = courses.find((course) => course.status === "active") ?? courses[0];
+  const coursePeriods = currentCourse
+    ? periods.filter((period) => period.course_id === currentCourse.id)
+    : [];
+  const activePeriod = coursePeriods.find((period) => period.status === "active") ??
+    coursePeriods.find((period) => period.status === "planned");
+  const activeSubjects = activePeriod
+    ? subjects.filter((subject) => subject.period_id === activePeriod.id && subject.status === "active")
+    : [];
   const subjectNames = new Map(subjects.map((subject) => [subject.id, subject.name]));
 
   return (
-    <div className="page-wrap">
-      <header className="page-header">
-        <div>
-          <p className="eyebrow">Seu espaço de foco</p>
-          <h1>Hoje</h1>
-          <p>Organize o que importa e acompanhe sua vida acadêmica.</p>
-        </div>
-      </header>
+    <div className={styles.page}>
+      <DashboardHeader />
 
-      <section className="hero-card">
-        <div>
-          <span className="hero-kicker">Faculdade</span>
-          <h2>Seu semestre em uma visão clara.</h2>
-          <p>Cursos, períodos, matérias, aulas e provas em um só lugar.</p>
-        </div>
-        <Link className="button button-primary" href="/faculdade">Abrir Faculdade</Link>
+      <DashboardSummary activeSubjectCount={activeSubjects.length} examCount={upcomingExams.length} />
+
+      <div className={styles.mainGrid}>
+        <UpcomingExams exams={upcomingExams} subjectNames={subjectNames} />
+        <WeekAgenda exams={upcomingExams} subjectNames={subjectNames} />
+      </div>
+
+      <section aria-label="Seu ecossistema pessoal" className={styles.ecosystemGrid}>
+        <PlannedModuleCard
+          description="Treinos, hábitos e frequência serão conectados quando o módulo Academia for autorizado."
+          icon="academy"
+          title="Academia"
+        />
+        <FacultySummaryCard
+          courseName={currentCourse?.name ?? "Estrutura acadêmica"}
+          examCount={upcomingExams.length}
+          periodName={activePeriod?.name ?? "Nenhum período"}
+          subjectCount={activeSubjects.length}
+        />
+        <PlannedModuleCard
+          description="Projetos, etapas e próximas ações ganharão vida em uma etapa futura."
+          icon="projects"
+          title="Projetos"
+        />
       </section>
 
-      <section className="section-block">
-        <div className="section-heading">
-          <div>
-            <p className="eyebrow">Agenda acadêmica</p>
-            <h2>Próximas provas</h2>
-          </div>
-        </div>
-        {upcomingExams.length ? (
-          <div className="card-grid">
-            {upcomingExams.slice(0, 3).map((exam) => (
-              <article className="data-card" key={exam.id}>
-                <p className="card-meta">{subjectNames.get(exam.subject_id) ?? "Matéria"}</p>
-                <h3>{exam.title}</h3>
-                <p><LocalDateTime value={exam.exam_date} /></p>
-              </article>
-            ))}
-          </div>
-        ) : (
-          <div className="empty-inline">Nenhuma prova futura cadastrada.</div>
-        )}
-      </section>
+      <aside className={`${styles.panel} ${styles.mobileQuote}`}>
+        <blockquote>“Disciplina é o que transforma intenção em resultado.”</blockquote>
+      </aside>
     </div>
   );
 }
