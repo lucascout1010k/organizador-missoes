@@ -2,7 +2,7 @@
 
 ## Estado atual
 
-Hoje é um Dashboard responsivo com saudação, data, resumos acadêmicos reais, próximos compromissos, agenda visual de sete dias, panorama da Faculdade e apresentação honesta dos módulos futuros. Faculdade possui uma central visual responsiva com curso e período atuais, matérias, provas dos próximos 30 dias, aulas da semana, conclusão de matérias por status e resumo do histórico. O gerenciamento de curso, períodos, matérias, aulas e provas continua disponível, incluindo criação, edição e mudanças de status.
+Hoje é um Dashboard responsivo com saudação, data, resumos acadêmicos reais, próximos compromissos, agenda visual de sete dias, panorama da Faculdade e apresentação honesta dos módulos futuros. Faculdade possui uma central visual responsiva com curso e período atuais, matérias, provas dos próximos 30 dias, aulas da semana, conclusão de matérias por status e resumo do histórico. O detalhe da matéria apresenta cabeçalho contextual, navegação interna, conclusão das aulas por status cadastrado, próxima aula, próxima prova planejada, dias restantes, tópicos, cronologia completa, outras provas e ações expansíveis para editar a matéria e cadastrar ou editar aulas e provas. O gerenciamento de curso, períodos, matérias, aulas e provas continua disponível, incluindo criação, edição e mudanças de status. Materiais aparece somente como recurso futuro, sem controle falso.
 
 ## Regras aprovadas
 

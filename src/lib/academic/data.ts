@@ -220,10 +220,11 @@ export async function getPeriodPage(periodId: string) {
 
 export async function getSubjectPage(subjectId: string) {
   const { supabase, userId } = await getAuthenticatedAcademicClient();
+  const currentTime = new Date().toISOString();
   const [subjectResult, classesResult, examsResult] = await Promise.all([
     supabase
       .from("subjects")
-      .select("id,period_id,name,code,status,created_at,updated_at,academic_periods(name,course_id,academic_courses(name))")
+      .select("id,period_id,name,code,status,created_at,updated_at,academic_periods(id,course_id,name,period_number,year,term,status,start_date,end_date,created_at,updated_at,academic_courses(name))")
       .eq("user_id", userId)
       .eq("id", subjectId)
       .maybeSingle(),
@@ -248,8 +249,8 @@ export async function getSubjectPage(subjectId: string) {
 
   const raw = subjectResult.data as Subject & {
     academic_periods:
-      | { name: string; course_id: string; academic_courses: { name: string } | { name: string }[] | null }
-      | { name: string; course_id: string; academic_courses: { name: string } | { name: string }[] | null }[]
+      | (AcademicPeriod & { academic_courses: { name: string } | { name: string }[] | null })
+      | (AcademicPeriod & { academic_courses: { name: string } | { name: string }[] | null })[]
       | null;
   };
   const period = Array.isArray(raw.academic_periods)
@@ -260,8 +261,23 @@ export async function getSubjectPage(subjectId: string) {
     : period?.academic_courses;
 
   return {
+    currentTime,
     subject: raw,
-    period: period ? { id: raw.period_id, name: period.name } : null,
+    period: period
+      ? {
+          course_id: period.course_id,
+          created_at: period.created_at,
+          end_date: period.end_date,
+          id: period.id,
+          name: period.name,
+          period_number: period.period_number,
+          start_date: period.start_date,
+          status: period.status,
+          term: period.term,
+          updated_at: period.updated_at,
+          year: period.year,
+        }
+      : null,
     courseName: course?.name ?? "Curso",
     classes: classesResult.data as ClassSession[],
     exams: examsResult.data as Exam[],

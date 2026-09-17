@@ -2,13 +2,13 @@
 
 ## Estado atual
 
-Etapas 1D e 2B implementadas e validadas. `/faculdade` funciona como central acadêmica visual integrada ao AppShell da Etapa 2A: identifica curso e período atuais, apresenta métricas compactas, matérias do período, provas planejadas nos próximos 30 dias, aulas da semana atual e resumo de períodos. `/faculdade/historico` reúne períodos concluídos ou arquivados; páginas de período e matéria oferecem gerenciamento contextual. Curso, períodos, matérias, aulas e provas podem ser criados e editados, com mudanças de status sem exclusão física pela interface.
+Etapas 1D, 2B e 2C implementadas e validadas. `/faculdade` funciona como central acadêmica visual integrada ao AppShell da Etapa 2A: identifica curso e período atuais, apresenta métricas compactas, matérias do período, provas planejadas nos próximos 30 dias, aulas da semana atual e resumo de períodos. `/faculdade/historico` reúne períodos concluídos ou arquivados; a página de período mantém o gerenciamento contextual. `/faculdade/materias/[id]` funciona como central da vida da matéria, com cabeçalho de curso/período/status, navegação por seções, conclusão de aulas por status, próxima aula, próxima prova planejada, dias restantes, tópicos, cronologia, outras provas e ações acadêmicas expansíveis. Curso, períodos, matérias, aulas e provas podem ser criados e editados, com mudanças de status sem exclusão física pela interface.
 
 A conclusão exibida na central significa exclusivamente `matérias concluídas / total de matérias do período`. Não representa nota, frequência, domínio de conteúdo ou progresso pedagógico. Dias até a prova são derivados da data real; aulas da semana usam o intervalo de segunda-feira a domingo em `America/Sao_Paulo`. Quando não existem registros, a composição completa permanece visível com métricas zero e estados vazios honestos, sem fixtures persistentes.
 
 O fluxo CRUD real foi testado com dados fictícios, incluindo persistência após recarga, histórico de período concluído e exibição de prova futura na home. Após `FACULDADE VALIDADA`, todos os registros de teste foram removidos e o estado vazio foi confirmado.
 
-O redesenho da Etapa 2B foi validado em 375px, 430px, 768px, 1024px e desktop amplo, sem overflow horizontal. O ajuste final garantiu altura integral do card de período atual em 375px e 430px. A navegação interna usa âncoras reais e a rota de histórico existente; criação e edição permanecem como ações secundárias nos formulários originais.
+Os redesenhos das Etapas 2B e 2C foram validados em 375px, 430px, 768px, 1024px e desktop amplo, sem overflow horizontal. O detalhe da matéria prioriza a próxima prova antes das métricas no mobile e mantém o grid de aulas com próxima prova e ações no desktop. A navegação interna usa âncoras reais; Materiais é somente uma indicação não interativa de funcionalidade futura. Criação e edição permanecem como ações secundárias nos formulários originais, sem alterar Server Actions, timezone ou contratos funcionais.
 
 ## Regras aprovadas
 

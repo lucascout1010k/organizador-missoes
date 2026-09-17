@@ -72,6 +72,19 @@ Nenhuma dependência adicional, tabela de domínio, migration, policy ou Edge Fu
 - Preservar a composição completa quando o banco estiver vazio, com métricas zero, mensagens honestas e criação de curso em posição secundária.
 - Validar desktop e mobile como composições próprias, incluindo 375px, 430px, 768px, 1024px e desktop amplo, sem overflow horizontal e com `prefers-reduced-motion`.
 
+### Matéria visual — Etapa 2C implementada e validada
+
+- Manter `/faculdade/materias/[id]` como Server Component e concentrar sua composição em um componente server-side próprio, preservando os pequenos Client Components existentes apenas para formulários e apresentação local de data/hora.
+- Isolar o desenho em `subject-detail.module.css`, compartilhando a identidade navy, azul e verde das Etapas 2A e 2B sem importar os CSS Modules do Dashboard ou da central da Faculdade.
+- Ampliar somente a seleção relacionada de `getSubjectPage()` com metadados existentes do período; preservar consultas paralelas, sessão validada, RLS e filtros explícitos por `user_id`.
+- Fixar um único timestamp na leitura `server-only` para derivar próxima aula, próxima prova, datas passadas e dias restantes de forma consistente durante a renderização, mantendo armazenamento em UTC e apresentação local existentes.
+- Interpretar conclusão exclusivamente como `aulas com status completed / total de aulas`, com rótulo explícito; não representar domínio, desempenho, frequência, nota ou progresso pedagógico.
+- Destacar somente a próxima prova futura com status planejado, mantendo todas as demais provas e seus tópicos disponíveis para consulta e edição.
+- Preservar integralmente `SubjectForm`, `ClassSessionForm`, `ExamForm`, `ActionForm`, `DateTimeField` e as Server Actions; ações rápidas são `details` reais, sem modal ou botão inerte.
+- Representar Materiais apenas como item não interativo `Em breve` e aviso contextual, sem rota, tabela, Storage, PDF, IA ou plano de revisão.
+- Tratar desktop e mobile como composições próprias: grid informacional no desktop e prioridade para próxima prova, métricas, aulas, provas e ações no mobile, com safe area e ausência de overflow.
+- Validar estados preenchidos e vazios com fixture apenas em memória e desenvolvimento, removida antes da revisão final; nenhum dado fictício foi persistido.
+
 ## Pendências
 
 Registrar decisões futuras com contexto, alternativas e consequências.
