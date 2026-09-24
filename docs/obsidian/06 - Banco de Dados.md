@@ -2,7 +2,9 @@
 
 ## Estado atual
 
-O projeto Supabase foi criado na região South America (São Paulo). A migration `supabase/migrations/20260916124208_criar_fundacao_academica_e_missoes.sql` foi aplicada manualmente no SQL Editor, com confirmação do usuário. As seis tabelas foram acessadas pela integração autenticada e os 81 checks passaram. O helper e o resumo de evidências estão em `supabase/tests`; todos os registros fictícios foram removidos.
+O projeto Supabase foi criado na região South America (São Paulo). A migration `supabase/migrations/20260916124208_criar_fundacao_academica_e_missoes.sql` foi aplicada manualmente no SQL Editor, com confirmação do usuário. As seis tabelas foram acessadas pela integração autenticada e os 81 checks passaram.
+
+As migrations `20260918114607_criar_materiais_academicos_e_storage_privado.sql` e `20260918155614_corrigir_policies_storage_exclusao_materiais_academicos.sql` também foram aplicadas manualmente. Elas criam a fundação 2D.1 e reconciliam o ciclo de remoção do Storage. O helper `supabase/tests/materials-foundation-checks.ts` permanece versionado; 33 checks runtime e 5 checks de cleanup passaram. Ao final, as duas tabelas de materiais ficaram vazias, as fixtures acadêmicas foram removidas e nenhum objeto de teste permaneceu no bucket.
 
 ## Regras aprovadas
 
@@ -18,8 +20,22 @@ PostgreSQL via Supabase, com exposição automática de tabelas desativada no pr
 | `class_sessions` | Matéria obrigatória, título, data/hora, notas opcionais e status. |
 | `exams` | Matéria obrigatória, título, data/hora, tópicos `text[]`, notas opcionais e status. |
 | `missions` | Entidade universal: título, descrição, categoria, estado, prioridade, agenda, prazo, estimativa e origem opcional. |
+| `academic_materials` | Metadata do PDF, matéria obrigatória, aula opcional compatível, caminho privado e ciclo do arquivo. |
+| `academic_material_analyses` | Tentativas futuras de análise, consentimento, provedor/modelo, estado, resultado ou erro. A integração de IA ainda não existe. |
 
-Não há `profiles`, tabelas de PDFs, IA, academia ou projetos. Categorias e rótulos de origem reservados não representam implementação desses módulos.
+Não há `profiles`, integração de IA, tabelas de academia ou projetos. Categorias e rótulos de origem reservados não representam implementação desses módulos. `missions` não foi alterada pela Etapa 2D.1.
+
+### Materiais e Storage — Etapa 2D.1
+
+- `academic_materials` aceita somente `application/pdf`, tamanho entre 1 byte e 6 MiB e caminho canônico `<user_id>/<subject_id>/<material_id>/source.pdf`.
+- Estados do arquivo: `pending_upload`, `ready`, `upload_failed`, `deleting` e `deleted`. `deleted_at` deve existir exatamente no estado `deleted`.
+- O material pertence a uma matéria do mesmo proprietário. A aula é opcional, mas, quando presente, deve pertencer ao mesmo usuário e à mesma matéria.
+- `academic_material_analyses` admite `processing`, `completed` e `failed`, com constraints para coerência de `result`, `error_code`, `completed_at` e cronologia do consentimento. Apenas uma tentativa `processing` pode existir por material.
+- Ambas as tabelas têm RLS habilitada e forçada, policies próprias e grants CRUD apenas para `authenticated`.
+- O bucket `academic-materials` é privado, limitado a 6291456 bytes e ao MIME `application/pdf`.
+- Storage possui policies de `INSERT`, `SELECT` e `DELETE`; não existe policy de `UPDATE`. `INSERT` exige `pending_upload`; `DELETE` exige `deleting`; `SELECT` aceita `ready` e `deleting` para permitir a operação interna de remoção.
+- A aplicação deve reler a metadata e exigir `ready` com `deleted_at is null` antes de gerar signed URL ou servir download/preview.
+- Fluxo de exclusão: `ready`/`pending_upload`/`upload_failed` → `deleting` → remover objeto → `deleted` com `deleted_at` → hard delete opcional.
 
 ### Integridade e histórico
 
@@ -64,9 +80,9 @@ O arquivo não é idempotente: uma segunda execução deve falhar, evitando masc
 
 ## Pendências
 
-- Revisão externa da conclusão da Etapa 1C.
-- Teste A/B com duas contas reais somente com autorização específica; não realizado nesta etapa.
 - Reconciliar histórico de migrations antes de futura adoção do Supabase CLI.
+- Implementar frontend, endpoints funcionais de download/upload e processamento de PDF somente em etapa autorizada.
+- Implementar análise por IA somente em etapa posterior e explicitamente autorizada.
 
 ## Ideias futuras
 

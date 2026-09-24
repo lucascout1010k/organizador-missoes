@@ -85,6 +85,22 @@ Nenhuma dependência adicional, tabela de domínio, migration, policy ou Edge Fu
 - Tratar desktop e mobile como composições próprias: grid informacional no desktop e prioridade para próxima prova, métricas, aulas, provas e ações no mobile, com safe area e ausência de overflow.
 - Validar estados preenchidos e vazios com fixture apenas em memória e desenvolvimento, removida antes da revisão final; nenhum dado fictício foi persistido.
 
+### Materiais acadêmicos — Etapa 2D.1 implementada e validada
+
+- Versionar como imutáveis as migrations já aplicadas `20260918114607_criar_materiais_academicos_e_storage_privado.sql` e `20260918155614_corrigir_policies_storage_exclusao_materiais_academicos.sql`; qualquer nova reconciliação exige migration posterior.
+- Manter `academic_materials` como metadata do PDF e `academic_material_analyses` como registro de tentativas futuras de análise. A existência da segunda tabela não significa que Gemini/IA esteja implementado.
+- Manter o bucket `academic-materials` privado, com limite de 6 MiB, MIME `application/pdf` e caminho canônico `<user_id>/<subject_id>/<material_id>/source.pdf`.
+- Aplicar RLS e grants mínimos às tabelas. No Storage, manter somente policies de `INSERT`, `SELECT` e `DELETE`, sem `UPDATE`.
+- Adotar um único fluxo de remoção para materiais `ready`, `pending_upload` ou `upload_failed`: transicionar metadados para `deleting`, chamar `storage.remove()` e somente após sucesso concluir como `deleted` com `deleted_at` preenchido.
+- Manter o estado `deleting` quando a remoção falhar, permitindo retry idempotente; não retornar automaticamente para `ready`.
+- Permitir que a policy `SELECT` de `storage.objects` enxergue metadados `ready` ou `deleting`, pois a remoção pelo Storage precisa selecionar o objeto antes de excluí-lo. A policy `DELETE` aceita exclusivamente `deleting` com `deleted_at is null`.
+- Manter isolamento pelo usuário autenticado e correspondência exata entre bucket, caminho canônico e metadados. Não usar `owner_id` como fronteira principal, não criar policy anônima e não criar policy `UPDATE` em `storage.objects`.
+- A visibilidade técnica de `deleting` na RLS do Storage não autoriza leitura funcional. Toda futura Server Action ou Route Handler de signed URL, download ou preview deverá reler `academic_materials` e exigir `file_status = 'ready'` e `deleted_at is null` antes de acessar o objeto.
+- Preservar o hard delete de `academic_materials` somente para `file_status = 'deleted'` e `deleted_at is not null`.
+- Considerar `owner_id` apenas observação técnica, nunca requisito de autorização. A autorização deriva da sessão, das policies, do caminho canônico e da metadata correspondente.
+- Preservar o helper `supabase/tests/materials-foundation-checks.ts` sem expô-lo como endpoint. Os runners temporários foram removidos após 33 checks runtime e 5 checks de cleanup aprovados.
+- Não alterar `missions` nesta fundação e não criar missões automaticamente a partir de conteúdo futuro de IA.
+
 ## Pendências
 
 Registrar decisões futuras com contexto, alternativas e consequências.

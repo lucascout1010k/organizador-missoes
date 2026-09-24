@@ -2,7 +2,7 @@
 
 ## Estado atual
 
-O projeto Supabase e o banco existem. A Etapa 1B implementou autenticação privada. A migration de domínio da Etapa 1C foi aplicada manualmente; CRUD próprio, negação anônima e rejeição de proprietário divergente foram verificados nas seis tabelas. A aplicação usa somente Project URL e publishable key no client público. O repositório é público; dados privados nunca pertencem ao GitHub. `.env.local` não é versionado e `.env.example` contém somente nomes de variáveis e placeholders vazios.
+O projeto Supabase e o banco existem. A Etapa 1B implementou autenticação privada. A migration de domínio da Etapa 1C foi aplicada manualmente; CRUD próprio, negação anônima e rejeição de proprietário divergente foram verificados nas seis tabelas. A Etapa 2D.1 adicionou duas tabelas privadas e um bucket privado para materiais acadêmicos, com migrations aplicadas manualmente e 38/38 checks de runtime e cleanup aprovados. A aplicação usa somente Project URL e publishable key no client público. O repositório é público; dados privados nunca pertencem ao GitHub. `.env.local` não é versionado e `.env.example` contém somente nomes de variáveis e placeholders vazios.
 
 ## Regras aprovadas
 
@@ -84,6 +84,17 @@ RLS não limita papéis administrativos com `BYPASSRLS`, como o usado no SQL Edi
 `getClaims()` valida assinatura e expiração do JWT; não oferece revogação instantânea de uma cópia de access token já emitida. O logout foi validado no navegador atual, onde os cookies são removidos. Verificação remota adicional será avaliada para operações sensíveis futuras.
 
 Os 81 checks da Etapa 1C passaram e os seis registros fictícios foram removidos; consultas finais confirmaram a limpeza. Nenhuma conta foi criada ou alterada, nem credencial capturada em logs/documentação. A tela e a action temporárias foram removidas. Concorrência de dados, expiração natural de sessão e limitação de tentativas sob carga ainda não foram exercitadas. Antes de exposição em produção, revisar limites de Auth, controles web e configuração de HTTPS.
+
+### Controles da Etapa 2D.1 — Materiais acadêmicos
+
+- `academic_materials` e `academic_material_analyses` usam `user_id`, RLS habilitada e forçada, grants mínimos e policies por operação para `authenticated`; `anon` não recebe acesso.
+- FKs compostas impedem associar material, aula, matéria ou análise de proprietários diferentes. Constraints limitam MIME, tamanho, caminho, estados e cronologia das análises.
+- O bucket `academic-materials` é privado, limitado a 6 MiB e `application/pdf`. O caminho deve ser exatamente `<user_id>/<subject_id>/<material_id>/source.pdf`.
+- `storage.objects` possui policies de `INSERT`, `SELECT` e `DELETE`, sem policy de `UPDATE`. Inserção exige metadata `pending_upload`; remoção exige metadata `deleting`.
+- A policy técnica de `SELECT` aceita `ready` e `deleting` para viabilizar `storage.remove()`. A aplicação não deve usar essa visibilidade como autorização funcional: downloads, previews e signed URLs futuros exigem metadata `ready` e `deleted_at is null`.
+- O ciclo oficial de exclusão é `ready`, `pending_upload` ou `upload_failed` → `deleting` → `storage.remove()` → `deleted` com `deleted_at`; hard delete da metadata somente depois de `deleted`.
+- O runtime usou publishable key e duas contas reais, sem `service_role` ou cliente administrativo. Signed upload, magic bytes `%PDF-`, isolamento A/B, negação anônima, bloqueio de remoção em `ready`, remoção em `deleting` e cleanup foram verificados.
+- `owner_id` foi apenas observado tecnicamente e não constitui fronteira de autorização. Nenhuma credencial, token ou URL assinada foi registrada.
 
 ## Ideias futuras
 

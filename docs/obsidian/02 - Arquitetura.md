@@ -12,11 +12,15 @@ A Etapa 1D adicionou um shell privado responsivo compartilhado entre Hoje e Facu
 
 Rotas acadêmicas atuais: `/faculdade`, `/faculdade/historico`, `/faculdade/periodos/[id]` e `/faculdade/materias/[id]`.
 
+A Etapa 2D.1 adicionou a fundação de dados para materiais sem criar rota ou frontend. `academic_materials` guarda metadata e ciclo de vida do arquivo; `academic_material_analyses` reserva tentativas futuras de análise com consentimento, estado e resultado estruturado. O bucket `academic-materials` é privado, aceita somente `application/pdf` até 6 MiB e usa o caminho canônico `<user_id>/<subject_id>/<material_id>/source.pdf`. As tabelas e os objetos são isolados pelo usuário autenticado e pela correspondência exata com a metadata.
+
+No Storage existem policies somente de `INSERT`, `SELECT` e `DELETE`; não existe policy de `UPDATE`. A leitura técnica da policy de objetos admite metadata `ready` ou `deleting` porque `storage.remove()` precisa selecionar antes de excluir. Isso não autoriza download funcional durante `deleting`: qualquer futura Server Action ou Route Handler de download, preview ou signed URL deverá reler a metadata e exigir `file_status = 'ready'` e `deleted_at is null`.
+
 ## Regras aprovadas
 
 ### Fundação acadêmica e missões — Etapa 1C implementada
 
-Modelo definido: Curso → Períodos históricos → Matérias → Aulas e Provas. `academic_courses` complementa as cinco tabelas mínimas para representar o curso sem repetir seu nome em cada período. `missions` permanece independente como entidade universal, com referências acadêmicas opcionais protegidas pelo mesmo proprietário.
+Modelo definido: Curso → Períodos históricos → Matérias → Aulas e Provas. `academic_courses` complementa as cinco tabelas mínimas para representar o curso sem repetir seu nome em cada período. Materiais pertencem a matérias e podem referenciar uma aula do mesmo usuário e da mesma matéria. `missions` permanece independente como entidade universal e não foi alterada pela Etapa 2D.1.
 
 Toda tabela possui `user_id`, RLS e policies CRUD individuais. FKs compostas `(user_id, id)` impedem referências cruzadas. A migration foi aplicada manualmente pelo usuário e a integração foi validada em 81 checks, incluindo limpeza dos registros fictícios. O helper em `supabase/tests` não é endpoint; a tela e a Server Action temporárias de teste foram removidas. Esta etapa não inclui a interface completa, PDF, IA ou módulos adicionais.
 
