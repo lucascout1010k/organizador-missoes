@@ -2,7 +2,7 @@
 
 ## Estado atual
 
-O projeto Supabase e o banco existem. A Etapa 1B implementou autenticação privada. A migration de domínio da Etapa 1C foi aplicada manualmente; CRUD próprio, negação anônima e rejeição de proprietário divergente foram verificados nas seis tabelas. A Etapa 2D.1 adicionou duas tabelas privadas e um bucket privado para materiais acadêmicos, com migrations aplicadas manualmente e 38/38 checks de runtime e cleanup aprovados. A aplicação usa somente Project URL e publishable key no client público. O repositório é público; dados privados nunca pertencem ao GitHub. `.env.local` não é versionado e `.env.example` contém somente nomes de variáveis e placeholders vazios.
+O projeto Supabase e o banco existem. A Etapa 1B implementou autenticação privada. A migration de domínio da Etapa 1C foi aplicada manualmente; CRUD próprio, negação anônima e rejeição de proprietário divergente foram verificados nas seis tabelas. A Etapa 2D.1 adicionou duas tabelas privadas e um bucket privado para materiais acadêmicos, com migrations aplicadas manualmente e 38/38 checks de runtime e cleanup aprovados. A Etapa 2D.2A refinou a máquina de estados e a policy de leitura do Storage; o runtime aprovou 93/93 checks principais, 8/8 de isolamento A/B e 23/23 de cleanup, sem erro real. A aplicação usa somente Project URL e publishable key no client público. O repositório é público; dados privados nunca pertencem ao GitHub. `.env.local` não é versionado e `.env.example` contém somente nomes de variáveis e placeholders vazios.
 
 ## Regras aprovadas
 
@@ -95,6 +95,15 @@ Os 81 checks da Etapa 1C passaram e os seis registros fictícios foram removidos
 - O ciclo oficial de exclusão é `ready`, `pending_upload` ou `upload_failed` → `deleting` → `storage.remove()` → `deleted` com `deleted_at`; hard delete da metadata somente depois de `deleted`.
 - O runtime usou publishable key e duas contas reais, sem `service_role` ou cliente administrativo. Signed upload, magic bytes `%PDF-`, isolamento A/B, negação anônima, bloqueio de remoção em `ready`, remoção em `deleting` e cleanup foram verificados.
 - `owner_id` foi apenas observado tecnicamente e não constitui fronteira de autorização. Nenhuma credencial, token ou URL assinada foi registrada.
+
+### Controles da Etapa 2D.2A — Upload operation-aware
+
+- A migration posterior adiciona `validating` aos estados permitidos sem editar as duas migrations 2D.1 já aplicadas.
+- Em `pending_upload`, a policy de `SELECT` de `storage.objects` só permite a seleção exigida internamente por `storage.object.upload`; listagem, download e signed read normais permanecem negados.
+- O proprietário pode selecionar tecnicamente o objeto em `validating`, `ready` e `deleting`. A aplicação futura deve continuar oferecendo abertura ou download somente quando a metadata estiver `ready` e sem `deleted_at`.
+- O desenho aprovado para a 2D.2B usa upload autenticado padrão Browser → Supabase Storage; signed upload token foi removido da arquitetura da aplicação.
+- O isolamento entre duas contas e a negação anônima foram exercitados em runtime. As fixtures, metadatas e objetos foram integralmente removidos.
+- A etapa não adiciona `service_role`, client administrativo, policy de `UPDATE`, frontend, processamento de PDF ou IA.
 
 ## Ideias futuras
 

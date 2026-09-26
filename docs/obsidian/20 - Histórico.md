@@ -22,6 +22,8 @@
 
 - 2026-09-24 — Etapa 2D.1 concluída e aprovada: migrations de fundação e correção do ciclo de exclusão aplicadas manualmente no Supabase; `academic_materials`, `academic_material_analyses` e bucket privado `academic-materials` implementados com RLS, grants mínimos, PDF de até 6 MiB e caminho canônico por proprietário. O runtime real aprovou 33 checks funcionais e 5 de cleanup: signed upload, magic bytes `%PDF-`, leitura apenas em `ready`, isolamento entre duas contas, negação anônima, bloqueio de remoção em `ready`, remoção em `deleting`, transição para `deleted` e hard delete posterior. Tabelas, bucket e fixtures ficaram limpos; runners temporários foram removidos. `missions` permaneceu inalterada. Frontend de Materiais, processamento de PDF e Gemini/IA não foram iniciados.
 
+- 2026-09-25 — Etapa 2D.2A concluída e validada em runtime: migration posterior aplicada manualmente sem alterar as migrations 2D.1, adicionando `validating` e tornando o `SELECT` do Storage sensível à operação. Em `pending_upload`, somente `storage.object.upload` pode selecionar o objeto; a leitura normal permanece negada. O proprietário possui leitura técnica em `validating`, `ready` e `deleting`, enquanto a futura UI continuará abrindo ou baixando somente em `ready`. A arquitetura aprovada para a 2D.2B usa upload autenticado padrão Browser → Supabase Storage, sem signed upload token. Foram aprovados 93/93 checks principais, 8/8 de isolamento A/B e 23/23 de cleanup, com negação anônima, zero erros e nenhum resíduo em tabelas ou bucket. Temporários foram removidos; frontend, upload/finalize, IA e alterações em `missions` não foram iniciados.
+
 ## Regras aprovadas
 
 Registrar mudanças relevantes sem incluir dados pessoais ou segredos.

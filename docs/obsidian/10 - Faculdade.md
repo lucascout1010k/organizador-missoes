@@ -10,7 +10,7 @@ O fluxo CRUD real foi testado com dados fictícios, incluindo persistência apó
 
 Os redesenhos das Etapas 2B e 2C foram validados em 375px, 430px, 768px, 1024px e desktop amplo, sem overflow horizontal. O detalhe da matéria prioriza a próxima prova antes das métricas no mobile e mantém o grid de aulas com próxima prova e ações no desktop. A navegação interna usa âncoras reais. A fundação backend de Materiais foi concluída na Etapa 2D.1, mas sua indicação na interface permanece não interativa: nenhuma tela ou endpoint funcional foi implementado. Criação e edição acadêmicas permanecem como ações secundárias nos formulários originais, sem alterar Server Actions, timezone, `missions` ou contratos funcionais existentes.
 
-Materiais acadêmicos possuem metadata privada vinculada à matéria, aula opcional compatível, PDF de até 6 MiB e caminho canônico por usuário/matéria/material. O runtime real validou signed upload, leitura própria em `ready`, isolamento entre duas contas, negação anônima, ciclo de exclusão e cleanup. A IA ainda não foi implementada.
+Materiais acadêmicos possuem metadata privada vinculada à matéria, aula opcional compatível, PDF de até 6 MiB e caminho canônico por usuário/matéria/material. A Etapa 2D.2A adicionou o estado `validating`: `pending_upload` só possui `SELECT` durante a operação interna de upload, e a leitura normal continua negada nesse estado; o proprietário tem leitura técnica em `validating`, `ready` e `deleting`. A futura UI continuará permitindo abertura ou download somente em `ready`. O isolamento A/B, a negação anônima e o cleanup foram validados em runtime. O upload autenticado padrão Browser → Supabase Storage, sem signed upload token, está planejado para a 2D.2B. A IA ainda não foi implementada.
 
 ## Regras aprovadas
 
@@ -26,7 +26,7 @@ Aulas e provas guardam horários com fuso (`timestamptz`); datas de início e fi
 
 ## Pendências
 
-Frontend de Materiais, integração de download/upload na aplicação e IA ficam para uma etapa autorizada posterior.
+Frontend de Materiais e o fluxo de upload/finalize ficam para a 2D.2B quando autorizada. IA permanece para etapa posterior e explicitamente autorizada.
 
 ## Ideias futuras
 
@@ -34,4 +34,4 @@ Frontend de Materiais, integração de download/upload na aplicação e IA ficam
 - IA poderá analisar esses PDFs e sugerir conteúdo de estudo; essa integração ainda não existe.
 - IA poderá sugerir planos de estudo e revisão para provas a partir dos tópicos e das aulas.
 - Conteúdo gerado por IA será sempre uma sugestão: o usuário confirma antes de qualquer sugestão virar missão ou compromisso. Não haverá criação silenciosa de missões.
-- Upload funcional no frontend, processamento de PDF e integração de IA ainda não foram implementados.
+- Upload funcional no frontend, finalize, processamento de PDF e integração de IA ainda não foram implementados.

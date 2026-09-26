@@ -14,7 +14,9 @@ Rotas acadêmicas atuais: `/faculdade`, `/faculdade/historico`, `/faculdade/peri
 
 A Etapa 2D.1 adicionou a fundação de dados para materiais sem criar rota ou frontend. `academic_materials` guarda metadata e ciclo de vida do arquivo; `academic_material_analyses` reserva tentativas futuras de análise com consentimento, estado e resultado estruturado. O bucket `academic-materials` é privado, aceita somente `application/pdf` até 6 MiB e usa o caminho canônico `<user_id>/<subject_id>/<material_id>/source.pdf`. As tabelas e os objetos são isolados pelo usuário autenticado e pela correspondência exata com a metadata.
 
-No Storage existem policies somente de `INSERT`, `SELECT` e `DELETE`; não existe policy de `UPDATE`. A leitura técnica da policy de objetos admite metadata `ready` ou `deleting` porque `storage.remove()` precisa selecionar antes de excluir. Isso não autoriza download funcional durante `deleting`: qualquer futura Server Action ou Route Handler de download, preview ou signed URL deverá reler a metadata e exigir `file_status = 'ready'` e `deleted_at is null`.
+No Storage existem policies somente de `INSERT`, `SELECT` e `DELETE`; não existe policy de `UPDATE`. A Etapa 2D.2A acrescentou `validating` à máquina de estados e tornou a policy de `SELECT` sensível à operação: em `pending_upload`, o objeto é selecionável apenas durante `storage.object.upload`; a leitura normal continua negada. Para o proprietário, a leitura técnica normal admite metadata `validating`, `ready` ou `deleting`. Isso não amplia a autorização funcional da futura UI: abertura, preview e download exigirão metadata `ready` e `deleted_at is null`.
+
+O fluxo planejado para a 2D.2B usa upload autenticado padrão diretamente do Browser para o Supabase Storage, sem signed upload token na arquitetura da aplicação. Após o envio, a metadata seguirá para `validating` antes de se tornar `ready` ou `upload_failed`. A 2D.2A não implementou frontend, upload/finalize nem processamento; apenas preparou e validou o contrato de banco e Storage. A integração de IA continua inexistente.
 
 ## Regras aprovadas
 

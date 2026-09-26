@@ -6,6 +6,8 @@ O projeto Supabase foi criado na região South America (São Paulo). A migration
 
 As migrations `20260918114607_criar_materiais_academicos_e_storage_privado.sql` e `20260918155614_corrigir_policies_storage_exclusao_materiais_academicos.sql` também foram aplicadas manualmente. Elas criam a fundação 2D.1 e reconciliam o ciclo de remoção do Storage. O helper `supabase/tests/materials-foundation-checks.ts` permanece versionado; 33 checks runtime e 5 checks de cleanup passaram. Ao final, as duas tabelas de materiais ficaram vazias, as fixtures acadêmicas foram removidas e nenhum objeto de teste permaneceu no bucket.
 
+A migration `20260924113838_adicionar_validating_e_select_storage_operation_aware.sql` foi aplicada manualmente na Etapa 2D.2A, sem modificar as migrations 2D.1. Ela adiciona `validating` à constraint de `file_status` e recria somente a policy `academic_materials_storage_select`. O runtime aprovou 93/93 checks principais, 8/8 de isolamento A/B e 23/23 de cleanup; ao final, não restaram materiais, análises, fixtures acadêmicas ou objetos de teste.
+
 ## Regras aprovadas
 
 PostgreSQL via Supabase, com exposição automática de tabelas desativada no projeto. Toda tabela privada nasce com UUID como chave primária, `user_id NOT NULL REFERENCES auth.users(id)`, RLS explícita e grants mínimos. O default de `user_id` é `auth.uid()`, mas a segurança é imposta pelas policies, não pelo default.
@@ -25,16 +27,17 @@ PostgreSQL via Supabase, com exposição automática de tabelas desativada no pr
 
 Não há `profiles`, integração de IA, tabelas de academia ou projetos. Categorias e rótulos de origem reservados não representam implementação desses módulos. `missions` não foi alterada pela Etapa 2D.1.
 
-### Materiais e Storage — Etapa 2D.1
+### Materiais e Storage — estado após a Etapa 2D.2A
 
 - `academic_materials` aceita somente `application/pdf`, tamanho entre 1 byte e 6 MiB e caminho canônico `<user_id>/<subject_id>/<material_id>/source.pdf`.
-- Estados do arquivo: `pending_upload`, `ready`, `upload_failed`, `deleting` e `deleted`. `deleted_at` deve existir exatamente no estado `deleted`.
+- Estados do arquivo: `pending_upload`, `validating`, `ready`, `upload_failed`, `deleting` e `deleted`. `deleted_at` deve existir exatamente no estado `deleted`.
 - O material pertence a uma matéria do mesmo proprietário. A aula é opcional, mas, quando presente, deve pertencer ao mesmo usuário e à mesma matéria.
 - `academic_material_analyses` admite `processing`, `completed` e `failed`, com constraints para coerência de `result`, `error_code`, `completed_at` e cronologia do consentimento. Apenas uma tentativa `processing` pode existir por material.
 - Ambas as tabelas têm RLS habilitada e forçada, policies próprias e grants CRUD apenas para `authenticated`.
 - O bucket `academic-materials` é privado, limitado a 6291456 bytes e ao MIME `application/pdf`.
-- Storage possui policies de `INSERT`, `SELECT` e `DELETE`; não existe policy de `UPDATE`. `INSERT` exige `pending_upload`; `DELETE` exige `deleting`; `SELECT` aceita `ready` e `deleting` para permitir a operação interna de remoção.
-- A aplicação deve reler a metadata e exigir `ready` com `deleted_at is null` antes de gerar signed URL ou servir download/preview.
+- Storage possui policies de `INSERT`, `SELECT` e `DELETE`; não existe policy de `UPDATE`. `INSERT` exige `pending_upload`; `DELETE` exige `deleting`. Em `pending_upload`, `SELECT` é permitido somente quando `storage.allow_only_operation('storage.object.upload')` confirma a operação interna de upload. A leitura normal aceita `validating`, `ready` e `deleting` para o proprietário.
+- A aplicação deve reler a metadata e exigir `ready` com `deleted_at is null` antes de abrir ou servir download/preview. A visibilidade técnica de `validating` e `deleting` não é autorização funcional da UI.
+- O upload autenticado padrão Browser → Supabase Storage está planejado para a 2D.2B. A arquitetura da aplicação não usará signed upload token.
 - Fluxo de exclusão: `ready`/`pending_upload`/`upload_failed` → `deleting` → remover objeto → `deleted` com `deleted_at` → hard delete opcional.
 
 ### Integridade e histórico
@@ -81,7 +84,7 @@ O arquivo não é idempotente: uma segunda execução deve falhar, evitando masc
 ## Pendências
 
 - Reconciliar histórico de migrations antes de futura adoção do Supabase CLI.
-- Implementar frontend, endpoints funcionais de download/upload e processamento de PDF somente em etapa autorizada.
+- Implementar frontend e o fluxo autenticado de upload/finalize somente na 2D.2B autorizada; a 2D.2A preparou apenas banco e Storage.
 - Implementar análise por IA somente em etapa posterior e explicitamente autorizada.
 
 ## Ideias futuras

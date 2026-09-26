@@ -101,6 +101,16 @@ Nenhuma dependência adicional, tabela de domínio, migration, policy ou Edge Fu
 - Preservar o helper `supabase/tests/materials-foundation-checks.ts` sem expô-lo como endpoint. Os runners temporários foram removidos após 33 checks runtime e 5 checks de cleanup aprovados.
 - Não alterar `missions` nesta fundação e não criar missões automaticamente a partir de conteúdo futuro de IA.
 
+### Storage operation-aware — Etapa 2D.2A aplicada e validada
+
+- Preservar como imutáveis as duas migrations 2D.1 aplicadas. A evolução foi versionada exclusivamente em `20260924113838_adicionar_validating_e_select_storage_operation_aware.sql`.
+- Adicionar `validating` à máquina de estados entre o envio do objeto e a decisão de torná-lo `ready` ou `upload_failed`.
+- Permitir `SELECT` em `pending_upload` exclusivamente durante `storage.object.upload`, por meio de `storage.allow_only_operation('storage.object.upload')`; leitura normal, listagem, download e signed read permanecem negados nesse estado.
+- Admitir leitura técnica do proprietário em `validating`, `ready` e `deleting`. A UI futura mantém uma regra mais restrita e só abre ou baixa o objeto quando a metadata está `ready` e `deleted_at is null`.
+- Adotar na 2D.2B upload autenticado padrão diretamente do Browser para o Supabase Storage. Signed upload token foi removido da arquitetura da aplicação.
+- Preservar as policies de `INSERT` e `DELETE`, a ausência de `UPDATE`, o bucket privado, caminho canônico, limite de 6 MiB, MIME PDF, Auth, grants, FKs, análises e `missions`.
+- Considerar a etapa validada pelos 93/93 checks principais, 8/8 de isolamento entre duas contas e 23/23 de cleanup, incluindo negação anônima e ausência de resíduos. Nenhum frontend, upload/finalize ou IA foi implementado.
+
 ## Pendências
 
 Registrar decisões futuras com contexto, alternativas e consequências.
