@@ -4,7 +4,11 @@
 
 Hoje é um Dashboard responsivo com saudação, data, resumos acadêmicos reais, próximos compromissos, agenda visual de sete dias, panorama da Faculdade e apresentação honesta dos módulos futuros. Faculdade possui uma central visual responsiva com curso e período atuais, matérias, provas dos próximos 30 dias, aulas da semana, conclusão de matérias por status e resumo do histórico. O detalhe da matéria apresenta cabeçalho contextual, navegação interna, conclusão das aulas por status cadastrado, próxima aula, próxima prova planejada, dias restantes, tópicos, cronologia completa, outras provas e ações expansíveis para editar a matéria e cadastrar ou editar aulas e provas. O gerenciamento de curso, períodos, matérias, aulas e provas continua disponível, incluindo criação, edição e mudanças de status.
 
-A fundação backend de Materiais está implementada e validada: metadata privada, upload assinado de PDF, leitura pelo proprietário somente no estado funcional `ready`, isolamento A/B e exclusão em etapas. A interface ainda apresenta Materiais como recurso futuro porque nenhuma tela, Route Handler permanente, análise de PDF ou integração de IA foi implementada na Etapa 2D.1.
+A fundação backend de Materiais está implementada e validada. A 2D.2B acrescentou o formulário mínimo no detalhe da matéria, com título, aula opcional e seleção de um PDF de até 6 MiB. `prepareMaterialUpload` recebe somente metadata, valida ownership e gera o identificador/caminho no servidor. O navegador autenticado envia o File diretamente ao bucket privado `academic-materials`, com `upsert: false`, sem signed upload token e sem bytes de PDF atravessando Next.js/Vercel.
+
+Sucesso informa "Arquivo enviado. Validação pendente." e mantém `pending_upload` sem abertura/download. `reportMaterialUploadFailure` pode registrar `upload_failed` somente sobre material próprio ainda pendente; resultados incertos não alteram automaticamente o estado nem provocam retry. A etapa foi validada em 82/82 checks consolidados, incluindo isolamento A/B, negação anônima e cleanup integral, além de 245/245 testes locais previamente aprovados.
+
+Finalize, página visual final, abertura/download, exclusão funcional, análise de PDF e IA não estão implementados. `ready` ainda não representa fluxo funcional concluído. A referência local `4. Materiais-PDF-IA` está reservada para etapa visual posterior.
 
 ## Regras aprovadas
 
@@ -12,7 +16,7 @@ A fundação backend de Materiais está implementada e validada: metadata privad
 
 ## Pendências
 
-Frontend de Materiais, processamento de PDF, Gemini/IA, Missões, Agenda, Academia, Projetos, Progresso e Configurações permanecem planejados. Priorizar funcionalidades por etapa aprovada.
+Interface final de Materiais, finalize, abertura/download, exclusão funcional, processamento de PDF, Gemini/IA, Missões, Agenda, Academia, Projetos, Progresso e Configurações permanecem planejados. O upload mínimo já está implementado; a 2D.2C não foi iniciada. Priorizar funcionalidades por etapa aprovada.
 
 ## Ideias futuras
 

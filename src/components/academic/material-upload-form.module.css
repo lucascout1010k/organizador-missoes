@@ -1,0 +1,15 @@
+.form { min-width: 0; padding: 16px; }
+.notice { margin: 0 0 16px; color: #a4b6cd; font-size: 13px; line-height: 1.6; }
+.fields { display: grid; min-width: 0; gap: 14px; border: 0; margin: 0; padding: 0; }
+.legend { margin-bottom: 12px; color: #e9f2ff; font-size: 14px; font-weight: 700; }
+.field { display: grid; min-width: 0; gap: 6px; color: #d6e3f5; font-size: 13px; }
+.field input, .field select { width: 100%; min-width: 0; min-height: 44px; border: 1px solid #385478; border-radius: 8px; background: #07182a; padding: 10px; color: #f1f6ff; }
+.field input[type="file"] { overflow: hidden; }
+.field input:focus-visible, .field select:focus-visible, .button:focus-visible, .feedback a:focus-visible { outline: 2px solid #78b9ff; outline-offset: 3px; }
+.button { min-height: 44px; border: 0; border-radius: 8px; background: #287bee; padding: 10px 16px; color: white; cursor: pointer; font-weight: 700; }
+.button:disabled { background: #244365; color: #b6c5d8; cursor: default; }
+.feedback { min-height: 32px; margin-top: 16px; color: #c2d3e9; font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+.feedback p { margin: 0 0 6px; }
+.feedback a { color: #8dc5ff; text-decoration: underline; }
+.feedback[data-state="uploaded_pending_validation"] { color: #8fe3bf; }
+.feedback[data-state="confirmed_failure"], .feedback[data-state="uncertain_result"], .feedback[data-state="auth_required"] { color: #ffca9e; }

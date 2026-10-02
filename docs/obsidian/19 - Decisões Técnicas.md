@@ -111,6 +111,36 @@ Nenhuma dependência adicional, tabela de domínio, migration, policy ou Edge Fu
 - Preservar as policies de `INSERT` e `DELETE`, a ausência de `UPDATE`, o bucket privado, caminho canônico, limite de 6 MiB, MIME PDF, Auth, grants, FKs, análises e `missions`.
 - Considerar a etapa validada pelos 93/93 checks principais, 8/8 de isolamento entre duas contas e 23/23 de cleanup, incluindo negação anônima e ausência de resíduos. Nenhum frontend, upload/finalize ou IA foi implementado.
 
+### Prepare — 2D.2B.1
+
+- Manter contratos e validação de Materiais separados dos formulários acadêmicos atuais; não criar interface, upload ou migration nesta subetapa.
+- Derivar o proprietário exclusivamente de `auth.getClaims()`, com UUID validado. Consultar matéria e aula com filtros explícitos por proprietário e matéria, além das FKs já aplicadas.
+- Gerar UUID aleatório e path canônico no servidor; original filename é somente texto de apresentação. Validar PDF declarado e tamanho de 1 a 6291456 bytes, sem aceitar payload de arquivo.
+- Usar INSERT com campos explícitos e somente `pending_upload`; nunca escrever estados posteriores nesta subetapa. Retornos públicos não incluem sessão, proprietário em campo separado ou erros brutos.
+- Exercitar a action real e a validação com dependências simuladas em testes locais, sem carregar ambiente, client real ou rede. Não interpretar esses testes como comprovação nova de RLS remota.
+- Documentar ausência de idempotência: repetição de prepare cria outro material; falha de transporte após INSERT pode deixar metadata persistida.
+- Pendência arquitetural da 2D.2C: "Antes de considerar ready como prova de validação, a máquina de transições deverá ter fronteira de escrita confiável e não depender somente da RLS genérica de UPDATE."
+
+### Upload direto e falhas conservadoras — 2D.2B.2
+
+- Preservar o prepare aprovado e sua classificação: erro técnico de claims não solicita login; resposta sem erro com identidade ausente/inválida solicita login. Os 66 testes anteriores continuam aprovados.
+- Montar somente um formulário funcional mínimo na matéria existente, com CSS Module isolado e opções de aulas reduzidas a ID/título; não criar a página visual final de Materiais.
+- Manter File apenas em memória. A action recebe somente metadata; extensão/MIME/limite 6 MiB/magic bytes no navegador são UX, não validação autoritativa.
+- Usar client browser autenticado, bucket fixo `academic-materials`, path retornado pelo prepare e `upsert: false`; sem signed upload token, URL pública ou envio do PDF pelo Next.js/Vercel.
+- Travar o fluxo sincronicamente antes do primeiro await. Não repetir prepare/upload automaticamente; depois de prepare bem-sucedido ou resultado incerto, bloquear reenvio nessa montagem. Não prometer idempotência entre abas ou após recarga.
+- Sucesso permanece `pending_upload`, com mensagem de validação pendente e sem leitura/download. Finalize não foi implementado nem chamado.
+- Classificar somente códigos conhecidos/status coerentes conforme [Storage Error Codes](https://supabase.com/docs/guides/storage/debugging/error-codes), com ambiguidade retornando resultado incerto. Nunca inferir rejeição pela mensagem; transporte, timeout/abort, 5xx e conflito não registram `upload_failed`.
+- Reautenticar o report e executar UPDATE único de `file_status: upload_failed`, condicionado ao proprietário, material, `pending_upload` e `deleted_at IS NULL`. Zero linhas não significa sucesso; report atrasado não sobrescreve estado posterior. Categoria do browser não é prova autoritativa nem é persistida.
+- Exercitar o código real com dependências simuladas e renderização local, sem ambiente/SDK reais, fixture remota ou upload. Fronteira confiável de escrita das transições, reconciliação e validação autoritativa permanecem pendentes; migrations, Auth, RLS, análises e `missions` não foram alterados.
+
+### Fechamento da 2D.2B — runtime validado
+
+- Consolidar os 54 checks principais, 13 A/B e 15 cleanup como 82/82 aprovados; preservar a evidência de 245/245 testes locais anteriores, sem repetir desnecessariamente as rodadas concluídas.
+- Considerar implementados prepare, upload autenticado Browser → Supabase Storage e `reportMaterialUploadFailure`, com bucket fixo e `upsert: false`, sem File atravessando Next.js/Vercel. Sucesso informa "Arquivo enviado. Validação pendente."; falhas incertas preservam `pending_upload` sem abertura/download.
+- Registrar isolamento A/B e negação anônima validados, com cleanup integral e diagnósticos removidos. Não persistir dados de contas ou conteúdos temporários na documentação.
+- Não interpretar `ready` como fluxo funcional concluído ou prova autoritativa: finalize e a fronteira confiável de transições continuam pendentes da 2D.2C, não iniciada. Migrations/RLS/Auth/missions permanecem intactos.
+- Reservar a referência `4. Materiais-PDF-IA` para etapa visual posterior; o formulário mínimo não implementa o redesign. IA continua não implementada.
+
 ## Pendências
 
 Registrar decisões futuras com contexto, alternativas e consequências.

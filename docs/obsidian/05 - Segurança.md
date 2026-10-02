@@ -105,6 +105,30 @@ Os 81 checks da Etapa 1C passaram e os seis registros fictícios foram removidos
 - O isolamento entre duas contas e a negação anônima foram exercitados em runtime. As fixtures, metadatas e objetos foram integralmente removidos.
 - A etapa não adiciona `service_role`, client administrativo, policy de `UPDATE`, frontend, processamento de PDF ou IA.
 
+### Limite do prepare — 2D.2B.1
+
+A action implementada nesta subetapa valida metadata e ownership e insere exclusivamente `pending_upload`. Rejeita campos de autoridade fornecidos pelo cliente, como proprietário, caminho, identificador de material, bucket e estado. Os testes locais verificam filtros e respostas públicas sanitizadas com client simulado; não constituem uma nova validação de RLS em runtime remoto. Tamanho e MIME recebidos são declarados pelo cliente, não uma prova do conteúdo do arquivo.
+
+A RLS genérica de UPDATE do proprietário e a constraint de estados válidos não garantem que `ready` prove validação autoritativa. Na 2D.2C: "Antes de considerar ready como prova de validação, a máquina de transições deverá ter fronteira de escrita confiável e não depender somente da RLS genérica de UPDATE."
+
+### Controles e limites do upload — 2D.2B.2
+
+O formulário faz checagens de extensão, MIME, tamanho e primeiros cinco bytes `%PDF-` somente para UX. O File não entra em Server Action, form nativo, base64 ou payload Next.js: o browser usa o client público existente e envia diretamente ao bucket privado, com caminho gerado pelo prepare e sem overwrite. Não foram adicionados client administrativo, segredo, token de signed upload, URL pública ou logs de sessão/erros brutos.
+
+A classificação exige `StorageApiError`, status coerente e código explícito conhecido; nunca interpreta a mensagem bruta. Status 0, falha de fetch, timeout/abort, 5xx, conflito e códigos desconhecidos não provam ausência de objeto e permanecem `pending_upload`, sem retry/report automáticos. Se a comunicação da falha perder autenticação ou resposta, a UI não afirma que a metadata mudou. A trava local não oferece idempotência entre abas ou recargas.
+
+O report aceita somente UUID e categoria allowlisted, reautentica e filtra a alteração atomicamente por proprietário, estado `pending_upload` e ausência de `deleted_at`. Categoria vinda do browser é notificação não confiável, não prova autoritativa da inexistência do objeto. A RLS genérica de UPDATE continua permitindo escrita direta do proprietário: a fronteira confiável de transições segue pendente da 2D.2C. Os 245 testes são locais/simulados; não substituem runtime remoto nem validam conteúdo PDF autoritativamente.
+
+### Evidência e limites do runtime — 2D.2B.3
+
+O fluxo real manteve o PDF fora do Next.js: prepare pequeno sem File/Blob/multipart/base64, upload direto autenticado ao bucket privado e nenhuma leitura funcional em `pending_upload`. Download e signed read foram negados, listagem normal não expôs o objeto e a tentativa de sobrescrita com `upsert: false` retornou `KeyAlreadyExists`, mantendo o arquivo original. Reports reais recusaram material inexistente e estados `deleting`/`deleted`; não se escreveu `validating`/`ready` para teste.
+
+As rejeições reais retornaram `StorageApiError` com HTTP 400, mas `statusCode: "413"`/`EntityTooLarge` e `statusCode: "415"`/`InvalidMimeType`. A classificação estrita aprovada considerou essa incoerência incerta e não reportou automaticamente `upload_failed`; a lógica não foi alterada. Um erro coerente simulado exercitou o controlador com prepare/report reais, confirmando a alteração condicional. Isso não transforma categoria do browser em prova autoritativa. A compatibilidade dos erros e a reconciliação permanecem observações para revisão.
+
+O teste cruzado pendente foi concluído com B autenticado por publishable key e credenciais carregadas somente pelo processo: B não preparou material para matéria de A, não consultou metadata, não enviou/sobrescreveu objeto, não reportou falha nem alterou `file_status` de A e não listou/baixou/gerou signed read ou explorou paths inventados. Passaram 13/13 verificações em oito cenários; a leitura técnica do proprietário em `deleting` confirmou o controle positivo de isolamento. Anon permanece negado conforme as validações consolidadas anteriores. Nenhuma credencial, cookie, token, URL assinada ou header de autorização foi exposto ou persistido.
+
+Cleanup cruzado: 15/15 aprovado, metadata e análises dos dados temporários em zero, objetos de teste e dados acadêmicos temporários removidos. Diagnósticos/PDF temporários foram retirados. Consolidado 2D.2B: 54 principais + 13 A/B + 15 cleanup = 82/82; 245 testes locais previamente aprovados. Auth, RLS, migrations e `missions` não foram alterados; sem service role ou client administrativo. Finalize não existe, `pending_upload` permanece sem abertura/download e `ready` ainda não prova validação autoritativa ou fluxo funcional concluído.
+
 ## Ideias futuras
 
 Automatizar verificações de segredo e dependências no CI.

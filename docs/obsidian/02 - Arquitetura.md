@@ -16,9 +16,29 @@ A Etapa 2D.1 adicionou a fundação de dados para materiais sem criar rota ou fr
 
 No Storage existem policies somente de `INSERT`, `SELECT` e `DELETE`; não existe policy de `UPDATE`. A Etapa 2D.2A acrescentou `validating` à máquina de estados e tornou a policy de `SELECT` sensível à operação: em `pending_upload`, o objeto é selecionável apenas durante `storage.object.upload`; a leitura normal continua negada. Para o proprietário, a leitura técnica normal admite metadata `validating`, `ready` ou `deleting`. Isso não amplia a autorização funcional da futura UI: abertura, preview e download exigirão metadata `ready` e `deleted_at is null`.
 
-O fluxo planejado para a 2D.2B usa upload autenticado padrão diretamente do Browser para o Supabase Storage, sem signed upload token na arquitetura da aplicação. Após o envio, a metadata seguirá para `validating` antes de se tornar `ready` ou `upload_failed`. A 2D.2A não implementou frontend, upload/finalize nem processamento; apenas preparou e validou o contrato de banco e Storage. A integração de IA continua inexistente.
+O fluxo implementado e validado em runtime na 2D.2B usa upload autenticado padrão diretamente do Browser para o Supabase Storage, sem signed upload token. Após o envio bem-sucedido, a metadata permanece `pending_upload`; a transição para `validating` e a decisão autoritativa futura dependem de finalize, ainda não implementado. `ready` não representa fluxo funcional concluído nesta entrega. A 2D.2A apenas preparou e validou o contrato de banco e Storage. A integração de IA continua inexistente.
 
 ## Regras aprovadas
+
+### Prepare de Materiais — 2D.2B.1 implementada localmente
+
+O domínio está separado em `src/lib/academic/materials/{types,validation,data}.ts`. A Server Action em `faculdade/materias/[id]/materiais/actions.ts` recebe somente metadata, valida a entrada em runtime e usa o client SSR existente. `materials/data.ts` é `server-only` e limita as consultas por identidade validada e relacionamento. O INSERT é explícito e cria exclusivamente `pending_upload`, com `deleted_at = null`; o retorno contém apenas `ok`, `materialId`, `storagePath` e `fileStatus`.
+
+A 2D.2B.1 não introduziu consumidor browser, leitura de Storage, UPDATE, exclusão ou escrita em estados posteriores. Falhas retornam códigos estáveis e mensagens sanitizadas; não há logs de metadata ou sessão. Erro técnico de `getClaims()` retorna `PREPARE_FAILED`; sem erro, identidade ausente/inválida retorna `AUTH_REQUIRED`. Prepare não é idempotente: uma resposta perdida pode deixar metadata criada e não deve provocar repetição automática. A confiança nas transições para `ready` dependerá de uma fronteira de escrita a definir na 2D.2C.
+
+### Upload browser e comunicação de falha — 2D.2B.2
+
+`MaterialUploadForm` é um Client Component mínimo montado no detalhe existente da matéria, sem nova página visual final. Recebe apenas a matéria, opções de aulas e referências de Server Actions. O File permanece em memória e somente seis campos pequenos entram no prepare. O SDK browser envia o File a `academic-materials`, no caminho exato retornado pelo servidor, com `upsert: false` e MIME PDF; nenhum byte do arquivo passa por Next.js/Vercel.
+
+O controlador separa a interação React do fluxo testável, trava submissões sincronicamente antes do primeiro await e bloqueia nova tentativa nessa montagem depois de prepare bem-sucedido ou resultado incerto. Não há upload em effect, progresso inventado, retry automático, leitura de existência, URL pública ou signed upload token. Sucesso informa "Arquivo enviado. Validação pendente." sem chamar finalize ou alterar `pending_upload`.
+
+Somente rejeição explícita allowlisted de Storage com código/status coerentes dispara `reportMaterialUploadFailure`. A action reautentica e executa um UPDATE único filtrado por material, proprietário, `pending_upload` e `deleted_at IS NULL`, alterando exclusivamente `file_status` para `upload_failed`. Zero linhas ou falha de report não são sucesso; nenhum estado posterior pode ser sobrescrito por report atrasado. Transporte, timeout, abort, 5xx, conflito e código desconhecido ficam incertos e exigem reconciliação futura.
+
+### Verificação do transporte — 2D.2B.3
+
+A 2D.2B.3 comprovou o transporte real pelo formulário da matéria: a Server Action recebeu apenas seis campos primitivos e o File foi enviado diretamente ao endpoint do Storage. O diagnóstico temporário não recebeu o File nem no cleanup: a prova física usou metadata técnica de listagem em `deleting`. Autenticação ausente foi exercitada com o SDK real sem sessão; erro técnico de claims, 5xx, status 0, abort/timeout e rejeição coerente do controlador foram explicitamente simulados. Reports atrasados em `deleting`/`deleted` foram reais; `validating`/`ready` continuaram apenas nos testes locais, sem escrita remota desses estados.
+
+A rodada cruzada confirmou prepare/report e operações de metadata/Storage negados para B sobre recursos de A, incluindo overwrite e paths inventados. As fontes reais das actions de B foram executadas em memória com client autenticado real, claims e consultas reais; isso exercita seus corpos de autorização, não uma segunda rodada do transporte HTTP de Server Actions. A leitura técnica de A em `deleting` forneceu controle positivo para distinguir isolamento de negação por estado. Resultado consolidado: 54 checks principais + 13 A/B + 15 cleanup = 82/82; 245 testes locais previamente aprovados. Todos os diagnósticos foram removidos. Auth/RLS/migrations/missions permanecem intactos. A referência `4. Materiais-PDF-IA` continua reservada para o redesign posterior, não implementado.
 
 ### Fundação acadêmica e missões — Etapa 1C implementada
 

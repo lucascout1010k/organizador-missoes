@@ -1,8 +1,10 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 
+import { prepareMaterialUpload, reportMaterialUploadFailure } from "@/app/(protected)/faculdade/materias/[id]/materiais/actions";
 import { ClassSessionForm, ExamForm, SubjectForm } from "@/components/academic/academic-forms";
 import { LocalDateTime } from "@/components/academic/local-date-time";
+import { MaterialUploadForm } from "@/components/academic/material-upload-form";
 import { StatusBadge } from "@/components/academic/status-badge";
 import { AppIcon, type AppIconName } from "@/components/ui/app-icon";
 import type { AcademicPeriod, ClassSession, Exam, Subject } from "@/lib/academic/types";
@@ -123,11 +125,11 @@ function SubjectTabs({ classesCount, examsCount }: { classesCount: number; exams
       <a className={styles.tabActive} href="#visao-geral"><AppIcon name="home" size={15} />Visão geral</a>
       <a href="#aulas"><AppIcon name="clock" size={15} />Aulas <small>{classesCount}</small></a>
       <a href="#provas"><AppIcon name="agenda" size={15} />Provas <small>{examsCount}</small></a>
-      <span aria-disabled="true" className={styles.futureTab}>
+      <a href="#materiais">
         <AppIcon name="projects" size={15} />
         <span>Materiais</span>
-        <small>Em breve</small>
-      </span>
+        <small>Enviar PDF</small>
+      </a>
     </nav>
   );
 }
@@ -377,6 +379,16 @@ export function SubjectDetail({
         <SubjectActions subject={subject} />
         <SubjectExams exams={exams} nextExam={nextExam} subjectId={subject.id} />
       </div>
+      <section className={styles.panel} id="materiais" style={{ marginTop: 16 }}>
+        <SectionTitle eyebrow="Envio privado · validação pendente" icon="projects" title="Enviar material PDF" />
+        <MaterialUploadForm
+          key={subject.id}
+          classes={classes.map((classSession) => ({ id: classSession.id, title: classSession.title }))}
+          prepareAction={prepareMaterialUpload}
+          reportFailureAction={reportMaterialUploadFailure}
+          subjectId={subject.id}
+        />
+      </section>
     </main>
   );
 }

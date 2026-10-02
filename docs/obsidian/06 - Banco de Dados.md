@@ -8,6 +8,8 @@ As migrations `20260918114607_criar_materiais_academicos_e_storage_privado.sql` 
 
 A migration `20260924113838_adicionar_validating_e_select_storage_operation_aware.sql` foi aplicada manualmente na Etapa 2D.2A, sem modificar as migrations 2D.1. Ela adiciona `validating` à constraint de `file_status` e recria somente a policy `academic_materials_storage_select`. O runtime aprovou 93/93 checks principais, 8/8 de isolamento A/B e 23/23 de cleanup; ao final, não restaram materiais, análises, fixtures acadêmicas ou objetos de teste.
 
+A 2D.2B implementou e validou prepare, upload autenticado Browser → Supabase Storage e `reportMaterialUploadFailure`, sem migration ou alteração de RLS/Auth/grants. O resultado consolidado foi 82/82 checks (54 principais, 13 A/B, 15 cleanup); metadata e análises dos dados temporários ficaram em zero, sem objetos de teste residuais. As migrations aplicadas permanecem imutáveis.
+
 ## Regras aprovadas
 
 PostgreSQL via Supabase, com exposição automática de tabelas desativada no projeto. Toda tabela privada nasce com UUID como chave primária, `user_id NOT NULL REFERENCES auth.users(id)`, RLS explícita e grants mínimos. O default de `user_id` é `auth.uid()`, mas a segurança é imposta pelas policies, não pelo default.
@@ -37,7 +39,7 @@ Não há `profiles`, integração de IA, tabelas de academia ou projetos. Catego
 - O bucket `academic-materials` é privado, limitado a 6291456 bytes e ao MIME `application/pdf`.
 - Storage possui policies de `INSERT`, `SELECT` e `DELETE`; não existe policy de `UPDATE`. `INSERT` exige `pending_upload`; `DELETE` exige `deleting`. Em `pending_upload`, `SELECT` é permitido somente quando `storage.allow_only_operation('storage.object.upload')` confirma a operação interna de upload. A leitura normal aceita `validating`, `ready` e `deleting` para o proprietário.
 - A aplicação deve reler a metadata e exigir `ready` com `deleted_at is null` antes de abrir ou servir download/preview. A visibilidade técnica de `validating` e `deleting` não é autorização funcional da UI.
-- O upload autenticado padrão Browser → Supabase Storage está planejado para a 2D.2B. A arquitetura da aplicação não usará signed upload token.
+- O upload autenticado padrão Browser → Supabase Storage foi implementado e validado na 2D.2B, sem signed upload token ou PDF atravessando Next.js/Vercel. Sucesso mantém `pending_upload` sem abertura/download; finalize ainda não existe. O report altera somente `pending_upload → upload_failed` do proprietário, com UPDATE condicional por ID, proprietário, estado e `deleted_at IS NULL`; não altera schema, grants ou policies. Falhas incertas preservam `pending_upload`. `ready` ainda não representa fluxo funcional concluído; uma fronteira confiável de escrita permanece pendente da 2D.2C.
 - Fluxo de exclusão: `ready`/`pending_upload`/`upload_failed` → `deleting` → remover objeto → `deleted` com `deleted_at` → hard delete opcional.
 
 ### Integridade e histórico
@@ -84,7 +86,7 @@ O arquivo não é idempotente: uma segunda execução deve falhar, evitando masc
 ## Pendências
 
 - Reconciliar histórico de migrations antes de futura adoção do Supabase CLI.
-- Implementar frontend e o fluxo autenticado de upload/finalize somente na 2D.2B autorizada; a 2D.2A preparou apenas banco e Storage.
+- Página visual final e finalize continuam pendentes de autorização; o formulário mínimo e upload da 2D.2B já foram validados. A fronteira confiável das transições pertence à 2D.2C, ainda não iniciada.
 - Implementar análise por IA somente em etapa posterior e explicitamente autorizada.
 
 ## Ideias futuras
