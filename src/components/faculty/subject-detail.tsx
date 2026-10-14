@@ -7,6 +7,7 @@ import { LocalDateTime } from "@/components/academic/local-date-time";
 import { MaterialUploadForm } from "@/components/academic/material-upload-form";
 import { MaterialList } from "@/components/academic/material-list";
 import type { MaterialItem } from "@/lib/academic/materials/management";
+import type { AnalysisView } from "@/lib/academic/materials/analysis-schema";
 import { StatusBadge } from "@/components/academic/status-badge";
 import { AppIcon, type AppIconName } from "@/components/ui/app-icon";
 import type { AcademicPeriod, ClassSession, Exam, Subject } from "@/lib/academic/types";
@@ -356,7 +357,7 @@ export function SubjectDetail({
   period,
   subject,
 }: {
-  materials?: { items: MaterialItem[]; unavailable: boolean };
+  materials?: { items: MaterialItem[]; unavailable: boolean; analyses?: Record<string, AnalysisView> };
   classes: ClassSession[];
   courseName: string;
   currentTime: string;

@@ -1,5 +1,19 @@
 # Banco de Dados
 
+## Atualização — 2026-10-14 / 2D.3 validada
+
+Schema real auditado antes da implementação: analyses tinha consent_version/consented_at, schema_version smallint, resultado JSONB limitado a 131072 bytes, RLS/FORCE e índice parcial único processing por user/material, mas INSERT/UPDATE/DELETE amplo para authenticated. Tabela estava vazia. Aplicada a migration 20261014191625_proteger_analises_academicas_ia.sql (SHA-256 c920759acbb80ea244fb928bcfe41cd4b89a116b62c389ec23aa1e688d0ebeb4): revoga mutação de clientes e adiciona lease_expires_at/completion_token_hash ocultos, RPC de início e completion/failure privadas com token/lease/locks. SELECT cliente é limitado a colunas para DTO. Executor recebe somente a escrita necessária em analyses; validator continua sem CRUD genérico.
+
+O método apply_migration falhou com sessão expirada; a mesma SQL integral foi aplicada por execute_sql e a versão/fonte foram registradas em supabase_migrations.schema_migrations. Não reaplicar. Migrations 2D.2C/2D.2D não foram editadas. schema_version=1 representa academic-material-analysis-v1. Consentimento usa gemini-pdf-analysis-consent-v1 e timestamp derivado do servidor, sem IP.
+
+Lock material → analysis, índice único, lease de até 180 segundos limitada pelo JWT (mínimo 90 segundos restantes), token de 32 bytes guardado somente como hash. Processing ativo reutiliza; completed atual reutiliza sem provider; failed/stale só recebe nova tentativa por ação explícita. Token antigo fica inválido. Completion reexige ready e persiste atomicamente JSON validado/model real/completed_at, limpando hash/lease. Nenhuma transação fica aberta durante Gemini.
+
+Evidências finais: 439 testes locais aprovados, incluindo 66 de IA e 2 novos do driver JSON. Integração com provider simulado: 81 checks principais, 8 de lease stale, 37 no Chromium, 15 de remoção Storage e 6 pelo pooler (4 negações de CRUD em analyses), além de 11 assertions SQL de claims/consentimento com rollback e 5 invariantes remotas. Gemini real: dois PDFs fictícios, acadêmico e hostil, processados por gemini-3.8-flash via Interactions API; 30 checks de schema, conteúdo acadêmico não vazio, persistência, reutilização, A/B e anon. A UI dos resultados reais passou em mais 28 checks desktop/mobile, sem chamadas automáticas no carregamento/refresh. Cleanup final: 8 checks pela fronteira/Storage e zero resíduos nas dez categorias remotas; credenciais temporárias de teste removidas. Lint, TypeScript, build e diff-check aprovados. Scanner confirmou ausência dos valores reais das credentials Gemini/validator no código e bundles do browser, e placeholders vazios no exemplo. npm audit de produção: zero; audit completo: 5 HIGH preexistentes na cadeia dev ESLint/fast-glob/micromatch/braces, sem correção compatível publicada; downgrade incompatível sugerido pelo npm não aplicado.
+
+2D.3 implementada e validada, pronta para publicação autorizada em origin/main. As duas interrupções externas foram resolvidas: conector Supabase reconectado e credential Gemini corrigida localmente/aceita pelo Google. Nenhum dado pessoal real foi usado nos testes. Não iniciar 2D.4 nesta rodada; criação de missão continua reservada à próxima etapa. Vercel não foi configurada.
+
+### Registro anterior
+
 ## Atualização — 2026-10-14 / 2D.2D concluída
 
 Nova migration aplicada via MCP: 20261014183256_permitir_exclusao_confiavel_material_proprio.sql. SHA-256: 56d3159b04970affda42e0aeda94661dbcb1a2f9263d0566c2529843e0c56285. Acrescenta somente public.request_material_deletion(uuid), ownership-bound, executável por authenticated; PUBLIC/anon/validator sem EXECUTE. Lock da metadata antecede attempts, como na fronteira existente. Material próprio sem lease ativa entra em deleting; deleting/deleted são idempotentes. Não modifica as seis funções privadas, grants de tabelas, bucket ou policies. Expiração e fencing continuam no issuer existente.

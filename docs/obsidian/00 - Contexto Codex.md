@@ -1,5 +1,15 @@
 # Contexto Codex
 
+## Atualização — 2026-10-14 / 2D.3 validada
+
+2D.3 implementada e validada, com consentimento explícito para analisar somente PDF próprio READY. Upload/finalize param em ready; page load/refresh nunca chamam IA. A análise produz resumo, tópicos, palavras-chave, exercícios/respostas, sugestões textuais de estudo e limitações. Nenhuma escrita em missions ou agenda, nenhum OCR/RAG/chat/Files API/tools.
+
+Evidências finais: 439 testes locais aprovados, incluindo 66 de IA e 2 novos do driver JSON. Integração com provider simulado: 81 checks principais, 8 de lease stale, 37 no Chromium, 15 de remoção Storage e 6 pelo pooler (4 negações de CRUD em analyses), além de 11 assertions SQL de claims/consentimento com rollback e 5 invariantes remotas. Gemini real: dois PDFs fictícios, acadêmico e hostil, processados por gemini-3.8-flash via Interactions API; 30 checks de schema, conteúdo acadêmico não vazio, persistência, reutilização, A/B e anon. A UI dos resultados reais passou em mais 28 checks desktop/mobile, sem chamadas automáticas no carregamento/refresh. Cleanup final: 8 checks pela fronteira/Storage e zero resíduos nas dez categorias remotas; credenciais temporárias de teste removidas. Lint, TypeScript, build e diff-check aprovados. Scanner confirmou ausência dos valores reais das credentials Gemini/validator no código e bundles do browser, e placeholders vazios no exemplo. npm audit de produção: zero; audit completo: 5 HIGH preexistentes na cadeia dev ESLint/fast-glob/micromatch/braces, sem correção compatível publicada; downgrade incompatível sugerido pelo npm não aplicado.
+
+2D.3 implementada e validada, pronta para publicação autorizada em origin/main. As duas interrupções externas foram resolvidas: conector Supabase reconectado e credential Gemini corrigida localmente/aceita pelo Google. Nenhum dado pessoal real foi usado nos testes. Não iniciar 2D.4 nesta rodada; criação de missão continua reservada à próxima etapa. Vercel não foi configurada.
+
+### Registro anterior
+
 ## Atualização — 2026-10-14 / 2D.2D concluída
 
 A 2D.2D concluiu a interface de Materiais no detalhe da matéria: listagem por proprietário/matéria, DTO mínimo, estados amigáveis, abrir/baixar PDF ready, confirmação de exclusão e retry. A atualização usa router.refresh após upload/finalize/delete/retry. Base publicada da 2D.2C: 30722ebed92ab4caa30856ac6130fb61f25c3207. A publicação desta etapa foi autorizada exclusivamente após todos os gates e cleanup. Nenhuma IA/OCR/Gemini, redesign global ou configuração da Vercel foi incluída.

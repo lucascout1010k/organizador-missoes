@@ -23,6 +23,7 @@ function load(relative) {
     if (name === "react/jsx-runtime") return jsxRuntime;
     if (name === "next/navigation") return { useRouter: () => ({ refresh() {} }) };
     if (name.includes("/materiais/actions")) return {};
+    if (name === "./material-analysis") return load("src/components/academic/material-analysis.tsx");
     if (name.endsWith(".module.css")) return { default: {} };
     throw Error("Unexpected " + name);
   };

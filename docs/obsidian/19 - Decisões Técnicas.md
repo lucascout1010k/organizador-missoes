@@ -1,5 +1,17 @@
 # Decisões Técnicas
 
+## Atualização — 2026-10-14 / 2D.3 validada
+
+Provider V1: @google/genai 2.29.1, Interactions API, modelo padrão gemini-3.8-flash; override de modelo somente por configuração server-side com nome validado. Documentação oficial atual e declarações do SDK foram consultadas. Structured output JSON Schema vem do Zod 4.6.7; Zod estrito também valida a saída/resultado lido, normaliza strings e aplica limites de campos/listas e 131072 bytes. Provider fica atrás de analyzeAcademicPdf, sem framework genérico.
+
+PDF até 6 MiB usa bytes inline em memória e nenhuma Files API/arquivo temporário. Não envia signed URL, storage path, owner, credential do banco ou filenames desnecessários ao Google. A UI mostra somente fatos de privacidade garantidos. System instruction trata o documento como conteúdo hostil e proíbe seguir seus comandos, navegação/tools/ações/conhecimento externo; saídas são sugestões/texto e nunca executadas.
+
+Reuse da validator ocorre só por duas funções privadas estreitas, separadas das seis transições de PDF. A fronteira de análise preserva os estados do material; erro de IA nunca altera ready. Na integração, foi corrigida dupla serialização JSON: postgres.json(result) é o binding oficial usado, com teste de regressão; a DB havia rejeitado a evidência errada e mantido o material intacto. Categoria sanitizada de falha, token/lease e lock ordenado impedem completions atrasadas ou falsificadas.
+
+2D.3 implementada e validada, pronta para publicação autorizada em origin/main. As duas interrupções externas foram resolvidas: conector Supabase reconectado e credential Gemini corrigida localmente/aceita pelo Google. Nenhum dado pessoal real foi usado nos testes. Não iniciar 2D.4 nesta rodada; criação de missão continua reservada à próxima etapa. Vercel não foi configurada.
+
+### Registro anterior
+
 ## Atualização — 2026-10-14 / 2D.2D concluída
 
 2D.2D reutiliza integralmente o motor finalize e as seis transições privadas da 2D.2C. A única lacuna era a entrada em deleting por intenção do proprietário; uma RPC pública restrita ao authenticated fornece apenas essa transição, com claims, ownership, lock e impedimento de lease ativa. Sem engine duplicado, acesso genérico a tabelas ou nova permissão para validator. deleteAcademicMaterial interpreta o resultado de cleanup confirmado do finalize existente, sem expor sua semântica interna na UI. Falha incerta permanece deleting até retry.

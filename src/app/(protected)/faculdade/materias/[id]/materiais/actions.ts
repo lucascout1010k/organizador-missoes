@@ -1,6 +1,11 @@
 "use server";
 
 import { randomUUID } from "node:crypto";
+import { analyzeOwnedAcademicMaterial } from "@/lib/academic/materials/analysis";
+
+export async function analyzeAcademicMaterial(input: { materialId: string; consent: boolean }) {
+  return analyzeOwnedAcademicMaterial(input);
+}
 import { accessOwnedMaterial, deleteOwnedMaterial } from "@/lib/academic/materials/management";
 import { finalizeOwnedMaterial } from "@/lib/academic/materials/finalize";
 import { downloadPrivatePdf } from "@/lib/academic/materials/pdf-object";

@@ -4,6 +4,8 @@ import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { deleteAcademicMaterial, downloadAcademicMaterial, finalizeMaterialUpload, openAcademicMaterial } from "@/app/(protected)/faculdade/materias/[id]/materiais/actions";
 import type { MaterialItem } from "@/lib/academic/materials/management";
+import type { AnalysisView } from "@/lib/academic/materials/analysis-schema";
+import { MaterialAnalysis } from "./material-analysis";
 import styles from "./material-list.module.css";
 
 export const materialStatusLabels = {
@@ -17,7 +19,7 @@ export function formatMaterialSize(bytes: number) {
   return `${(bytes / (unit === "KiB" ? 1024 : 1048576)).toLocaleString("pt-BR", { maximumFractionDigits: 2 })} ${unit}`;
 }
 
-function MaterialRow({ item }: { item: MaterialItem }) {
+function MaterialRow({ item, analysis }: { item: MaterialItem; analysis?: AnalysisView }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [confirmation, setConfirmation] = useState(false);
@@ -80,15 +82,16 @@ function MaterialRow({ item }: { item: MaterialItem }) {
         <div className={styles.actions}><button disabled={pending} onClick={cancel} ref={cancelButton} type="button">Cancelar</button><button className={styles.delete} disabled={pending} onClick={() => act("delete")} type="button">{pending ? "Excluindo…" : "Confirmar exclusão"}</button></div>
       </div> : null}
       <p aria-live="polite" className={styles.feedback} role="status">{pending ? "Aguarde…" : message}</p>
+      {ready ? <MaterialAnalysis analysis={analysis} materialId={item.id} /> : null}
     </div>
   </li>;
 }
 
-export function MaterialList({ items, unavailable }: { items: MaterialItem[]; unavailable: boolean }) {
+export function MaterialList({ items, unavailable, analyses = {} }: { items: MaterialItem[]; unavailable: boolean; analyses?: Record<string, AnalysisView> }) {
   return <div className={styles.container}>
     <h2>Seus materiais <span className={styles.count}>{items.length}</span></h2>
     {unavailable ? <p role="status">Não foi possível carregar os materiais. Tente novamente em instantes.</p>
       : items.length === 0 ? <p className={styles.empty}>Seus PDFs aparecerão aqui após o envio. Apenas arquivos validados podem ser abertos.</p>
-      : <ul aria-label="Materiais da matéria" className={styles.list}>{items.map(item => <MaterialRow item={item} key={item.id} />)}</ul>}
+      : <ul aria-label="Materiais da matéria" className={styles.list}>{items.map(item => <MaterialRow analysis={analyses[item.id]} item={item} key={item.id} />)}</ul>}
   </div>;
 }

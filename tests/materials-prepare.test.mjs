@@ -6,6 +6,7 @@ import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 import { runInThisContext } from "node:vm";
 import ts from "typescript";
+import * as zod from "zod";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const actionPath = "src/app/(protected)/faculdade/materias/[id]/materiais/actions.ts";
@@ -106,6 +107,8 @@ function createHarness(options = {}) {
       compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 },
     }).outputText;
     function requireMock(specifier) {
+      if (specifier === "zod") return zod;
+      if (specifier === "@google/genai") return { GoogleGenAI: class { constructor() { throw new Error("Upload must never invoke AI"); } } };
       if (specifier === "server-only") return {};
       if (specifier === "@/lib/supabase/database-ca") return { SUPABASE_DATABASE_CA: "offline-mock-public-ca" };
       if (specifier === "postgres") return { default() { throw new Error("Unexpected real validator connection"); } };

@@ -1,5 +1,15 @@
 # Pendências
 
+## Atualização — 2026-10-14 / 2D.3 validada
+
+2D.3 implementada e validada, pronta para publicação autorizada em origin/main. As duas interrupções externas foram resolvidas: conector Supabase reconectado e credential Gemini corrigida localmente/aceita pelo Google. Nenhum dado pessoal real foi usado nos testes. Não iniciar 2D.4 nesta rodada; criação de missão continua reservada à próxima etapa. Vercel não foi configurada.
+
+Pendências separadas: 5 avisos HIGH preexistentes de dependências dev (produção sem vulnerabilidades); habilitação da proteção contra senhas vazadas do Supabase Auth; reconciliação da migration manual original 2D.2C antes de futuro db push; configuração futura da Vercel. Advisors SECURITY DEFINER refletem RPCs públicas autenticadas intencionais com ownership verificado; public.rls_auto_enable retorna event_trigger e não é RPC comum. Nenhuma mudança global em PUBLIC/TEMP foi feita.
+
+Evidências finais: 439 testes locais aprovados, incluindo 66 de IA e 2 novos do driver JSON. Integração com provider simulado: 81 checks principais, 8 de lease stale, 37 no Chromium, 15 de remoção Storage e 6 pelo pooler (4 negações de CRUD em analyses), além de 11 assertions SQL de claims/consentimento com rollback e 5 invariantes remotas. Gemini real: dois PDFs fictícios, acadêmico e hostil, processados por gemini-3.8-flash via Interactions API; 30 checks de schema, conteúdo acadêmico não vazio, persistência, reutilização, A/B e anon. A UI dos resultados reais passou em mais 28 checks desktop/mobile, sem chamadas automáticas no carregamento/refresh. Cleanup final: 8 checks pela fronteira/Storage e zero resíduos nas dez categorias remotas; credenciais temporárias de teste removidas. Lint, TypeScript, build e diff-check aprovados. Scanner confirmou ausência dos valores reais das credentials Gemini/validator no código e bundles do browser, e placeholders vazios no exemplo. npm audit de produção: zero; audit completo: 5 HIGH preexistentes na cadeia dev ESLint/fast-glob/micromatch/braces, sem correção compatível publicada; downgrade incompatível sugerido pelo npm não aplicado.
+
+### Registro anterior
+
 ## Atualização — 2026-10-14 / 2D.2D concluída
 
 2D.2D concluída e autorizada para publicação após gates. Próxima etapa é 2D.3, ainda não iniciada. Nenhum bloqueio da interface de Materiais permanece nesta etapa.

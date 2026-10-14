@@ -61,3 +61,20 @@ export async function transitionMaterial(
   const timer = setTimeout(() => { try { query.cancel(); } catch { /* Return errors only through the action's sanitized result. */ } }, 8_000);
   try { await query; } finally { clearTimeout(timer); }
 }
+
+export type AnalysisAuthorization = { analysisId: string; completionToken: string };
+export async function settleAcademicAnalysis(
+  authorization: AnalysisAuthorization,
+  outcome: { kind: "completed"; result: unknown; model: string } | { kind: "failed"; category: string },
+) {
+  // Only narrow completion/failure functions; no table access or generic SQL API.
+  const statement = outcome.kind === "completed"
+    ? "select app_materials_private.complete_material_analysis($1::uuid,$2::text,$3::jsonb,$4::text)"
+    : "select app_materials_private.fail_material_analysis($1::uuid,$2::text,$3::text)";
+  const parameters = outcome.kind === "completed"
+    ? [authorization.analysisId, authorization.completionToken, getDatabase().json(outcome.result as postgres.JSONValue), outcome.model]
+    : [authorization.analysisId, authorization.completionToken, outcome.category];
+  const query = getDatabase().unsafe(statement, parameters);
+  const timer = setTimeout(() => { try { query.cancel(); } catch { /* Sanitized by caller. */ } }, 8_000);
+  try { await query; } finally { clearTimeout(timer); }
+}

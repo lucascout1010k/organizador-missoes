@@ -18,9 +18,9 @@ function harness(overrides = {}) {
   if (overrides.username) connection.username = overrides.username;
   if (overrides.host) connection.hostname = overrides.host;
   if (overrides.port) connection.port = overrides.port;
-  const calls = { connections: [], queries: [], cancelled: 0 };
+  const calls = { connections: [], queries: [], cancelled: 0, jsonValues: [] };
   const runtimeModule = { exports: {} };
-  const database = { unsafe(query, parameters) {
+  const database = { json(value) { calls.jsonValues.push(value); return { type: "jsonb", value }; }, unsafe(query, parameters) {
     calls.queries.push({ query, parameters });
     const pending = Promise.resolve([]);
     pending.cancel = () => { calls.cancelled++; };
@@ -38,7 +38,7 @@ function harness(overrides = {}) {
   runInThisContext(`(function(require,module,exports,process,setTimeout,clearTimeout){${compiled}\n})`)(
     requireMock, runtimeModule, runtimeModule.exports, fakeProcess, timer, () => {},
   );
-  return { calls, transition: runtimeModule.exports.transitionMaterial };
+  return { calls, transition: runtimeModule.exports.transitionMaterial, settle: runtimeModule.exports.settleAcademicAnalysis };
 }
 const authorization = {
   materialId: "11111111-1111-4111-8111-111111111111", attemptId: "22222222-2222-4222-8222-222222222222",
@@ -69,4 +69,18 @@ test("validator client: bounded SQL cancellation is enabled", async () => {
 test("validator client: reuses one small pool rather than connecting per transition", async () => {
   const h = harness(); await h.transition("begin", authorization); await h.transition("missing", authorization);
   assert.equal(h.calls.connections.length, 1); assert.equal(h.calls.queries.length, 2);
+});
+
+test("analysis validator: uses JSON binding rather than double stringifying evidence", async () => {
+  const h = harness(), result = { summary: "Fixture" };
+  await h.settle({ analysisId: authorization.materialId, completionToken: authorization.capability }, { kind: "completed", result, model: "gemini-3.8-flash" });
+  assert.deepEqual(h.calls.jsonValues, [result]);
+  assert.deepEqual(h.calls.queries[0].parameters[2], { type: "jsonb", value: result });
+  assert.equal(h.calls.queries[0].query, "select app_materials_private.complete_material_analysis($1::uuid,$2::text,$3::jsonb,$4::text)");
+});
+test("analysis validator: failure uses fixed function, only id/token/category bound", async () => {
+  const h = harness();
+  await h.settle({ analysisId: authorization.materialId, completionToken: authorization.capability }, { kind: "failed", category: "provider_unavailable" });
+  assert.equal(h.calls.queries[0].query, "select app_materials_private.fail_material_analysis($1::uuid,$2::text,$3::text)");
+  assert.equal(h.calls.queries[0].parameters.length, 3); assert.equal(h.calls.jsonValues.length, 0);
 });
