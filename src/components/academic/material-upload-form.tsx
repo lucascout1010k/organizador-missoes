@@ -8,6 +8,7 @@ import type {
   PrepareMaterialUploadResult,
   ReportMaterialUploadFailureInput,
   ReportMaterialUploadFailureResult,
+  FinalizeMaterialUploadResult,
 } from "@/lib/academic/materials/types";
 import {
   createMaterialUploadController,
@@ -22,6 +23,7 @@ type MaterialUploadFormProps = {
   classes?: { id: string; title: string }[];
   prepareAction: (input: PrepareMaterialUploadInput) => Promise<PrepareMaterialUploadResult>;
   reportFailureAction: (input: ReportMaterialUploadFailureInput) => Promise<ReportMaterialUploadFailureResult>;
+  finalizeAction: (materialId: string) => Promise<FinalizeMaterialUploadResult>;
 };
 
 export function MaterialUploadForm({
@@ -29,6 +31,7 @@ export function MaterialUploadForm({
   classes = [],
   prepareAction,
   reportFailureAction,
+  finalizeAction,
 }: MaterialUploadFormProps) {
   const id = useId();
   const [file, setFile] = useState<File | null>(null);
@@ -39,7 +42,7 @@ export function MaterialUploadForm({
   });
   const [transitionPending, startTransition] = useTransition();
   const controller = useRef<ReturnType<typeof createMaterialUploadController> | null>(null);
-  const busy = transitionPending || feedback.state === "preparing" || feedback.state === "uploading";
+  const busy = transitionPending || feedback.state === "preparing" || feedback.state === "uploading" || feedback.state === "validating";
   const disabled = busy || feedback.blocked;
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -50,6 +53,7 @@ export function MaterialUploadForm({
       controller.current = createMaterialUploadController({
         prepare: prepareAction,
         reportFailure: reportFailureAction,
+        finalize: finalizeAction,
         createClient,
         onFeedback: setFeedback,
       });
@@ -63,8 +67,7 @@ export function MaterialUploadForm({
   return (
     <form aria-label="Enviar PDF da matéria" aria-busy={busy} className={styles.form} onSubmit={handleSubmit}>
       <p className={styles.notice} id={`${id}-notice`}>
-        Envio direto ao Storage privado. A conferência no navegador é apenas uma ajuda;
-        a validação autoritativa ainda não está disponível. Não há abertura ou download nesta etapa.
+        Após o envio, o servidor confere o tamanho e a assinatura do PDF antes de liberar o material.
       </p>
       <fieldset className={styles.fields} disabled={disabled}>
         <legend className={styles.legend}>Dados do PDF</legend>
@@ -97,13 +100,12 @@ export function MaterialUploadForm({
           </label>
         ) : null}
         <button className={styles.button} disabled={!file || disabled} type="submit">
-          {feedback.state === "preparing" ? "Preparando…" : feedback.state === "uploading" ? "Enviando…" : "Enviar PDF"}
+          {feedback.state === "preparing" ? "Preparando…" : feedback.state === "uploading" ? "Enviando…" : feedback.state === "validating" ? "Validando…" : "Enviar PDF"}
         </button>
       </fieldset>
       <div aria-atomic="true" aria-live="polite" className={styles.feedback} data-state={feedback.state} role="status">
         <p>{feedback.message}</p>
         {feedback.state === "auth_required" ? <Link href="/login">Entrar novamente</Link> : null}
-        {feedback.state === "uploaded_pending_validation" ? <p>O material continua pending_upload. Nenhum acesso ao arquivo foi liberado.</p> : null}
       </div>
     </form>
   );

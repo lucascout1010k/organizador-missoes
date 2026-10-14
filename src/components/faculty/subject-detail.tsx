@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 
-import { prepareMaterialUpload, reportMaterialUploadFailure } from "@/app/(protected)/faculdade/materias/[id]/materiais/actions";
+import { finalizeMaterialUpload, prepareMaterialUpload, reportMaterialUploadFailure } from "@/app/(protected)/faculdade/materias/[id]/materiais/actions";
 import { ClassSessionForm, ExamForm, SubjectForm } from "@/components/academic/academic-forms";
 import { LocalDateTime } from "@/components/academic/local-date-time";
 import { MaterialUploadForm } from "@/components/academic/material-upload-form";
@@ -385,6 +385,7 @@ export function SubjectDetail({
           key={subject.id}
           classes={classes.map((classSession) => ({ id: classSession.id, title: classSession.title }))}
           prepareAction={prepareMaterialUpload}
+          finalizeAction={finalizeMaterialUpload}
           reportFailureAction={reportMaterialUploadFailure}
           subjectId={subject.id}
         />

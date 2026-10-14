@@ -46,7 +46,7 @@ function load(relativePath) {
 const { createMaterialUploadController, validateClientMaterialPdf } = load("src/lib/academic/materials/upload-client.ts");
 
 function createHarness(options = {}) {
-  const calls = { prepare: [], client: 0, bucket: [], uploads: [], reports: [], feedback: [] };
+  const calls = { prepare: [], client: 0, bucket: [], uploads: [], reports: [], finalizes: [], feedback: [] };
   const controller = createMaterialUploadController({
     async prepare(input) {
       calls.prepare.push(input);
@@ -71,6 +71,11 @@ function createHarness(options = {}) {
       calls.reports.push(input);
       if (options.reportThrow) throw new Error("PRIVATE_REPORT_DETAIL");
       return options.reportResult ?? { ok: true, fileStatus: "upload_failed" };
+    },
+    async finalize(input) {
+      calls.finalizes.push(input);
+      if (options.finalizeThrow) throw new Error("PRIVATE_FINALIZE_DETAIL");
+      return options.finalizeResult ?? { ok: true, fileStatus: "ready", message: "PDF validado e pronto." };
     },
     onFeedback(value) { calls.feedback.push(value); },
   });
@@ -167,8 +172,9 @@ test("upload: exact metadata only enters prepare, while File goes directly to fi
   assert.deepEqual(harness.calls.bucket, ["academic-materials"]);
   assert.deepEqual(harness.calls.uploads, [{ path: storagePath, file: harness.selection.file, options: { upsert: false, contentType: "application/pdf" } }]);
   assert.equal(harness.calls.uploads[0].file, harness.selection.file);
-  assert.deepEqual(harness.calls.feedback.map(({ state }) => state), ["preparing", "uploading", "uploaded_pending_validation"]);
-  assert.equal(harness.last().message, "Arquivo enviado. Validação pendente.");
+  assert.deepEqual(harness.calls.feedback.map(({ state }) => state), ["preparing", "uploading", "validating", "ready"]);
+  assert.deepEqual(harness.calls.finalizes, [materialId]);
+  assert.equal(harness.last().message, "PDF validado e pronto.");
   assert.equal(harness.last().blocked, true);
   assert.equal(harness.calls.reports.length, 0);
 });
@@ -316,4 +322,20 @@ test("form: local server render has one file input, no native upload action and 
   assert.ok(!markup.includes("multiple="));
   assert.ok(!markup.includes("action="));
   assert.ok(!markup.includes("enctype="));
+});
+
+for (const [code, state] of [
+  ["INVALID_PDF", "confirmed_failure"], ["MISSING", "confirmed_failure"],
+  ["AUTH_REQUIRED", "auth_required"], ["IN_PROGRESS", "uncertain_result"], ["UNCERTAIN", "uncertain_result"],
+]) test(`upload: finalize ${code} remains blocked and never resends`, async () => {
+  const h = createHarness({ finalizeResult: { ok: false, code, message: "Mensagem pública." } });
+  await h.controller.submit(h.selection); await h.controller.submit(h.selection);
+  assert.equal(h.last().state, state); assert.equal(h.last().blocked, true);
+  assert.deepEqual(h.calls.finalizes, [materialId]); assert.equal(h.calls.uploads.length, 1);
+  assert.equal(h.calls.prepare.length, 1); assert.equal(h.calls.reports.length, 0);
+});
+
+test("upload: lost finalize response never claims ready", async () => {
+  const h = createHarness({ finalizeThrow: true }); await h.controller.submit(h.selection);
+  assert.equal(h.last().state, "uncertain_result"); assert.ok(!h.last().message.includes("PRIVATE"));
 });

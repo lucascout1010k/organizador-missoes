@@ -27,7 +27,7 @@ const validInput = {
 // Compile the actual source in memory. Every external runtime dependency is
 // replaced explicitly; the real SSR client, environment and network are never loaded.
 function createHarness(options = {}) {
-  const calls = { client: 0, claims: 0, queries: [], inserts: [], updates: [], uuid: 0 };
+  const calls = { client: 0, claims: 0, queries: [], inserts: [], updates: [], rpcs: [], uuid: 0 };
   const rows = {
     subjects: options.subjects ?? [{ id: subjectId, user_id: userId }],
     class_sessions: options.classes ?? [{ id: classSessionId, subject_id: subjectId, user_id: userId }],
@@ -36,6 +36,26 @@ function createHarness(options = {}) {
     }]).map((row) => ({ ...row })),
   };
   const client = {
+    rpc(name, parameters) {
+      calls.rpcs.push({ name, parameters });
+      assert.equal(name, "report_material_upload_failure");
+      assert.deepEqual(Object.keys(parameters), ["p_material_id"]);
+      return {
+        async maybeSingle() {
+          if (options.rpcThrow) throw new Error("PRIVATE_RPC_DETAIL");
+          if (options.rpcError) return { data: null, error: options.rpcError };
+          if (options.stateBeforeRpc) {
+            for (const row of rows.academic_materials) row.file_status = options.stateBeforeRpc;
+          }
+          // Model the approved RPC contract; database enforcement is tested remotely.
+          const row = rows.academic_materials.find((row) => row.id === parameters.p_material_id
+            && row.user_id === userId && row.file_status === "pending_upload" && row.deleted_at === null);
+          if (!row) return { data: null, error: null };
+          row.file_status = "upload_failed";
+          return { data: { material_id: row.id, file_status: row.file_status }, error: null };
+        },
+      };
+    },
     auth: {
       async getClaims() {
         calls.claims++;
@@ -51,27 +71,9 @@ function createHarness(options = {}) {
             if (options.insertThrow) throw new Error("PRIVATE_DATABASE_DETAIL");
             return { error: options.insertError ?? null };
           },
-          update(changes) {
-            const query = { changes, columns: null, filters: [], nullFilters: [] };
-            calls.updates.push(query);
-            const builder = {
-              eq(column, value) { query.filters.push([column, value]); return builder; },
-              is(column, value) { query.nullFilters.push([column, value]); return builder; },
-              select(columns) { query.columns = columns; return builder; },
-              async maybeSingle() {
-                if (options.updateThrow) throw new Error("PRIVATE_UPDATE_DETAIL");
-                if (options.updateError) return { data: null, error: options.updateError };
-                if (options.stateBeforeUpdate) {
-                  for (const row of rows.academic_materials) row.file_status = options.stateBeforeUpdate;
-                }
-                const data = rows.academic_materials.find((row) => (
-                  [...query.filters, ...query.nullFilters].every(([key, value]) => row[key] === value)
-                ));
-                if (data) Object.assign(data, changes);
-                return { data: data ? { id: data.id } : null, error: null };
-              },
-            };
-            return builder;
+          update() {
+            calls.updates.push(true);
+            assert.fail("Direct metadata UPDATE is forbidden");
           },
         };
       }
@@ -105,6 +107,8 @@ function createHarness(options = {}) {
     }).outputText;
     function requireMock(specifier) {
       if (specifier === "server-only") return {};
+      if (specifier === "@/lib/supabase/database-ca") return { SUPABASE_DATABASE_CA: "offline-mock-public-ca" };
+      if (specifier === "postgres") return { default() { throw new Error("Unexpected real validator connection"); } };
       if (specifier === "node:crypto") return { randomUUID() { calls.uuid++; return randomUUID(); } };
       if (specifier === "@/lib/supabase/server") return {
         async createClient() {
@@ -226,11 +230,10 @@ test("prepare: server generates the canonical path and writes only pending metad
   assert.deepEqual(Object.keys(result).sort(), ["fileStatus", "materialId", "ok", "storagePath"]);
   assert.deepEqual(JSON.parse(JSON.stringify(result)), result);
   assert.deepEqual(harness.calls.inserts, [{
-    id: result.materialId, user_id: userId, subject_id: subjectId, class_session_id: null,
+    id: result.materialId, subject_id: subjectId, class_session_id: null,
     title: validInput.title, original_filename: validInput.originalFilename,
     storage_path: `${userId}/${subjectId}/${result.materialId}/source.pdf`,
     mime_type: "application/pdf", size_bytes: validInput.sizeBytes,
-    file_status: "pending_upload", deleted_at: null,
   }]);
   assert.equal(result.storagePath, harness.calls.inserts[0].storage_path);
   assert.equal(result.fileStatus, "pending_upload");
@@ -246,6 +249,28 @@ test("prepare: optional class is scoped by owner and subject", async () => {
   assert.deepEqual(harness.calls.queries[1], {
     table: "class_sessions", columns: "id", filters: [["id", classSessionId], ["subject_id", subjectId], ["user_id", userId]],
   });
+});
+
+test("prepare: exact column allowlist also holds with a class session", async () => {
+  const harness = createHarness();
+  assert.equal((await harness.prepare({ ...validInput, classSessionId })).ok, true);
+  assert.deepEqual(Object.keys(harness.calls.inserts[0]).sort(), [
+    "class_session_id", "id", "mime_type", "original_filename", "size_bytes",
+    "storage_path", "subject_id", "title",
+  ]);
+});
+
+test("materials actions/data: direct metadata UPDATE is absent", () => {
+  for (const relative of [actionPath, "src/lib/academic/materials/data.ts"]) {
+    const source = ts.createSourceFile(relative, readFileSync(path.join(root, relative), "utf8"), ts.ScriptTarget.Latest, true);
+    function visit(node) {
+      if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression)) {
+        assert.notEqual(node.expression.name.text, "update", `${relative} must use the constrained RPC`);
+      }
+      ts.forEachChild(node, visit);
+    }
+    visit(source);
+  }
 });
 
 test("prepare: missing and foreign subjects have identical public failures", async () => {
@@ -331,7 +356,8 @@ test("prepare: repeated requests generate different IDs and never overwrite meta
   assert.equal(first.ok, true);
   assert.equal(second.ok, true);
   assert.notEqual(first.materialId, second.materialId);
-  assert.ok(harness.calls.inserts.every((row) => row.file_status === "pending_upload" && row.deleted_at === null));
+  assert.ok(harness.calls.inserts.every((row) => Object.keys(row).length === 8
+    && ["user_id", "file_status", "deleted_at", "created_at", "updated_at"].every((key) => !Object.hasOwn(row, key))));
 });
 
 const validReport = { materialId, failureCategory: "mime_rejected" };
@@ -381,6 +407,7 @@ test("report: rejects invalid input before authentication or any write", async (
   assert.equal(result.code, "INVALID_INPUT");
   assert.equal(harness.calls.client, 0);
   assert.equal(harness.calls.updates.length, 0);
+  assert.equal(harness.calls.rpcs.length, 0);
 });
 
 test("report: authenticates again and atomically changes only the owner's pending material", async () => {
@@ -391,10 +418,9 @@ test("report: authenticates again and atomically changes only the owner's pendin
   assert.equal(harness.calls.claims, 1);
   assert.equal(harness.calls.queries.length, 0);
   assert.equal(harness.calls.inserts.length, 0);
-  assert.deepEqual(harness.calls.updates, [{
-    changes: { file_status: "upload_failed" }, columns: "id",
-    filters: [["id", materialId], ["user_id", userId], ["file_status", "pending_upload"]],
-    nullFilters: [["deleted_at", null]],
+  assert.deepEqual(harness.calls.updates, []);
+  assert.deepEqual(harness.calls.rpcs, [{
+    name: "report_material_upload_failure", parameters: { p_material_id: materialId },
   }]);
   assert.deepEqual(harness.rows.academic_materials, [{
     id: materialId, user_id: userId, file_status: "upload_failed", deleted_at: null,
@@ -418,12 +444,13 @@ for (const [name, materials] of [
     assert.equal(result.ok, false);
     assert.equal(result.code, "RESOURCE_UNAVAILABLE");
     assert.deepEqual(harness.rows.academic_materials, before);
-    assert.equal(harness.calls.updates.length, 1);
+    assert.equal(harness.calls.updates.length, 0);
+    assert.equal(harness.calls.rpcs.length, 1);
   });
 }
 
-test("report: late failure cannot overwrite a state that changed immediately before UPDATE", async () => {
-  const harness = createHarness({ stateBeforeUpdate: "validating" });
+test("report: late failure cannot overwrite a state that changed immediately before RPC", async () => {
+  const harness = createHarness({ stateBeforeRpc: "validating" });
   const result = await harness.report(validReport);
   assert.equal(result.code, "RESOURCE_UNAVAILABLE");
   assert.equal(harness.rows.academic_materials[0].file_status, "validating");
@@ -449,6 +476,7 @@ for (const [name, claims, code] of [
     assert.equal(result.ok, false);
     assert.equal(result.code, code);
     assert.equal(harness.calls.updates.length, 0);
+    assert.equal(harness.calls.rpcs.length, 0);
     assert.equal(harness.calls.queries.length, 0);
     assert.ok(!JSON.stringify(result).includes("PRIVATE"));
   });
@@ -457,8 +485,8 @@ for (const [name, claims, code] of [
 for (const [name, options] of [
   ["client error", { clientThrow: true }],
   ["claims exception", { claimsThrow: true }],
-  ["UPDATE database rejection", { updateError: { code: "42501", message: "PRIVATE_DATABASE_DETAIL", details: "PRIVATE_SQL_DETAIL", hint: "PRIVATE_HINT" } }],
-  ["UPDATE transport exception", { updateThrow: true }],
+  ["RPC database rejection", { rpcError: { code: "42501", message: "PRIVATE_DATABASE_DETAIL", details: "PRIVATE_SQL_DETAIL", hint: "PRIVATE_HINT" } }],
+  ["RPC transport exception", { rpcThrow: true }],
 ]) {
   test(`report: sanitizes ${name}`, async () => {
     const harness = createHarness(options);

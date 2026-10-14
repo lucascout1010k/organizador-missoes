@@ -1,5 +1,13 @@
 # Decisões Técnicas
 
+## Atualização — 2026-10-14 / 2D.2C validada
+
+A 2D.2C foi implementada e validada. A migration 2D.2C.1, aplicada manualmente, permanece imutável; a corretiva `20261014161215_remover_dependencia_auth_executor_materiais.sql` foi aplicada via MCP para ler claims PostgREST diretamente, sem auth.uid()/auth.jwt() no executor. Prepare usa oito colunas; report usa RPC restrita.
+
+Decisões: claims GUC verificados por PostgREST em vez de grants provider auth; exp numérico rigoroso, UUID e identidade conflitante fail-closed; capability request-local sem DTO/log/persistência do app; no transaction SQL durante HTTP. TLS verifica CA pública Supabase/hostname; certificado obtido da URL oficial do Studio, expira em 2031-04-26. LOGIN foi autorizado após provar seis SELECTs fixos sem TEMP/DDL; PUBLIC TEMP preservado. Confirmação de ausência usa metadata própria atual e listagem Storage oficial, além de NoSuchKey em download para missing; cleanup não usa DELETE SQL em storage.objects. Next/transitivas receberam patch de segurança compatível, sem npm audit fix --force. Validação: 323 testes locais; 73 checks da rodada runtime principal + 11 de recuperação + 7 de cleanup Storage = 91 checks, além de três suítes SQL de fronteira/claims/transições e testes pelo pooler. A/B usou duas contas controladas reais. MIME divergente e erro transitório foram injetados de modo controlado sobre o fluxo/infraestrutura real; não se afirma que o provider produziu naturalmente essas falhas. Cinco attempts validated foram comparadas ao SHA-256/tamanho exatos do PDF fictício. Cleanup administrativo confirmou zero usuários, identities, sessions, metadata, attempts, dados acadêmicos e objetos Storage de teste. Credenciais temporárias removidas.
+
+### Registro anterior
+
 ## Estado atual
 
 Fundação local com npm, Next.js App Router, TypeScript, Tailwind CSS, ESLint, diretório `src/` e alias `@/*`. O baseline está publicado em um repositório GitHub público na branch `main`.

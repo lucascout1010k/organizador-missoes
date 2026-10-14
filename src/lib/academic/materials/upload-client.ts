@@ -3,6 +3,7 @@ import type {
   PrepareMaterialUploadResult,
   ReportMaterialUploadFailureInput,
   ReportMaterialUploadFailureResult,
+  FinalizeMaterialUploadResult,
 } from "./types";
 import { classifyMaterialUploadError } from "./upload-errors";
 import {
@@ -16,7 +17,8 @@ export type MaterialUploadUiState =
   | "selected"
   | "preparing"
   | "uploading"
-  | "uploaded_pending_validation"
+  | "validating"
+  | "ready"
   | "confirmed_failure"
   | "uncertain_result"
   | "auth_required";
@@ -37,6 +39,7 @@ type UploadSelection = {
 type UploadDependencies = {
   prepare: (input: PrepareMaterialUploadInput) => Promise<PrepareMaterialUploadResult>;
   reportFailure: (input: ReportMaterialUploadFailureInput) => Promise<ReportMaterialUploadFailureResult>;
+  finalize: (materialId: string) => Promise<FinalizeMaterialUploadResult>;
   createClient: () => {
     storage: {
       from: (bucket: string) => {
@@ -139,7 +142,13 @@ export function createMaterialUploadController(dependencies: UploadDependencies)
           .upload(prepared.storagePath, file, { upsert: false, contentType: "application/pdf" });
 
         if (error == null && data != null) {
-          feedback("uploaded_pending_validation", "Arquivo enviado. Validação pendente.");
+          feedback("validating", "Conferindo o PDF no servidor…");
+          const finalized = await dependencies.finalize(prepared.materialId);
+          if (finalized.ok) feedback("ready", finalized.message);
+          else if (finalized.code === "INVALID_PDF" || finalized.code === "MISSING") {
+            feedback("confirmed_failure", finalized.message);
+          } else if (finalized.code === "AUTH_REQUIRED") feedback("auth_required", finalized.message);
+          else uncertain(finalized.message);
           return;
         }
 

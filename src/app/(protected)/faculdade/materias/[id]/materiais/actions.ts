@@ -1,6 +1,9 @@
 "use server";
 
 import { randomUUID } from "node:crypto";
+import { finalizeOwnedMaterial } from "@/lib/academic/materials/finalize";
+import { downloadPrivatePdf } from "@/lib/academic/materials/pdf-object";
+import { transitionMaterial } from "@/lib/academic/materials/validator";
 
 import {
   findOwnedMaterialClassSession,
@@ -64,7 +67,6 @@ export async function prepareMaterialUpload(
     const storagePath = `${userId}/${metadata.subjectId}/${materialId}/source.pdf`;
     const { error } = await supabase.from("academic_materials").insert({
       id: materialId,
-      user_id: userId,
       subject_id: metadata.subjectId,
       class_session_id: metadata.classSessionId ?? null,
       title: metadata.title,
@@ -72,8 +74,6 @@ export async function prepareMaterialUpload(
       storage_path: storagePath,
       mime_type: "application/pdf",
       size_bytes: metadata.sizeBytes,
-      file_status: "pending_upload",
-      deleted_at: null,
     });
 
     if (error) return fail("PREPARE_FAILED");
@@ -95,6 +95,14 @@ function reportFail(code: ReportMaterialUploadFailureErrorCode): ReportMaterialU
   return { ok: false, code, message: REPORT_PUBLIC_MESSAGES[code] };
 }
 
+export async function finalizeMaterialUpload(materialId: string) {
+  return finalizeOwnedMaterial(materialId, {
+    authenticate: getAuthenticatedMaterialsClient,
+    transition: transitionMaterial,
+    download: downloadPrivatePdf,
+  });
+}
+
 export async function reportMaterialUploadFailure(
   input: ReportMaterialUploadFailureInput,
 ): Promise<ReportMaterialUploadFailureResult> {
@@ -111,7 +119,6 @@ export async function reportMaterialUploadFailure(
     // proof of object absence. Never persist it or any raw Storage error.
     const { data, error } = await markOwnedPendingMaterialUploadFailed(
       context.supabase,
-      context.userId,
       report.materialId,
     );
     if (error) return reportFail("REPORT_FAILED");

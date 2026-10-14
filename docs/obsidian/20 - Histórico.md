@@ -1,5 +1,13 @@
 # Histórico
 
+## Atualização — 2026-10-14 / 2D.2C validada
+
+A 2D.2C foi implementada e validada. A migration 2D.2C.1, aplicada manualmente, permanece imutável; a corretiva `20261014161215_remover_dependencia_auth_executor_materiais.sql` foi aplicada via MCP para ler claims PostgREST diretamente, sem auth.uid()/auth.jwt() no executor. Prepare usa oito colunas; report usa RPC restrita.
+
+2026-10-14: correção de claims aplicada; validator LOGIN server-only autorizada/provisionada, com atributos mínimos preservados e TLS verificado após configuração de CA pública oficial. Finalize/UI/driver concluídos, PDF real fictício validado, inválidos removidos, idempotência/concorrência e recuperação por lease confirmadas. Validação: 323 testes locais; 73 checks da rodada runtime principal + 11 de recuperação + 7 de cleanup Storage = 91 checks, além de três suítes SQL de fronteira/claims/transições e testes pelo pooler. A/B usou duas contas controladas reais. MIME divergente e erro transitório foram injetados de modo controlado sobre o fluxo/infraestrutura real; não se afirma que o provider produziu naturalmente essas falhas. Cinco attempts validated foram comparadas ao SHA-256/tamanho exatos do PDF fictício. Cleanup administrativo confirmou zero usuários, identities, sessions, metadata, attempts, dados acadêmicos e objetos Storage de teste. Credenciais temporárias removidas. Obsidian atualizado, dependências de produção corrigidas e sem vulnerabilidades npm conhecidas; advisory dev registrado. Publicação em origin/main autorizada somente após gates finais. Nenhuma configuração Vercel foi realizada; próxima etapa 2D.2D depende de autorização.
+
+### Registro anterior
+
 ## Estado atual
 
 - 2026-09-15 — Etapa 0A implementada: fundação local, home mínima, documentação, Git local e controles básicos de segurança. Lint e build concluídos com sucesso.

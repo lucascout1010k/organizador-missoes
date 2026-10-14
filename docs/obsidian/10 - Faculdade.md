@@ -1,5 +1,13 @@
 # Faculdade
 
+## Atualização — 2026-10-14 / 2D.2C validada
+
+A 2D.2C foi implementada e validada. A migration 2D.2C.1, aplicada manualmente, permanece imutável; a corretiva `20261014161215_remover_dependencia_auth_executor_materiais.sql` foi aplicada via MCP para ler claims PostgREST diretamente, sem auth.uid()/auth.jwt() no executor. Prepare usa oito colunas; report usa RPC restrita.
+
+O formulário mínimo liga upload confirmado → validação server-side → pronto/falha/resultado incerto. File vai Browser → Storage; PDF privado é baixado Storage → servidor com limite real de 6291456 bytes e timeout. V1 confere proprietário/path, bytes reais/metadata, assinatura %PDF-, MIME observado, SHA-256 e versão pdf-signature-v1. Não é parser/antivírus/OCR. Inválido entra deleting antes de Storage.remove; metadata própria atual e listagem oficial Storage confirmam ausência antes de deleted, evitando depender de download em cache. Ausência requer NoSuchKey e confirmação adicional; erros ambíguos permanecem recuperáveis. Deleting pode retomar somente cleanup. Ready repetido é idempotente; concorrência e takeover por lease foram testados. Validação: 323 testes locais; 73 checks da rodada runtime principal + 11 de recuperação + 7 de cleanup Storage = 91 checks, além de três suítes SQL de fronteira/claims/transições e testes pelo pooler. A/B usou duas contas controladas reais. MIME divergente e erro transitório foram injetados de modo controlado sobre o fluxo/infraestrutura real; não se afirma que o provider produziu naturalmente essas falhas. Cinco attempts validated foram comparadas ao SHA-256/tamanho exatos do PDF fictício. Cleanup administrativo confirmou zero usuários, identities, sessions, metadata, attempts, dados acadêmicos e objetos Storage de teste. Credenciais temporárias removidas.
+
+### Registro anterior
+
 ## Estado atual
 
 Etapas 1D, 2B e 2C implementadas e validadas. `/faculdade` funciona como central acadêmica visual integrada ao AppShell da Etapa 2A: identifica curso e período atuais, apresenta métricas compactas, matérias do período, provas planejadas nos próximos 30 dias, aulas da semana atual e resumo de períodos. `/faculdade/historico` reúne períodos concluídos ou arquivados; a página de período mantém o gerenciamento contextual. `/faculdade/materias/[id]` funciona como central da vida da matéria, com cabeçalho de curso/período/status, navegação por seções, conclusão de aulas por status, próxima aula, próxima prova planejada, dias restantes, tópicos, cronologia, outras provas e ações acadêmicas expansíveis. Curso, períodos, matérias, aulas e provas podem ser criados e editados, com mudanças de status sem exclusão física pela interface.

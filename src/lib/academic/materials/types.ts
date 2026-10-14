@@ -50,3 +50,7 @@ export type ReportMaterialUploadFailureResult =
       code: ReportMaterialUploadFailureErrorCode;
       message: string;
     };
+
+export type FinalizeMaterialUploadResult =
+  | { ok: true; fileStatus: "ready"; message: string }
+  | { ok: false; code: "INVALID_INPUT" | "AUTH_REQUIRED" | "RESOURCE_UNAVAILABLE" | "IN_PROGRESS" | "UNCERTAIN" | "INVALID_PDF" | "MISSING"; message: string };

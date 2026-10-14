@@ -51,18 +51,11 @@ export async function findOwnedMaterialClassSession(
 
 export async function markOwnedPendingMaterialUploadFailed(
   supabase: MaterialsClient,
-  userId: string,
   materialId: string,
 ) {
-  // A late report must never overwrite a later lifecycle state. Keep the scope
-  // and transition in the same UPDATE instead of doing read-then-update.
+  // The RPC derives ownership from verified PostgREST claims and accepts only pending.
+  // No browser category, owner or destination status crosses this boundary.
   return supabase
-    .from("academic_materials")
-    .update({ file_status: "upload_failed" })
-    .eq("id", materialId)
-    .eq("user_id", userId)
-    .eq("file_status", "pending_upload")
-    .is("deleted_at", null)
-    .select("id")
+    .rpc("report_material_upload_failure", { p_material_id: materialId })
     .maybeSingle();
 }

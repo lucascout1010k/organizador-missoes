@@ -1,5 +1,13 @@
 # Contexto Codex
 
+## Atualização — 2026-10-14 / 2D.2C validada
+
+A 2D.2C foi implementada e validada. A migration 2D.2C.1, aplicada manualmente, permanece imutável; a corretiva `20261014161215_remover_dependencia_auth_executor_materiais.sql` foi aplicada via MCP para ler claims PostgREST diretamente, sem auth.uid()/auth.jwt() no executor. Prepare usa oito colunas; report usa RPC restrita.
+
+Validação: 323 testes locais; 73 checks da rodada runtime principal + 11 de recuperação + 7 de cleanup Storage = 91 checks, além de três suítes SQL de fronteira/claims/transições e testes pelo pooler. A/B usou duas contas controladas reais. MIME divergente e erro transitório foram injetados de modo controlado sobre o fluxo/infraestrutura real; não se afirma que o provider produziu naturalmente essas falhas. Cinco attempts validated foram comparadas ao SHA-256/tamanho exatos do PDF fictício. Cleanup administrativo confirmou zero usuários, identities, sessions, metadata, attempts, dados acadêmicos e objetos Storage de teste. Credenciais temporárias removidas. Finalize e UI mínima estão ligados; PDF válido promove ready somente após evidência atômica. A validator LOGIN foi autorizada após revisão do runtime sem TEMP, conectada via pooler com TLS verificado e credential somente em .env.local. IA/Gemini/OCR/redesign permanecem fora do escopo. Commit/push dependem dos gates finais desta rodada; Vercel não foi configurada.
+
+### Registro anterior
+
 ## Estado atual
 
 As Etapas 0A, 0B, 1A, 1B, 1C, 1D, 2A, 2B, 2C, 2D.1, 2D.2A e 2D.2B foram concluídas. A fundação em Next.js está publicada no repositório GitHub público `lucascout1010k/organizador-missoes`, com a branch principal `main`; a publicação da 2D.2B depende de autorização específica para push.
