@@ -1,5 +1,13 @@
 # Pendências
 
+## Atualização — 2026-10-14 / 2D.2D concluída
+
+2D.2D concluída e autorizada para publicação após gates. Próxima etapa é 2D.3, ainda não iniciada. Nenhum bloqueio da interface de Materiais permanece nesta etapa.
+
+Pendências separadas preservadas: configurar a credential server-only na Vercel somente sob autorização específica; reconciliar no histórico Supabase a migration original aplicada manualmente antes de usar db push; avaliar proteção contra senhas vazadas do Auth ([referência](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection)); acompanhar advisory de desenvolvimento ESLint/transitivas sem downgrade incompatível. IA/Gemini/OCR e redesign geral continuam fora do escopo.
+
+### Registro anterior
+
 ## Atualização — 2026-10-14 / 2D.2C validada
 
 A 2D.2C foi implementada e validada. A migration 2D.2C.1, aplicada manualmente, permanece imutável; a corretiva `20261014161215_remover_dependencia_auth_executor_materiais.sql` foi aplicada via MCP para ler claims PostgREST diretamente, sem auth.uid()/auth.jwt() no executor. Prepare usa oito colunas; report usa RPC restrita.

@@ -1,5 +1,17 @@
 # Segurança
 
+## Atualização — 2026-10-14 / 2D.2D concluída
+
+As três ações recebem somente materialId, reautenticam por getClaims, reconsultam metadata própria e validam o path canônico no servidor. Abrir/baixar exigem ready e deleted_at null; URLs oficiais de Storage duram 60 segundos, com filename de download sanitizado. Essa URL é uma capability efêmera de leitura autorizada: quem a receber poderá usá-la durante sua validade; não se promete revogação instantânea por mudança de estado. Nenhum path separado, capability de transição, attempt, generation, hash ou credential é serializado no DTO da lista.
+
+A RPC request_material_deletion aceita apenas UUID, lê claims PostgREST com sub/exp rigorosos, deriva ownership e só permite entrar em deleting. SECURITY DEFINER pertence ao executor mínimo, search_path vazio e row_security on. Não promove ready nem concede UPDATE/DELETE aos clientes. Lease ativa impede competir com a validator; cleanup retoma o fluxo 2D.2C e só conclui após Storage remove + confirmação de ausência. Executor permanece sem auth, LOGIN ou DDL persistente; validator conserva os seis EXECUTE privados e nenhum CRUD/membership/DDL persistente. TEMP herdado de PUBLIC permanece não utilizado; PUBLIC não foi alterado.
+
+Validação: 371 testes locais aprovados (48 novos), lint, TypeScript, build e diff-check aprovados. 130 checks runtime/browser selecionados: 48 positivos da rodada inicial, 28 da continuação, 5 de recuperação após expiração natural, 15 de cleanup pela fronteira e 34 no Chromium; mais 11 assertions SQL de claims/ownership em transação com rollback. Um argumento incorreto do harness de report foi corrigido e seu check falho foi excluído dessa contagem. A/B e anonymous reais, PATCH/DELETE diretos negados, RPC privada negada, concorrência, URLs assinadas e bytes reais exercitados. Remoção incerta foi injetada de forma controlada, sem afirmar falha natural do provider. Cleanup confirmou zero usuários, identities, sessions, materiais, attempts, analyses, matérias, períodos, cursos e objetos fictícios; credentials temporárias removidas.
+
+Advisor: os avisos de RPC SECURITY DEFINER authenticated são intencionais e ownership-bound. rls_auto_enable retorna event_trigger e está vinculado a um event trigger; somente metadados foram consultados. A revisão automática rejeitou sua chamada direta de diagnóstico por possível efeito privilegiado; a chamada não ocorreu nem é gate desta etapa. Proteção contra senhas vazadas continua desativada no Auth, pendência preexistente: [documentação oficial](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection). Advisory de desenvolvimento ESLint/transitivas continua separado; nenhum downgrade forçado foi aplicado.
+
+### Registro anterior
+
 ## Atualização — 2026-10-14 / 2D.2C validada
 
 A 2D.2C foi implementada e validada. A migration 2D.2C.1, aplicada manualmente, permanece imutável; a corretiva `20261014161215_remover_dependencia_auth_executor_materiais.sql` foi aplicada via MCP para ler claims PostgREST diretamente, sem auth.uid()/auth.jwt() no executor. Prepare usa oito colunas; report usa RPC restrita.

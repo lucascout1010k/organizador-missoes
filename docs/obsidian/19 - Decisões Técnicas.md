@@ -1,5 +1,13 @@
 # Decisões Técnicas
 
+## Atualização — 2026-10-14 / 2D.2D concluída
+
+2D.2D reutiliza integralmente o motor finalize e as seis transições privadas da 2D.2C. A única lacuna era a entrada em deleting por intenção do proprietário; uma RPC pública restrita ao authenticated fornece apenas essa transição, com claims, ownership, lock e impedimento de lease ativa. Sem engine duplicado, acesso genérico a tabelas ou nova permissão para validator. deleteAcademicMaterial interpreta o resultado de cleanup confirmado do finalize existente, sem expor sua semântica interna na UI. Falha incerta permanece deleting até retry.
+
+Leitura usa createSignedUrl(path,60) somente após metadata own/ready/canônica; download usa opção oficial download com nome sanitizado. A URL é a única capability de leitura intencionalmente entregue ao browser, sem registro em logs/docs. Listagem server-only faz filtros explícitos owner/subject/deleted e retorna DTO mínimo; router.refresh integra os resultados ao App Router sem state manager. UI compartilha componentes/estilo da matéria. Escopo de Auth/RLS/Storage/roles existente preservado.
+
+### Registro anterior
+
 ## Atualização — 2026-10-14 / 2D.2C validada
 
 A 2D.2C foi implementada e validada. A migration 2D.2C.1, aplicada manualmente, permanece imutável; a corretiva `20261014161215_remover_dependencia_auth_executor_materiais.sql` foi aplicada via MCP para ler claims PostgREST diretamente, sem auth.uid()/auth.jwt() no executor. Prepare usa oito colunas; report usa RPC restrita.

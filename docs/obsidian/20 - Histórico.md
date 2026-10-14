@@ -1,5 +1,11 @@
 # Histórico
 
+## Atualização — 2026-10-14 / 2D.2D concluída
+
+2026-10-14 — 2D.2D implementada e validada para publicação: listagem por matéria/proprietário, DTO sem internals, status amigável, abrir/baixar ready com URL assinada de 60 s, exclusão confirmada/idempotente via fronteira existente, retry e refresh, mobile e acessibilidade. Aplicada somente a nova migration 20261014183256_permitir_exclusao_confiavel_material_proprio.sql; migrations da 2D.2C intactas. Validação: 371 testes locais aprovados (48 novos), lint, TypeScript, build e diff-check aprovados. 130 checks runtime/browser selecionados: 48 positivos da rodada inicial, 28 da continuação, 5 de recuperação após expiração natural, 15 de cleanup pela fronteira e 34 no Chromium; mais 11 assertions SQL de claims/ownership em transação com rollback. Um argumento incorreto do harness de report foi corrigido e seu check falho foi excluído dessa contagem. A/B e anonymous reais, PATCH/DELETE diretos negados, RPC privada negada, concorrência, URLs assinadas e bytes reais exercitados. Remoção incerta foi injetada de forma controlada, sem afirmar falha natural do provider. Cleanup confirmou zero usuários, identities, sessions, materiais, attempts, analyses, matérias, períodos, cursos e objetos fictícios; credentials temporárias removidas. Notas oficiais atualizadas, sem secrets. Nenhuma configuração Vercel, IA/Gemini/OCR ou redesign geral.
+
+### Registro anterior
+
 ## Atualização — 2026-10-14 / 2D.2C validada
 
 A 2D.2C foi implementada e validada. A migration 2D.2C.1, aplicada manualmente, permanece imutável; a corretiva `20261014161215_remover_dependencia_auth_executor_materiais.sql` foi aplicada via MCP para ler claims PostgREST diretamente, sem auth.uid()/auth.jwt() no executor. Prepare usa oito colunas; report usa RPC restrita.

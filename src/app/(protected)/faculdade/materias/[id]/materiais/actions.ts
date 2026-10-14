@@ -1,9 +1,22 @@
 "use server";
 
 import { randomUUID } from "node:crypto";
+import { accessOwnedMaterial, deleteOwnedMaterial } from "@/lib/academic/materials/management";
 import { finalizeOwnedMaterial } from "@/lib/academic/materials/finalize";
 import { downloadPrivatePdf } from "@/lib/academic/materials/pdf-object";
 import { transitionMaterial } from "@/lib/academic/materials/validator";
+
+export async function openAcademicMaterial(materialId: string) {
+  return accessOwnedMaterial(materialId, false);
+}
+
+export async function downloadAcademicMaterial(materialId: string) {
+  return accessOwnedMaterial(materialId, true);
+}
+
+export async function deleteAcademicMaterial(materialId: string) {
+  return deleteOwnedMaterial(materialId, finalizeMaterialUpload);
+}
 
 import {
   findOwnedMaterialClassSession,

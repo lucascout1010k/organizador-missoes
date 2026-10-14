@@ -1,0 +1,25 @@
+.container { min-width: 0; padding: 16px; border-top: 1px solid #24384f; }
+.container h2 { margin: 0 0 16px; color: #e9f2ff; font-size: 17px; }
+.count { color: #93a9c3; font-size: 13px; margin-left: 8px; }
+.list { display: grid; gap: 12px; padding: 0; margin: 0; list-style: none; }
+.row { display: flex; align-items: flex-start; min-width: 0; gap: 14px; padding: 16px; background: #0b1b2e; border: 1px solid #2a405a; border-radius: 12px; }
+.pdf { flex-shrink: 0; display: grid; place-items: center; width: 40px; height: 48px; border-radius: 8px; background: #173759; color: #9bcfff; font-size: 11px; font-weight: 800; }
+.details { flex: 1; min-width: 0; }
+.details h3 { margin: 0 0 4px; font-size: 15px; color: #edf4ff; overflow-wrap: anywhere; }
+.filename { margin: 0 0 8px; color: #a4b6cd; font-size: 12px; overflow-wrap: anywhere; }
+.meta, .hint, .feedback, .empty { color: #a4b6cd; font-size: 13px; line-height: 1.6; }
+.meta { margin: 0 0 8px; }
+.badge { display: inline-block; padding: 4px 8px; border-radius: 6px; background: #193653; color: #b7d9fa; font-size: 12px; }
+.badge[data-state="ready"] { background: #143b32; color: #8fe3bf; }
+.badge[data-state="upload_failed"], .badge[data-state="deleting"] { background: #3b302a; color: #eac5a6; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.actions button { min-height: 44px; padding: 8px 14px; border: 1px solid #385478; border-radius: 8px; background: #122b46; color: #d9ebff; cursor: pointer; font-weight: 600; }
+.actions button:hover { background: #1c3c5f; }
+.actions button:focus-visible { outline: 2px solid #78b9ff; outline-offset: 3px; }
+.actions button:disabled { opacity: .55; cursor: default; }
+.actions button.delete { color: #ffc2bb; border-color: #6e494b; background: #33262b; }
+.confirmation { padding: 12px; margin-top: 12px; border-radius: 8px; background: #15263b; color: #e6effb; }
+.confirmation p { font-size: 13px; line-height: 1.5; }
+.feedback { margin: 8px 0 0; overflow-wrap: anywhere; }
+.feedback:empty { display: none; }
+@media (max-width: 480px) { .container { padding: 12px; } .row { gap: 10px; padding: 12px; } .pdf { width: 32px; height: 40px; } .actions button { flex: 1 1 auto; } }

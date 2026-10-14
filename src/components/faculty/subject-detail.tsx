@@ -5,6 +5,8 @@ import { finalizeMaterialUpload, prepareMaterialUpload, reportMaterialUploadFail
 import { ClassSessionForm, ExamForm, SubjectForm } from "@/components/academic/academic-forms";
 import { LocalDateTime } from "@/components/academic/local-date-time";
 import { MaterialUploadForm } from "@/components/academic/material-upload-form";
+import { MaterialList } from "@/components/academic/material-list";
+import type { MaterialItem } from "@/lib/academic/materials/management";
 import { StatusBadge } from "@/components/academic/status-badge";
 import { AppIcon, type AppIconName } from "@/components/ui/app-icon";
 import type { AcademicPeriod, ClassSession, Exam, Subject } from "@/lib/academic/types";
@@ -346,6 +348,7 @@ function SubjectActions({ subject }: { subject: Subject }) {
 }
 
 export function SubjectDetail({
+  materials = { items: [], unavailable: false },
   classes,
   courseName,
   currentTime,
@@ -353,6 +356,7 @@ export function SubjectDetail({
   period,
   subject,
 }: {
+  materials?: { items: MaterialItem[]; unavailable: boolean };
   classes: ClassSession[];
   courseName: string;
   currentTime: string;
@@ -380,7 +384,7 @@ export function SubjectDetail({
         <SubjectExams exams={exams} nextExam={nextExam} subjectId={subject.id} />
       </div>
       <section className={styles.panel} id="materiais" style={{ marginTop: 16 }}>
-        <SectionTitle eyebrow="Envio privado · validação pendente" icon="projects" title="Enviar material PDF" />
+        <SectionTitle eyebrow="PDFs privados · até 6 MiB" icon="projects" title="Materiais da matéria" />
         <MaterialUploadForm
           key={subject.id}
           classes={classes.map((classSession) => ({ id: classSession.id, title: classSession.title }))}
@@ -389,6 +393,7 @@ export function SubjectDetail({
           reportFailureAction={reportMaterialUploadFailure}
           subjectId={subject.id}
         />
+        <MaterialList {...materials} />
       </section>
     </main>
   );

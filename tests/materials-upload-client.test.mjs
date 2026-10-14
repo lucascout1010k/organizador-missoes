@@ -30,6 +30,7 @@ function load(relativePath) {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, jsx: ts.JsxEmit.ReactJSX },
   }).outputText;
   function requireMock(specifier) {
+    if (specifier === "next/navigation") return { useRouter: () => ({ refresh() {} }) };
     if (specifier === "react") return React;
     if (specifier === "react/jsx-runtime") return jsxRuntime;
     if (specifier === "next/link") return { default: ({ children, ...props }) => React.createElement("a", props, children) };

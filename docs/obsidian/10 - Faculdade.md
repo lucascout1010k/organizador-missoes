@@ -1,5 +1,15 @@
 # Faculdade
 
+## Atualização — 2026-10-14 / 2D.2D concluída
+
+2D.2D concluída: a seção Materiais da matéria mantém o design navy/azul existente, upload e lista mais recente primeiro. DTO: id, title, originalFilename, sizeBytes, fileStatus, createdAt. Deleted fica oculto. Labels: Envio pendente, Validando PDF..., Pronto, Falha no envio, Excluindo.... Pronto oferece Abrir/Baixar/Excluir. Estados recuperáveis oferecem Tentar novamente pelo finalize existente; ausência confirmada orienta novo envio. Excluindo bloqueia leitura e oferece apenas Concluir exclusão. Não há progresso artificial.
+
+Abrir usa nova aba sem opener; Baixar usa filename oficial sanitizado. Confirmação inline tem Cancelar/Confirmar exclusão, Escape e retorno do foco. Botões têm 44 px, loading/disabled, bloqueio síncrono de double-click e feedback aria-live. Atualização sem F5 e botão Enviar outro PDF depois de resultado terminal confirmado. Chromium headless passou em desktop e larguras 414/390/375/320, com títulos longos e nenhum overflow horizontal; é emulação de largura/reduced-motion, não teste em dispositivo iOS físico.
+
+Validação: 371 testes locais aprovados (48 novos), lint, TypeScript, build e diff-check aprovados. 130 checks runtime/browser selecionados: 48 positivos da rodada inicial, 28 da continuação, 5 de recuperação após expiração natural, 15 de cleanup pela fronteira e 34 no Chromium; mais 11 assertions SQL de claims/ownership em transação com rollback. Um argumento incorreto do harness de report foi corrigido e seu check falho foi excluído dessa contagem. A/B e anonymous reais, PATCH/DELETE diretos negados, RPC privada negada, concorrência, URLs assinadas e bytes reais exercitados. Remoção incerta foi injetada de forma controlada, sem afirmar falha natural do provider. Cleanup confirmou zero usuários, identities, sessions, materiais, attempts, analyses, matérias, períodos, cursos e objetos fictícios; credentials temporárias removidas.
+
+### Registro anterior
+
 ## Atualização — 2026-10-14 / 2D.2C validada
 
 A 2D.2C foi implementada e validada. A migration 2D.2C.1, aplicada manualmente, permanece imutável; a corretiva `20261014161215_remover_dependencia_auth_executor_materiais.sql` foi aplicada via MCP para ler claims PostgREST diretamente, sem auth.uid()/auth.jwt() no executor. Prepare usa oito colunas; report usa RPC restrita.

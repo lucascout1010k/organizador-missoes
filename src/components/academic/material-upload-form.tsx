@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useId, useRef, useState, useTransition, type FormEvent } from "react";
 
 import type {
@@ -33,6 +34,7 @@ export function MaterialUploadForm({
   reportFailureAction,
   finalizeAction,
 }: MaterialUploadFormProps) {
+  const router = useRouter();
   const id = useId();
   const [file, setFile] = useState<File | null>(null);
   const [title, setTitle] = useState("");
@@ -42,6 +44,7 @@ export function MaterialUploadForm({
   });
   const [transitionPending, startTransition] = useTransition();
   const controller = useRef<ReturnType<typeof createMaterialUploadController> | null>(null);
+  const form = useRef<HTMLFormElement>(null);
   const busy = transitionPending || feedback.state === "preparing" || feedback.state === "uploading" || feedback.state === "validating";
   const disabled = busy || feedback.blocked;
 
@@ -61,11 +64,12 @@ export function MaterialUploadForm({
     const flow = controller.current;
     startTransition(async () => {
       await flow.submit({ subjectId, classSessionId: classSessionId || null, title, file });
+      router.refresh();
     });
   }
 
   return (
-    <form aria-label="Enviar PDF da matéria" aria-busy={busy} className={styles.form} onSubmit={handleSubmit}>
+    <form aria-label="Enviar PDF da matéria" aria-busy={busy} className={styles.form} onSubmit={handleSubmit} ref={form}>
       <p className={styles.notice} id={`${id}-notice`}>
         Após o envio, o servidor confere o tamanho e a assinatura do PDF antes de liberar o material.
       </p>
@@ -103,6 +107,10 @@ export function MaterialUploadForm({
           {feedback.state === "preparing" ? "Preparando…" : feedback.state === "uploading" ? "Enviando…" : feedback.state === "validating" ? "Validando…" : "Enviar PDF"}
         </button>
       </fieldset>
+      {!busy && (feedback.state === "ready" || feedback.state === "confirmed_failure") ? <button className={styles.button} onClick={() => {
+        form.current?.reset(); controller.current = null; setFile(null); setTitle(""); setClassSessionId("");
+        setFeedback({ state: "idle", message: "Selecione um novo PDF de até 6 MiB.", blocked: false });
+      }} type="button">Enviar outro PDF</button> : null}
       <div aria-atomic="true" aria-live="polite" className={styles.feedback} data-state={feedback.state} role="status">
         <p>{feedback.message}</p>
         {feedback.state === "auth_required" ? <Link href="/login">Entrar novamente</Link> : null}

@@ -1,5 +1,15 @@
 # Banco de Dados
 
+## Atualização — 2026-10-14 / 2D.2D concluída
+
+Nova migration aplicada via MCP: 20261014183256_permitir_exclusao_confiavel_material_proprio.sql. SHA-256: 56d3159b04970affda42e0aeda94661dbcb1a2f9263d0566c2529843e0c56285. Acrescenta somente public.request_material_deletion(uuid), ownership-bound, executável por authenticated; PUBLIC/anon/validator sem EXECUTE. Lock da metadata antecede attempts, como na fronteira existente. Material próprio sem lease ativa entra em deleting; deleting/deleted são idempotentes. Não modifica as seis funções privadas, grants de tabelas, bucket ou policies. Expiração e fencing continuam no issuer existente.
+
+As duas migrations aplicadas da 2D.2C permanecem byte a byte intactas, com SHA-256 2cf5a1a20efab06d774fd94c01b248e21e1c517da6a33c580321b3082fb176ff e 7150248dab4a325b9b46e4a1a0a0de58219198e44ff1bd9a0f9954a8e894fc3d. Bucket continua privado, 6291456 bytes, application/pdf, sem UPDATE Storage. A migration manual original ainda precisa reconciliar o histórico antes de um futuro db push, sem reaplicação cega.
+
+Validação: 371 testes locais aprovados (48 novos), lint, TypeScript, build e diff-check aprovados. 130 checks runtime/browser selecionados: 48 positivos da rodada inicial, 28 da continuação, 5 de recuperação após expiração natural, 15 de cleanup pela fronteira e 34 no Chromium; mais 11 assertions SQL de claims/ownership em transação com rollback. Um argumento incorreto do harness de report foi corrigido e seu check falho foi excluído dessa contagem. A/B e anonymous reais, PATCH/DELETE diretos negados, RPC privada negada, concorrência, URLs assinadas e bytes reais exercitados. Remoção incerta foi injetada de forma controlada, sem afirmar falha natural do provider. Cleanup confirmou zero usuários, identities, sessions, materiais, attempts, analyses, matérias, períodos, cursos e objetos fictícios; credentials temporárias removidas. O hard cleanup administrativo foi limitado às duas contas fictícias identificadas, depois de todos os objetos removidos pela API; nunca houve DELETE SQL de storage.objects.
+
+### Registro anterior
+
 ## Atualização — 2026-10-14 / 2D.2C validada
 
 A 2D.2C foi implementada e validada. A migration 2D.2C.1, aplicada manualmente, permanece imutável; a corretiva `20261014161215_remover_dependencia_auth_executor_materiais.sql` foi aplicada via MCP para ler claims PostgREST diretamente, sem auth.uid()/auth.jwt() no executor. Prepare usa oito colunas; report usa RPC restrita.

@@ -1,5 +1,13 @@
 # Contexto Codex
 
+## Atualização — 2026-10-14 / 2D.2D concluída
+
+A 2D.2D concluiu a interface de Materiais no detalhe da matéria: listagem por proprietário/matéria, DTO mínimo, estados amigáveis, abrir/baixar PDF ready, confirmação de exclusão e retry. A atualização usa router.refresh após upload/finalize/delete/retry. Base publicada da 2D.2C: 30722ebed92ab4caa30856ac6130fb61f25c3207. A publicação desta etapa foi autorizada exclusivamente após todos os gates e cleanup. Nenhuma IA/OCR/Gemini, redesign global ou configuração da Vercel foi incluída.
+
+Validação: 371 testes locais aprovados (48 novos), lint, TypeScript, build e diff-check aprovados. 130 checks runtime/browser selecionados: 48 positivos da rodada inicial, 28 da continuação, 5 de recuperação após expiração natural, 15 de cleanup pela fronteira e 34 no Chromium; mais 11 assertions SQL de claims/ownership em transação com rollback. Um argumento incorreto do harness de report foi corrigido e seu check falho foi excluído dessa contagem. A/B e anonymous reais, PATCH/DELETE diretos negados, RPC privada negada, concorrência, URLs assinadas e bytes reais exercitados. Remoção incerta foi injetada de forma controlada, sem afirmar falha natural do provider. Cleanup confirmou zero usuários, identities, sessions, materiais, attempts, analyses, matérias, períodos, cursos e objetos fictícios; credentials temporárias removidas.
+
+### Registro anterior
+
 ## Atualização — 2026-10-14 / 2D.2C validada
 
 A 2D.2C foi implementada e validada. A migration 2D.2C.1, aplicada manualmente, permanece imutável; a corretiva `20261014161215_remover_dependencia_auth_executor_materiais.sql` foi aplicada via MCP para ler claims PostgREST diretamente, sem auth.uid()/auth.jwt() no executor. Prepare usa oito colunas; report usa RPC restrita.
