@@ -1,5 +1,14 @@
 # Histórico
 
+## Atualização — 2026-10-20 / 3A concluída, publicação autorizada
+
+2026-10-20 — 3A implementada e validada: missions na home, fuso diário explícito, atrasadas/hoje/concluídas, prioridade/origem/duração, progresso real, conclusão segura/idempotente, feedback/refresh, mobile/teclado. 547 testes locais (51 novos), 42 checks runtime A/B e 53 Chrome finais. Cleanup remoto zero; nenhuma migration. Publicação em origin/main autorizada explicitamente pelo usuário, com exceção documentada para os 5 HIGH DEV preexistentes e não resolvidos; audit de produção zero.
+
+Validação final: 547 testes locais, 42 checks remotos A/B e 53 checks Chrome; lint, TypeScript, build e diff-check aprovados. Produção npm audit zero; audit completo mantém 5 HIGH DEV preexistentes e não resolvidos. Usuário autorizou explicitamente publicar a 3A em origin/main com essa exceção em 2026-10-20. Fixtures remotas zeradas. Sem secrets. Regras, evidências e limites em [3A — validação](../3a-validacao.md).
+
+### Registro anterior
+
+
 ## Atualização — 2026-10-20 / 2D.4 concluída
 
 2026-10-20 — 2D.4 implementada e validada: conversão explícita e revisável de sugestões persistidas em missions, vínculo específico por análise/índice, transação atômica, idempotência concorrente, estados persistentes e proteção A/B. Três migrations aplicadas e alinhadas ao histórico remoto; corretiva usa ALTER POLICY. Cleanup final sem resíduos. Sem nova chamada Gemini, dados reais ou alteração do fluxo PDF/consentimento. Usuário autorizou explicitamente commit/push em origin/main mantendo os 5 HIGH DEV preexistentes documentados e não resolvidos; produção zero.

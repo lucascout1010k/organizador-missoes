@@ -5,9 +5,15 @@ import styles from "@/components/dashboard/dashboard.module.css";
 import { UpcomingExams } from "@/components/dashboard/upcoming-exams";
 import { WeekAgenda } from "@/components/dashboard/week-agenda";
 import { getFacultyOverview } from "@/lib/academic/data";
+import { TodayMissions } from "@/components/dashboard/today-missions";
+import { readTodayMissions } from "@/lib/missions/service";
+import { redirect } from "next/navigation";
 
 export default async function Home() {
-  const { courses, periods, subjects, upcomingExams } = await getFacultyOverview();
+  const [{ courses, periods, subjects, upcomingExams }, missions] = await Promise.all([
+    getFacultyOverview(), readTodayMissions(),
+  ]);
+  if (!missions.ok && missions.reason === "auth_required") redirect("/login");
   const currentCourse = courses.find((course) => course.status === "active") ?? courses[0];
   const coursePeriods = currentCourse
     ? periods.filter((period) => period.course_id === currentCourse.id)
@@ -22,6 +28,8 @@ export default async function Home() {
   return (
     <div className={styles.page}>
       <DashboardHeader />
+
+      <TodayMissions dashboard={missions.ok ? missions.dashboard : null} />
 
       <DashboardSummary activeSubjectCount={activeSubjects.length} examCount={upcomingExams.length} />
 

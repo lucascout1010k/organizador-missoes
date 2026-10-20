@@ -1,5 +1,14 @@
 # Banco de Dados
 
+## Atualização — 2026-10-20 / 3A concluída, publicação autorizada
+
+Schema remoto de missions conferido contra migrations: scheduled_for/due_at/completed_at timestamptz, status/priority/category reais, FKs de origem por proprietário, completion_check, índices, trigger, RLS/FORCE e grants. Nenhuma migration/RPC/role/policy/grant nova. Query por owner reúne abertas até fim do dia e completed_at no dia; páginas de 500 evitam truncamento. UPDATE atômico por owner/id/estado/completed_at null preserva primeiro timestamp concorrente.
+
+Validação final: 547 testes locais, 42 checks remotos A/B e 53 checks Chrome; lint, TypeScript, build e diff-check aprovados. Produção npm audit zero; audit completo mantém 5 HIGH DEV preexistentes e não resolvidos. Usuário autorizou explicitamente publicar a 3A em origin/main com essa exceção em 2026-10-20. Fixtures remotas zeradas. Sem secrets. Regras, evidências e limites em [3A — validação](../3a-validacao.md).
+
+### Registro anterior
+
+
 ## Atualização — 2026-10-20 / 2D.4 concluída
 
 Aplicadas as migrations 20261020202827_converter_sugestoes_ia_em_missoes.sql, 20261020204757_remover_dependencia_auth_conversao_sugestoes.sql e 20261020205231_otimizar_claims_rls_conversao_sugestoes.sql. Versões/SQL normalizada locais correspondem ao histórico remoto. Tabela academic_analysis_mission_links com RLS/FORCE, leitura própria, escrita somente pelo executor e UNIQUE(analysis_id,suggestion_index). FKs compostas protegem owner/analysis/material/mission; missão excluída deixa tombstone mission_id null sem liberar nova conversão. Constraints anteriores de origem permanecem. Correção de auth usou ALTER POLICY e claims verificadas; nenhuma migration anterior foi editada.

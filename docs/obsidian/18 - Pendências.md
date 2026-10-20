@@ -1,5 +1,14 @@
 # Pendências
 
+## Atualização — 2026-10-20 / 3A concluída, publicação autorizada
+
+3A implementada e validada. Publicação da 3A em origin/main autorizada explicitamente pelo usuário em 2026-10-20, com exceção somente para os mesmos 5 HIGH DEV preexistentes. Os avisos DEV permanecem pendentes e não resolvidos; produção zero. Nenhum upgrade incompatível ou supressão foi aplicado. Cleanup remoto zerado. Permanecem Agenda/backlog/reabertura, Vercel e melhorias Auth anteriores. Chrome emulado passou; não houve iPhone físico/WebKit.
+
+Validação final: 547 testes locais, 42 checks remotos A/B e 53 checks Chrome; lint, TypeScript, build e diff-check aprovados. Produção npm audit zero; audit completo mantém 5 HIGH DEV preexistentes e não resolvidos. Usuário autorizou explicitamente publicar a 3A em origin/main com essa exceção em 2026-10-20. Fixtures remotas zeradas. Sem secrets. Regras, evidências e limites em [3A — validação](../3a-validacao.md).
+
+### Registro anterior
+
+
 ## Atualização — 2026-10-20 / 2D.4 concluída
 
 2D.4 implementada e validada; nenhuma fixture remota permanece. Publicação em origin/main autorizada explicitamente em 2026-10-20 com exceção documentada: npm audit completo retorna exit 1 pelos mesmos 5 HIGH preexistentes de desenvolvimento. Os avisos DEV continuam abertos e não resolvidos. Audit de produção permanece zero. Não foi aplicado downgrade incompatível. Pendências de produto separadas: listagem geral de missões, Dashboard/Agenda consumindo missions, configuração Vercel e melhorias Auth anteriores. O build padrão usa Webpack devido à falha do worker Turbopack neste Windows.

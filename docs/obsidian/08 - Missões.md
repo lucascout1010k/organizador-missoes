@@ -1,5 +1,14 @@
 # Missões
 
+## Atualização — 2026-10-20 / 3A concluída, publicação autorizada
+
+Dashboard é consumidor real de missions. planned/in_progress/postponed podem ser concluídas; missed fica no histórico e não entra no foco/transição. Conclusão grava completed_at server-side e é idempotente. Não havia fluxo seguro de reabertura: desfazer fica para etapa própria. Missões sem data, inclusive conversões 2D.4, permanecem backlog; nenhuma data automática ou cópia no Dashboard.
+
+Validação final: 547 testes locais, 42 checks remotos A/B e 53 checks Chrome; lint, TypeScript, build e diff-check aprovados. Produção npm audit zero; audit completo mantém 5 HIGH DEV preexistentes e não resolvidos. Usuário autorizou explicitamente publicar a 3A em origin/main com essa exceção em 2026-10-20. Fixtures remotas zeradas. Sem secrets. Regras, evidências e limites em [3A — validação](../3a-validacao.md).
+
+### Registro anterior
+
+
 ## Atualização — 2026-10-20 / 2D.4 concluída
 
 Sugestões de análise completed podem virar missões reais somente após seleção, revisão e confirmação. Cada missão tem category academic, status planned, origin_type ai e origin_id null; a autoridade de proveniência é o vínculo analysis/material/suggestion_index. Campos finais respeitam título 200, descrição 20000, enum de prioridade e integer positivo para minutos. Sem data automática. Retries e edições de título não mudam identidade; exclusão posterior preserva tombstone. Missões manuais continuam com o CRUD anterior. Não existe ainda UI geral de listagem/transição ou rota individual de missão.

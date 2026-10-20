@@ -1,5 +1,14 @@
 # Decisões Técnicas
 
+## Atualização — 2026-10-20 / 3A concluída, publicação autorizada
+
+Reutilizar America/Sao_Paulo em vez de inventar sistema de fuso; usar OR entre agendamento/prazo e precedência de atraso; excluir backlog/futuras/missed e concluir somente planned/in_progress/postponed. Denominador inclui atrasadas e trabalho concluído hoje para estabilizar o progresso após concluir. Uma coleta paginada por owner para todos os grupos/contadores; sem joins/N+1. Server Action estrita com compare-and-set e releitura do vencedor resolve retry/duas abas sem migration. Não introduzir reabertura, XP ou Agenda completa.
+
+Validação final: 547 testes locais, 42 checks remotos A/B e 53 checks Chrome; lint, TypeScript, build e diff-check aprovados. Produção npm audit zero; audit completo mantém 5 HIGH DEV preexistentes e não resolvidos. Usuário autorizou explicitamente publicar a 3A em origin/main com essa exceção em 2026-10-20. Fixtures remotas zeradas. Sem secrets. Regras, evidências e limites em [3A — validação](../3a-validacao.md).
+
+### Registro anterior
+
+
 ## Atualização — 2026-10-20 / 2D.4 concluída
 
 Adotar ligação específica, sem duplicar texto original, com identidade imutável por análise/índice. Manter origin_type ai/origin_id null e constraints existentes; vínculo é a autoridade. Escolher transação por item via RPC estreita e resultado de lote explícito. Lock material → análise acompanha a fronteira PDF. Separar executor de conversão do executor/validator existente; ler claims PostgREST porque postgres não delega grants no auth gerenciado. Preservar tombstone após excluir missão. Não adicionar datas nem consumidores inexistentes no Dashboard/Agenda. Usar build Webpack suportado, sem reduzir TypeScript, após falha reproduzida do worker Turbopack.

@@ -1,5 +1,14 @@
 # Segurança
 
+## Atualização — 2026-10-20 / 3A concluída, publicação autorizada
+
+Conclusão recebe somente objeto estrito {missionId}; valida UUID, reexecuta getClaims, deriva userId e inclui owner em leitura e UPDATE condicional. Payloads user_id/status/completed_at/extra falham. RLS/FORCE e grants próprios preexistentes foram auditados remotamente e preservados. Não owner/anon/inexistente negados; sem service_role nova ou secrets no DTO. A fronteira segura é a Server Action; CRUD REST próprio anterior continua existindo e não se afirma timestamp inviolável global.
+
+Validação final: 547 testes locais, 42 checks remotos A/B e 53 checks Chrome; lint, TypeScript, build e diff-check aprovados. Produção npm audit zero; audit completo mantém 5 HIGH DEV preexistentes e não resolvidos. Usuário autorizou explicitamente publicar a 3A em origin/main com essa exceção em 2026-10-20. Fixtures remotas zeradas. Sem secrets. Regras, evidências e limites em [3A — validação](../3a-validacao.md).
+
+### Registro anterior
+
+
 ## Atualização — 2026-10-20 / 2D.4 concluída
 
 Conversão deriva identidade de getClaims e revalida análise própria completed, resultado Zod persistido e material ready/sem exclusão. Payload estrito não aceita autoridade de user/material/origin/mission. RPC invoker delega a função privada definer com executor específico NOLOGIN/NOINHERIT/NOBYPASSRLS, claims PostgREST/exp e RLS própria. Sem service_role ou CRUD cliente de vínculos. Função insere missão+vínculo atomicamente e impede duplicatas por análise/índice; strings hostis são texto. A/B nos dois sentidos, anon, estados e payloads forjados foram exercitados. Executor/validator de PDFs anteriores permanecem sem novas permissões.

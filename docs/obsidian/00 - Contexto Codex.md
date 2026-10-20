@@ -1,5 +1,14 @@
 # Contexto Codex
 
+## Atualização — 2026-10-20 / 3A concluída, publicação autorizada
+
+3A implementada e validada: a home agora consome public.missions, com grupos Atrasadas/Hoje/Concluídas hoje, progresso real e conclusão segura/idempotente sem F5. America/Sao_Paulo preserva a estratégia existente. Backlog sem data e missões futuras ficam fora do foco diário; 2D.4 continua criando somente missões sem datas automáticas. Faculdade/PDF/IA, Auth e RLS permanecem intactos. Nenhuma migration.
+
+Validação final: 547 testes locais, 42 checks remotos A/B e 53 checks Chrome; lint, TypeScript, build e diff-check aprovados. Produção npm audit zero; audit completo mantém 5 HIGH DEV preexistentes e não resolvidos. Usuário autorizou explicitamente publicar a 3A em origin/main com essa exceção em 2026-10-20. Fixtures remotas zeradas. Sem secrets. Regras, evidências e limites em [3A — validação](../3a-validacao.md).
+
+### Registro anterior
+
+
 ## Atualização — 2026-10-20 / 2D.4 concluída
 
 A 2D.4 está implementada e validada: seleção explícita de sugestões persistidas, revisão de título/descrição/prioridade/minutos e confirmação antes de qualquer missão real. A IA nunca cria missão automaticamente. O vínculo analysis → suggestion_index → mission fica em academic_analysis_mission_links; a missão continua em missions. Origin ai/null preserva o schema anterior. Dashboard/Agenda ainda não consultam missions; nenhuma página nova foi inventada. O bloco Faculdade/PDF/IA tem o fluxo autorizado concluído funcionalmente, com publicação em origin/main autorizada e audit DEV preexistente mantido como pendência não resolvida.

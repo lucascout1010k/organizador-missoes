@@ -1,5 +1,14 @@
 # Dashboard Hoje
 
+## Atualização — 2026-10-20 / 3A concluída, publicação autorizada
+
+3A funcional. Dia em America/Sao_Paulo, meia-noite inclusiva/próxima exclusiva. Atrasada: aberta com agendamento OU prazo anterior ao dia; Hoje: agendamento OU prazo no dia, sem atraso anterior; concluída hoje: completed_at no dia. Sem data/futuras/missed/conclusões antigas excluídas. Grupos nessa ordem, prioridade high/medium/low, menor instante, created_at/id. Progresso: concluídas hoje / (abertas hoje + atrasadas abertas + concluídas hoje). DTO mínimo, prioridade/origem/duração/datas/estado, conclusão/loading/erro/vazio reais e refresh sem F5, preservando dark premium e cards existentes.
+
+Validação final: 547 testes locais, 42 checks remotos A/B e 53 checks Chrome; lint, TypeScript, build e diff-check aprovados. Produção npm audit zero; audit completo mantém 5 HIGH DEV preexistentes e não resolvidos. Usuário autorizou explicitamente publicar a 3A em origin/main com essa exceção em 2026-10-20. Fixtures remotas zeradas. Sem secrets. Regras, evidências e limites em [3A — validação](../3a-validacao.md).
+
+### Registro anterior
+
+
 ## Atualização — 2026-10-20 / 2D.4 concluída
 
 Auditoria 2D.4 confirmou que a home e WeekAgenda continuam consumindo dados acadêmicos/provas, sem leitura de missions. Missões convertidas existem na tabela universal e nas consultas próprias normais; ainda não há critério funcional de exibição de missões no Dashboard. Nenhum contador ou integração fictícia foi acrescentado. A Server Action invalida a home para leituras futuras, mas isso não implementa um consumidor de missions.

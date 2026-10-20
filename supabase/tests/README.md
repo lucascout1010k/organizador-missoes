@@ -36,4 +36,12 @@ Browser: iniciar o build em `localhost:3100`; instalar/disponibilizar Playwright
 
 `suggestion-missions-checks.sql` exige as fixtures identificadas no próprio script e uma conversão prévia no índice zero. Valida 19 assertions e falha controlada no segundo INSERT; executa integralmente com `ROLLBACK`. Não executar trechos isolados em dados reais.
 
+## Dashboard Hoje — 3A
+
+`dashboard-runtime.mjs` e `dashboard-browser.mjs` são runners explícitos, fora da suíte local, usando somente publishable key e sessões fictícias. Não chamam Gemini nem tocam missões reais. Preparar administrativamente duas contas fictícias confirmadas com UUIDs `3a000000-0000-4000-8000-000000000001`/`002`, e-mails `dashboard-3a-a-<nonce>@example.invalid`/`dashboard-3a-b-<nonce>@example.invalid` e senhas aleatórias temporárias; guardar somente no arquivo ignorado `.env.3a-runtime.json` como `{a:{id,email,password},b:{id,email,password}}`. Nunca registrar senhas em Git, docs ou logs. Signup público permanece desativado.
+
+Executar runtime uma vez; ele insere apenas missões de namespace controlado `3a000000`, registra seus IDs no arquivo ignorado e testa serviço real/getClaims/PostgREST/RLS. Browser exige build em `localhost:3100`, Chrome e `PLAYWRIGHT_MODULE_PATH` se o pacote estiver fora do projeto. `UI_SCREENSHOT_DIRECTORY` é opcional. O browser começa com os resultados do runtime, valida 53 checks e remove somente suas missões A conhecidas para provar estado vazio.
+
+Após os testes, encerrar sessões, remover as duas contas somente depois de conferir UUID **e** e-mail fictícios e verificar ausência em users/identities/sessions/missions/dados acadêmicos/materials/analyses/links/Storage. Apagar o arquivo temporário com credenciais. Não versionar fixtures ou capturas. Detalhes e limites em [3A — validação](../../docs/3a-validacao.md).
+
 ---

@@ -1,5 +1,14 @@
 # Agenda
 
+## Atualização — 2026-10-20 / 3A concluída, publicação autorizada
+
+A 3A implementa somente o consumidor diário na home; WeekAgenda continua visualização de provas. Agenda completa, planejamento de datas, backlog, reabertura, calendário, drag/drop e replanejamento ficam para 3B/etapas autorizadas. scheduled_for e due_at existentes alimentam o foco diário; conversões 2D.4 continuam sem data. Não há estrutura paralela de compromissos.
+
+Validação final: 547 testes locais, 42 checks remotos A/B e 53 checks Chrome; lint, TypeScript, build e diff-check aprovados. Produção npm audit zero; audit completo mantém 5 HIGH DEV preexistentes e não resolvidos. Usuário autorizou explicitamente publicar a 3A em origin/main com essa exceção em 2026-10-20. Fixtures remotas zeradas. Sem secrets. Regras, evidências e limites em [3A — validação](../3a-validacao.md).
+
+### Registro anterior
+
+
 ## Atualização — 2026-10-20 / 2D.4 concluída
 
 A Agenda geral continua planejada. WeekAgenda existente mostra provas acadêmicas e não consulta missions. A 2D.4 grava somente missions e seus vínculos; não cria estrutura paralela, compromisso automático ou nova rota de Agenda. scheduled_for/due_at foram avaliados e permanecem nulos nesta conversão; a escolha de datas e a integração visual ficam para etapa própria.
