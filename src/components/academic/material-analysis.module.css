@@ -15,3 +15,11 @@
 .answer { border-top: 1px solid #385478; padding-top: 12px; }
 .keywords { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; list-style: none; }
 .keywords li { background: #193653; border-radius: 6px; padding: 4px 8px; }
+.selection { display: flex; align-items: center; gap: 10px; min-height: 44px; cursor: pointer; }
+.selection input { width: 20px; height: 20px; flex-shrink: 0; }
+.reviewButton { margin-top: 14px; }
+.editor { display: grid; min-width: 0; gap: 12px; margin: 12px 0; padding: 12px; border: 1px solid #385478; border-radius: 8px; }
+.editor label { display: grid; min-width: 0; gap: 4px; }
+.editor input, .editor textarea, .editor select { box-sizing: border-box; width: 100%; min-width: 0; max-width: 100%; padding: 10px; color: #e0eeff; background: #10253b; border: 1px solid #385478; border-radius: 6px; font: inherit; font-size: 16px; }
+.editor textarea { resize: vertical; }
+.analysis input:focus-visible, .analysis textarea:focus-visible, .analysis select:focus-visible { outline: 2px solid #78b9ff; outline-offset: 3px; }

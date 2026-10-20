@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { analyzeAcademicMaterial } from "@/app/(protected)/faculdade/materias/[id]/materiais/actions";
 import type { AnalysisView, AcademicAnalysis } from "@/lib/academic/materials/analysis-schema";
 import styles from "./material-analysis.module.css";
+import { SuggestionMissions } from "./suggestion-missions";
 
 const priorities = { high: "Alta", medium: "Média", low: "Baixa" };
 const difficulties = { easy: "Fácil", medium: "Médio", hard: "Difícil" };
@@ -25,14 +26,14 @@ function Exercise({ exercise }: { exercise: AcademicAnalysis["exercises"][number
   </article>;
 }
 
-export function AcademicAnalysisResult({ result }: { result: AcademicAnalysis }) {
+export function AcademicAnalysisResult({ result, analysisId, links }: { result: AcademicAnalysis; analysisId?: string; links?: AnalysisView["suggestionLinks"] }) {
   return <section aria-label="Análise com IA" className={styles.result}>
     <h4>Análise com IA</h4><p className={styles.notice}>Confira o resultado com o PDF. A IA pode cometer erros; sugestões não criam missões.</p>
     <h5>Resumo</h5><p>{result.summary}</p>
     <h5>Principais tópicos</h5><div className={styles.grid}>{result.topics.map((topic,index) => <article className={styles.card} key={index}><strong>{topic.title}</strong><small>Importância {priorities[topic.importance].toLowerCase()}</small><p>{topic.explanation}</p></article>)}</div>
     <h5>Palavras-chave</h5><ul className={styles.keywords}>{result.keywords.map((keyword,index) => <li key={index}>{keyword}</li>)}</ul>
     <h5>Exercícios para praticar</h5><div className={styles.grid}>{result.exercises.map((exercise,index) => <Exercise exercise={exercise} key={index} />)}</div>
-    <h5>Sugestões de estudo</h5><div className={styles.grid}>{result.suggestedMissions.map((suggestion,index) => <article className={styles.card} key={index}><strong>{suggestion.title}</strong><small>{suggestion.estimatedMinutes} min · Prioridade {priorities[suggestion.priority].toLowerCase()}</small><p>{suggestion.description}</p></article>)}</div>
+    <h5>Sugestões de estudo</h5>{analysisId ? <SuggestionMissions analysisId={analysisId} suggestions={result.suggestedMissions} links={links} key={analysisId} /> : <div className={styles.grid}>{result.suggestedMissions.map((suggestion,index) => <article className={styles.card} key={index}><strong>{suggestion.title}</strong><small>{suggestion.estimatedMinutes} min · Prioridade {priorities[suggestion.priority].toLowerCase()}</small><p>{suggestion.description}</p></article>)}</div>}
     {result.limitations.length ? <><h5>Limitações</h5><ul>{result.limitations.map((item,index) => <li key={index}>{item}</li>)}</ul></> : null}
   </section>;
 }
@@ -61,7 +62,7 @@ export function MaterialAnalysis({ materialId, analysis }: { materialId: string;
     });
   }
   return <div aria-busy={pending} className={styles.analysis}>
-    {current?.status === "completed" && current.result ? <AcademicAnalysisResult result={current.result} /> : <>
+    {current?.status === "completed" && current.result ? <AcademicAnalysisResult result={current.result} analysisId={current.id} links={analysis?.id === current.id ? analysis.suggestionLinks : current.suggestionLinks} /> : <>
       <p aria-live="polite" role="status">{pending || current?.status === "processing" ? "Analisando material..." : current?.status === "failed" ? "Não foi possível analisar este material." : "Este material ainda não foi analisado."}</p>
       <button disabled={pending || confirm} onClick={() => { setConfirm(true); requestAnimationFrame(() => cancelButton.current?.focus()); }} ref={trigger} type="button">{current?.status === "processing" ? "Verificar análise" : current?.status === "failed" ? "Tentar novamente" : "Analisar com IA"}</button>
       {current?.status === "processing" ? <p className={styles.notice}>Uma análise em andamento será reutilizada. Se a tentativa ficou interrompida, uma nova chamada só ocorrerá após expirar e com sua confirmação.</p> : null}

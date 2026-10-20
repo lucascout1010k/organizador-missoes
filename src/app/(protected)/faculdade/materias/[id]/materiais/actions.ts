@@ -2,6 +2,17 @@
 
 import { randomUUID } from "node:crypto";
 import { analyzeOwnedAcademicMaterial } from "@/lib/academic/materials/analysis";
+import { createOwnedSuggestionMissions } from "@/lib/academic/materials/suggestion-missions";
+import { revalidatePath } from "next/cache";
+
+export async function createMissionsFromAnalysisSuggestions(input: unknown) {
+  const result = await createOwnedSuggestionMissions(input);
+  if (result.ok && result.items.some(item => item.status !== "failed")) {
+    revalidatePath("/faculdade/materias/[id]", "page");
+    revalidatePath("/");
+  }
+  return result;
+}
 
 export async function analyzeAcademicMaterial(input: { materialId: string; consent: boolean }) {
   return analyzeOwnedAcademicMaterial(input);

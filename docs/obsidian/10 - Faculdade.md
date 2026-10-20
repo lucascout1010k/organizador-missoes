@@ -1,5 +1,13 @@
 # Faculdade
 
+## Atualização — 2026-10-20 / 2D.4 concluída
+
+A seção Sugestões de estudo agora oferece seleção real, revisão de quatro campos, confirmação e feedback por item. Carregar/selecionar/revisar não cria missão nem chama Gemini. Depois de converter, o DTO carrega vínculos próprios e a UI mantém Adicionada às missões após refresh. Material deleted/deleting ou análise não completed falham de forma fechada. Layout desktop/mobile, labels, teclado, foco e ausência de overflow foram verificados no build de produção; nenhum PDF acadêmico real foi usado como fixture.
+
+Validação: 496 testes locais (57 novos), 52 checks runtime A/B reais, 19 assertions SQL com rollback, 24 checks Chrome + 6 de teclado/foco, cleanup zerado em 12 categorias. Lint, TypeScript, build Webpack e diff-check aprovados. Audit de produção zero; audit completo mantém 5 HIGH dev preexistentes sem patch compatível. Publicação em origin/main autorizada explicitamente pelo usuário com os 5 HIGH DEV preexistentes mantidos como pendência não resolvida; produção permanece com zero vulnerabilidades. Evidências e limitações em [2D.4 — validação](../2d4-validacao.md).
+
+### Registro anterior
+
 ## Atualização — 2026-10-14 / 2D.3 validada
 
 A interface local inclui Analisar com IA somente em READY e confirmação informando envio do PDF ao Google Gemini. Sem checkbox pré-marcado nem disparo automático. Processing mostra Analisando material... e Verificar análise (com nova confirmação para eventual recuperação stale); Failed permite retry explícito. Completed renderiza resumo, tópicos, keywords, exercícios com resposta inicialmente recolhida, sugestões de estudo e limitações, como texto escapado. Sugestões não têm botão para criar missão.

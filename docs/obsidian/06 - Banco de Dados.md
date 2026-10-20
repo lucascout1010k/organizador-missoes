@@ -1,5 +1,13 @@
 # Banco de Dados
 
+## Atualização — 2026-10-20 / 2D.4 concluída
+
+Aplicadas as migrations 20261020202827_converter_sugestoes_ia_em_missoes.sql, 20261020204757_remover_dependencia_auth_conversao_sugestoes.sql e 20261020205231_otimizar_claims_rls_conversao_sugestoes.sql. Versões/SQL normalizada locais correspondem ao histórico remoto. Tabela academic_analysis_mission_links com RLS/FORCE, leitura própria, escrita somente pelo executor e UNIQUE(analysis_id,suggestion_index). FKs compostas protegem owner/analysis/material/mission; missão excluída deixa tombstone mission_id null sem liberar nova conversão. Constraints anteriores de origem permanecem. Correção de auth usou ALTER POLICY e claims verificadas; nenhuma migration anterior foi editada.
+
+Validação: 496 testes locais (57 novos), 52 checks runtime A/B reais, 19 assertions SQL com rollback, 24 checks Chrome + 6 de teclado/foco, cleanup zerado em 12 categorias. Lint, TypeScript, build Webpack e diff-check aprovados. Audit de produção zero; audit completo mantém 5 HIGH dev preexistentes sem patch compatível. Publicação em origin/main autorizada explicitamente pelo usuário com os 5 HIGH DEV preexistentes mantidos como pendência não resolvida; produção permanece com zero vulnerabilidades. Evidências e limitações em [2D.4 — validação](../2d4-validacao.md).
+
+### Registro anterior
+
 ## Atualização — 2026-10-14 / 2D.3 validada
 
 Schema real auditado antes da implementação: analyses tinha consent_version/consented_at, schema_version smallint, resultado JSONB limitado a 131072 bytes, RLS/FORCE e índice parcial único processing por user/material, mas INSERT/UPDATE/DELETE amplo para authenticated. Tabela estava vazia. Aplicada a migration 20261014191625_proteger_analises_academicas_ia.sql (SHA-256 c920759acbb80ea244fb928bcfe41cd4b89a116b62c389ec23aa1e688d0ebeb4): revoga mutação de clientes e adiciona lease_expires_at/completion_token_hash ocultos, RPC de início e completion/failure privadas com token/lease/locks. SELECT cliente é limitado a colunas para DTO. Executor recebe somente a escrita necessária em analyses; validator continua sem CRUD genérico.

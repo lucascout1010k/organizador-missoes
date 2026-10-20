@@ -1,5 +1,13 @@
 # Contexto Codex
 
+## Atualização — 2026-10-20 / 2D.4 concluída
+
+A 2D.4 está implementada e validada: seleção explícita de sugestões persistidas, revisão de título/descrição/prioridade/minutos e confirmação antes de qualquer missão real. A IA nunca cria missão automaticamente. O vínculo analysis → suggestion_index → mission fica em academic_analysis_mission_links; a missão continua em missions. Origin ai/null preserva o schema anterior. Dashboard/Agenda ainda não consultam missions; nenhuma página nova foi inventada. O bloco Faculdade/PDF/IA tem o fluxo autorizado concluído funcionalmente, com publicação em origin/main autorizada e audit DEV preexistente mantido como pendência não resolvida.
+
+Validação: 496 testes locais (57 novos), 52 checks runtime A/B reais, 19 assertions SQL com rollback, 24 checks Chrome + 6 de teclado/foco, cleanup zerado em 12 categorias. Lint, TypeScript, build Webpack e diff-check aprovados. Audit de produção zero; audit completo mantém 5 HIGH dev preexistentes sem patch compatível. Publicação em origin/main autorizada explicitamente pelo usuário com os 5 HIGH DEV preexistentes mantidos como pendência não resolvida; produção permanece com zero vulnerabilidades. Evidências e limitações em [2D.4 — validação](../2d4-validacao.md).
+
+### Registro anterior
+
 ## Atualização — 2026-10-14 / 2D.3 validada
 
 2D.3 implementada e validada, com consentimento explícito para analisar somente PDF próprio READY. Upload/finalize param em ready; page load/refresh nunca chamam IA. A análise produz resumo, tópicos, palavras-chave, exercícios/respostas, sugestões textuais de estudo e limitações. Nenhuma escrita em missions ou agenda, nenhum OCR/RAG/chat/Files API/tools.

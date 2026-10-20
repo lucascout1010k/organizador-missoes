@@ -14,7 +14,8 @@ export const academicAnalysisSchema = z.strictObject({
   limitations: z.array(text(800)).max(6),
 });
 export type AcademicAnalysis = z.infer<typeof academicAnalysisSchema>;
-export type AnalysisView = { id: string; status: "processing" | "completed" | "failed"; result: AcademicAnalysis | null };
+export type SuggestionLink = { suggestionIndex: number; missionId: string | null };
+export type AnalysisView = { id: string; status: "processing" | "completed" | "failed"; result: AcademicAnalysis | null; suggestionLinks?: SuggestionLink[] };
 export type AnalysisFailure = "provider_unavailable" | "provider_rate_limited" | "provider_auth_error" | "provider_refused" | "invalid_provider_response" | "analysis_timeout" | "material_unavailable" | "configuration_error" | "unknown";
 export type AnalysisActionResult = { ok: true; analysis: AnalysisView } | { ok: false; message: string };
 

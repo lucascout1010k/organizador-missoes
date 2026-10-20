@@ -30,7 +30,7 @@ function load(relative, sdk={}, cache=sharedCache) {
     if(name==="react/jsx-runtime")return jsxRuntime;
     if(name==="next/navigation")return {useRouter:()=>({refresh(){}})};
     if(name.endsWith(".module.css"))return {default:{}};
-    if(name.startsWith("."))return load(path.resolve(path.dirname(filename),name+".ts"),sdk,cache);
+    if(name.startsWith("."))return load(path.resolve(path.dirname(filename),name+(name==="./suggestion-missions"&&filename.endsWith(".tsx")?".tsx":".ts")),sdk,cache);
     throw Error("Unexpected "+name);
   }
   runInThisContext(`(function(require,module,exports){${code}\n})`,{filename})(requireMock,runtimeModule,runtimeModule.exports);return runtimeModule.exports;

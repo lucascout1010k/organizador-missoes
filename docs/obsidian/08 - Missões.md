@@ -1,5 +1,13 @@
 # Missões
 
+## Atualização — 2026-10-20 / 2D.4 concluída
+
+Sugestões de análise completed podem virar missões reais somente após seleção, revisão e confirmação. Cada missão tem category academic, status planned, origin_type ai e origin_id null; a autoridade de proveniência é o vínculo analysis/material/suggestion_index. Campos finais respeitam título 200, descrição 20000, enum de prioridade e integer positivo para minutos. Sem data automática. Retries e edições de título não mudam identidade; exclusão posterior preserva tombstone. Missões manuais continuam com o CRUD anterior. Não existe ainda UI geral de listagem/transição ou rota individual de missão.
+
+Validação: 496 testes locais (57 novos), 52 checks runtime A/B reais, 19 assertions SQL com rollback, 24 checks Chrome + 6 de teclado/foco, cleanup zerado em 12 categorias. Lint, TypeScript, build Webpack e diff-check aprovados. Audit de produção zero; audit completo mantém 5 HIGH dev preexistentes sem patch compatível. Publicação em origin/main autorizada explicitamente pelo usuário com os 5 HIGH DEV preexistentes mantidos como pendência não resolvida; produção permanece com zero vulnerabilidades. Evidências e limitações em [2D.4 — validação](../2d4-validacao.md).
+
+### Registro anterior
+
 ## Estado atual
 
 Etapa 1C implementada: tabela `missions` aplicada no Supabase e validada com CRUD próprio, negações de acesso, constraints e origens acadêmicas. Os dados fictícios de teste foram removidos. A interface e a automação de missões ainda não foram implementadas.

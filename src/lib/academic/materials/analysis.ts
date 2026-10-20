@@ -102,10 +102,15 @@ export async function listAcademicAnalysisViews(materialIds: string[]): Promise<
       .select("id,material_id,status,result").eq("user_id", context.userId).eq("schema_version", 1)
       .in("material_id", materialIds).order("created_at", { ascending: false }).order("id", { ascending: false });
     if (found.error || !Array.isArray(found.data)) return {};
+    const links = await context.supabase.from("academic_analysis_mission_links")
+      .select("analysis_id,suggestion_index,mission_id").eq("user_id", context.userId)
+      .in("analysis_id", found.data.map(row => row.id));
+    if (links.error || !Array.isArray(links.data)) return {};
     const views: Record<string, AnalysisView> = {};
     for (const row of found.data) {
       if (views[row.material_id] || !["processing", "completed", "failed"].includes(row.status)) continue;
-      views[row.material_id] = { id: row.id, status: row.status, result: row.status === "completed" ? parseAcademicAnalysis(row.result) : null };
+      views[row.material_id] = { id: row.id, status: row.status, result: row.status === "completed" ? parseAcademicAnalysis(row.result) : null,
+        suggestionLinks: links.data.filter(link => link.analysis_id === row.id).map(link => ({ suggestionIndex: link.suggestion_index, missionId: link.mission_id })) };
     }
     return views;
   } catch { return {}; }

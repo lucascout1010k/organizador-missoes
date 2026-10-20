@@ -1,5 +1,13 @@
 # Segurança
 
+## Atualização — 2026-10-20 / 2D.4 concluída
+
+Conversão deriva identidade de getClaims e revalida análise própria completed, resultado Zod persistido e material ready/sem exclusão. Payload estrito não aceita autoridade de user/material/origin/mission. RPC invoker delega a função privada definer com executor específico NOLOGIN/NOINHERIT/NOBYPASSRLS, claims PostgREST/exp e RLS própria. Sem service_role ou CRUD cliente de vínculos. Função insere missão+vínculo atomicamente e impede duplicatas por análise/índice; strings hostis são texto. A/B nos dois sentidos, anon, estados e payloads forjados foram exercitados. Executor/validator de PDFs anteriores permanecem sem novas permissões.
+
+Validação: 496 testes locais (57 novos), 52 checks runtime A/B reais, 19 assertions SQL com rollback, 24 checks Chrome + 6 de teclado/foco, cleanup zerado em 12 categorias. Lint, TypeScript, build Webpack e diff-check aprovados. Audit de produção zero; audit completo mantém 5 HIGH dev preexistentes sem patch compatível. Publicação em origin/main autorizada explicitamente pelo usuário com os 5 HIGH DEV preexistentes mantidos como pendência não resolvida; produção permanece com zero vulnerabilidades. Evidências e limitações em [2D.4 — validação](../2d4-validacao.md).
+
+### Registro anterior
+
 ## Atualização — 2026-10-14 / 2D.3 validada
 
 A Server Action aceita somente materialId e consent:true, valida contrato/UUID, usa getClaims, ownership, ready/deleted_at, path canônico e download autenticado server-side. Antes de enviar dados externos, confere de novo bytes 1..6291456, tamanho metadata, %PDF-, MIME e ready corrente. Provider server-only usa Google SDK oficial com PDF base64 inline, system instruction controlada, structured output, store:false, sem tools/agents/URLs externas/Files API, timeout de 60 segundos e retries SDK zero. O PDF é conteúdo não confiável; não concede autoridade ao modelo. Prompt injection pode afetar qualidade semântica do texto: não se promete obediência perfeita do LLM, mas ele não recebe ferramentas, banco, Storage ou credentials e sua saída só pode virar texto/resultado validado. Nenhum HTML bruto ou dangerouslySetInnerHTML.

@@ -24,3 +24,16 @@ Resultado: **81 checks aprovados**, com seis registros fictícios inseridos e de
 Não foi criada segunda conta. A tentativa com UUID de proprietário divergente comprova rejeição por RLS, mas não substitui um teste completo A/B com dados pertencentes a duas contas reais. As FKs compostas e as policies também foram revisadas estaticamente. Não foram testadas concorrência, expiração natural da sessão, exclusão administrativa de conta ou carga.
 
 Para repetir, usar um harness local temporário autenticado com verificação de identidade e proteção CSRF, sem publicar rotas de teste. Revisar e autorizar as mutações e a limpeza antes da execução. Não solicitar senha, token, connection string ou chave privilegiada ao usuário. Revalidar a limpeza antes de remover o harness.
+# Conversão de sugestões — 2D.4
+
+Testes locais: `node --test tests/*.test.mjs`. Não exigem contas, ambiente ou rede.
+
+Os runners remotos `suggestion-missions-runtime.mjs`, `suggestion-missions-browser.mjs` e `suggestion-missions-review.mjs` são execução explícita, fora da suíte local. Usam somente publishable key e sessões fictícias; não provisionam contas nem chamam Gemini. Exigem fixtures controladas, nunca análises reais. O procedimento da rodada e cleanup estão em `docs/2d4-validacao.md`.
+
+Configuração temporária ignorada `.env.2d4-runtime.json`: objetos `a` e `b` com `id`, `email` em `example.invalid` e `password`; IDs de `subject`, `material`, `analysis`, `processing`, `failed`, `deletedAnalysis` e `bAnalysis` das fixtures. O runtime exige o projeto conferido e oito sugestões na análise completed. Para repetir a rodada em outra análise fictícia, `SUGGESTION_RUNTIME_ANALYSIS_ID` aceita somente o namespace controlado 2d4.
+
+Browser: iniciar o build em `localhost:3100`; instalar/disponibilizar Playwright fora das dependências do produto, com Chrome. `PLAYWRIGHT_MODULE_PATH` permite indicar o pacote disponível no runtime e `UI_SCREENSHOT_DIRECTORY` define uma pasta local para capturas. A fixture UI usa os IDs documentados no runner, com título `PDF fictício UI 2D.4` na matéria fictícia. Executar primeiro browser e depois review. Remover todas as fixtures e a configuração temporária após os testes.
+
+`suggestion-missions-checks.sql` exige as fixtures identificadas no próprio script e uma conversão prévia no índice zero. Valida 19 assertions e falha controlada no segundo INSERT; executa integralmente com `ROLLBACK`. Não executar trechos isolados em dados reais.
+
+---

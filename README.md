@@ -22,6 +22,8 @@ Acesse `http://localhost:3000`.
 
 Para validação, execute `npm run lint` e `npm run build`.
 
+O build de produção usa `next build --webpack`, opção suportada pelo Next instalado. Neste ambiente Windows, o worker CSS do Turbopack encerra antes de estabelecer a conexão; Webpack compila a aplicação com TypeScript e otimizações de produção habilitados.
+
 ## Privacidade e documentação
 
 Este repositório é planejado como público. Exemplos e documentação devem usar somente dados fictícios; dados pessoais e segredos não pertencem ao Git.

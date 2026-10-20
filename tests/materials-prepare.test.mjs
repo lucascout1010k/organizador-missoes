@@ -110,6 +110,7 @@ function createHarness(options = {}) {
       if (specifier === "zod") return zod;
       if (specifier === "@google/genai") return { GoogleGenAI: class { constructor() { throw new Error("Upload must never invoke AI"); } } };
       if (specifier === "server-only") return {};
+      if (specifier === "next/cache") return { revalidatePath() { throw new Error("Upload must never revalidate mission creation"); } };
       if (specifier === "@/lib/supabase/database-ca") return { SUPABASE_DATABASE_CA: "offline-mock-public-ca" };
       if (specifier === "postgres") return { default() { throw new Error("Unexpected real validator connection"); } };
       if (specifier === "node:crypto") return { randomUUID() { calls.uuid++; return randomUUID(); } };
