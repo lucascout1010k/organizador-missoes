@@ -1,5 +1,11 @@
 # Missões
 
+## Atualização — 2026-10-21 / 2E.2 — recuperação semântica validada
+
+A recuperação semântica 2E.2 não cria nem altera missões. Resposta é texto com fontes controladas e limitações; nenhuma ferramenta/ação é concedida ao modelo. Hostile real aprovado sem ações. Conversão de sugestões da análise individual continua no fluxo 2D.4 com revisão e confirmação humana.
+
+Evidências, arquitetura, custo, segurança e limites em [2E.2 — validação](../2e2-validacao.md). Entradas anteriores são históricas; esta atualização define o estado atual.
+
 ## Atualização — 2026-10-21 / 2E.1 — memória acadêmica da matéria
 
 A memória da matéria lista pendências pelos vínculos reais analysis → material → mission da 2D.4 e pelas origens subject/class_session/exam compatíveis. Não compara títulos. Mostra contadores de pendentes/concluídas e até cinco pendências; completed não é pendente. Tombstones sem mission_id não recriam missões. Sugestões e sua revisão/confirmação continuam no detalhe do material; nenhuma missão é criada ao abrir matéria ou material.

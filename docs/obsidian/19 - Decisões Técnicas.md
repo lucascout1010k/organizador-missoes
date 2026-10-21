@@ -1,5 +1,11 @@
 # Decisões Técnicas
 
+## Atualização — 2026-10-21 / 2E.2 — recuperação semântica validada
+
+gemini-embedding-2 stable/768, subject-semantic-memory-v1 e consentimento semantic-memory-consent-v1. pdf-lib recorta em memória, sem texto integral duplicado. Indexação por capability/geração/lease com substituição atômica; cosseno exato top6, ranges mesclados e até 12 páginas. Summaries da 2E.1 complementam perguntas amplas. Resposta Interactions estruturada, store:false, IDs S1…S6 e sem tools. A corretiva executa grants como a role dona; mantém separação de privilégios. HNSW adiado pelo volume pequeno.
+
+Evidências, arquitetura, custo, segurança e limites em [2E.2 — validação](../2e2-validacao.md). Entradas anteriores são históricas; esta atualização define o estado atual.
+
 ## Atualização — 2026-10-21 / 2E.1 — memória acadêmica da matéria
 
 PDF individual = fonte; analysis = conhecimento persistido; subject memory = visão acumulada. DTO explícito server-only, derivações determinísticas e nenhuma chamada ao provider durante renderização. Consultas em lote por matéria/material/análise/vínculo, sem N+1; até sete consultas de dados na visão preenchida, quantidade independente do número de materiais. Resumo limitado a 420 caracteres, cinco tópicos no último conteúdo, 12 tópicos iniciais e 16 keywords; demais tópicos por expansão. Resultados inválidos não alimentam conhecimento. Falhas de leitura não simulam memória vazia. Detalhe do material revalida ownership e pertencimento à matéria antes de carregar a análise completa.

@@ -1,0 +1,12 @@
+.panel { padding: 20px; margin: 20px 0; border: 1px solid #293e56; border-radius: 14px; background: linear-gradient(130deg,#10243b,#0b1b2d); color: #e9f2ff; overflow-wrap: anywhere; }
+.panel h2 { font-size: 20px; font-weight: 700; margin: 0 0 12px; }
+.panel p { font-size: 14px; color: #aabdd3; line-height: 1.7; }
+.panel form label { display: block; font-size: 14px; margin-bottom: 8px; color: #d6e7fa; }
+.question { display: block; width: 100%; min-height: 84px; padding: 12px; margin-bottom: 12px; border-radius: 8px; background: #091a2c; color: #e9f2ff; border: 1px solid #385478; resize: vertical; }
+.question:focus-visible { outline: 2px solid #79baff; outline-offset: 3px; }
+.answer { margin-top: 18px; overflow-wrap: anywhere; }
+.answer h3 { font-size: 18px; font-weight: 700; margin: 0 0 12px; }
+.answer h4 { font-weight: 700; margin: 16px 0 8px; }
+.answer a { color: #9acbff; text-decoration: underline; display: inline-block; padding: 8px 0; }
+.answerText { white-space: pre-wrap; }
+@media(max-width:480px) { .panel { padding: 16px; } }

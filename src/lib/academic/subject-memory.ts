@@ -64,6 +64,12 @@ export function consolidateSubjectMemory(
   const studiedTopics = uniqueAcademicTerms(valid.flatMap(item => item.result.topics.map(topic => topic.title)));
   const keywords = uniqueAcademicTerms(valid.flatMap(item => item.result.keywords));
   const latest = valid[0];
+  const summaryByMaterial = new Map<string, { materialId: string; title: string; summary: string }>();
+  for (const item of valid) {
+    if (!summaryByMaterial.has(item.row.material_id)) summaryByMaterial.set(item.row.material_id, {
+      materialId: item.row.material_id, title: visible.get(item.row.material_id)!.title, summary: item.result.summary.slice(0, 400),
+    });
+  }
   const items: MemoryMaterial[] = [...visible.values()].map(row => ({
     id: row.id, title: row.title, originalFilename: row.original_filename, sizeBytes: row.size_bytes,
     createdAt: row.created_at, fileStatus: row.file_status,
@@ -72,6 +78,7 @@ export function consolidateSubjectMemory(
     analysisStatus: completedMaterials.has(row.id) ? "completed" : states.get(row.id) ?? "not_analyzed",
   }));
   return {
+    studiedSummaries: [...summaryByMaterial.values()].slice(0, 30),
     stats: {
       materials: items.length, analyzed: completedMaterials.size,
       awaitingAnalysis: items.filter(item => item.fileStatus === "ready" && item.analysisStatus === "not_analyzed").length,
@@ -93,6 +100,7 @@ export function consolidateSubjectMemory(
 }
 
 export type SubjectAcademicMemory = {
+  studiedSummaries: { materialId: string; title: string; summary: string }[];
   subject: Subject; period: AcademicPeriod | null; courseName: string; currentTime: string;
   stats: { materials: number; analyzed: number; awaitingAnalysis: number; studiedTopics: number;
     pendingMissions: number; completedMissions: number; suggestedMissions: number; createdMissions: number };

@@ -78,3 +78,16 @@ export async function settleAcademicAnalysis(
   const timer = setTimeout(() => { try { query.cancel(); } catch { /* Sanitized by caller. */ } }, 8_000);
   try { await query; } finally { clearTimeout(timer); }
 }
+
+export async function settleSemanticIndex(materialId: string, generation: number, token: string, evidence?: { pageCount: number; chunks: unknown[] }) {
+  const sql = evidence ? "select app_semantic_private.settle_index($1::uuid,$2::bigint,$3::text,$4::integer,$5::jsonb)"
+    : "select app_semantic_private.fail_index($1::uuid,$2::bigint,$3::text)";
+  const query = getDatabase().unsafe(sql, evidence ? [materialId, generation, token, evidence.pageCount, getDatabase().json(evidence.chunks as postgres.JSONValue)] : [materialId, generation, token]);
+  const timer = setTimeout(() => { try { query.cancel(); } catch {} }, 8000);
+  try { await query; } finally { clearTimeout(timer); }
+}
+export async function finishSemanticQuestion(subjectId: string, token: string) {
+  const query = getDatabase().unsafe("select app_semantic_private.finish_question($1::uuid,$2::text)", [subjectId, token]);
+  const timer = setTimeout(() => { try { query.cancel(); } catch {} }, 8000);
+  try { await query; } finally { clearTimeout(timer); }
+}

@@ -1,5 +1,11 @@
 # Pendências
 
+## Atualização — 2026-10-21 / 2E.2 — recuperação semântica validada
+
+Gates obrigatórios 2E.2 aprovados: migrations, retrieval remoto, grounding/not_found/hostile gemini-3.8-flash, runtime integrado, A/B por roles SQL, cleanup zero e verificações locais. Provider teve 503 intermitente, ainda pode ficar indisponível; sem fallback/troca de modelo/retry automático. Persistem cinco HIGH DEV preexistentes (produção zero) e avisos anteriores do Supabase. Dados reais não indexados: inclusão futura depende de consentimento explícito do usuário.
+
+Evidências, arquitetura, custo, segurança e limites em [2E.2 — validação](../2e2-validacao.md). Entradas anteriores são históricas; esta atualização define o estado atual.
+
 ## Atualização — 2026-10-21 / 2E.1 — memória acadêmica da matéria
 
 2E.1 não adiciona embeddings, pgvector, RAG, chat, análise em lote/automática, resumo global recorrente ou agenda recorrente. A 2E.2 será recuperação semântica futura, dependente de nova autorização. Permanecem cinco HIGH DEV preexistentes (cadeia ESLint/fast-glob/micromatch/braces); audit de produção zero. npm sugere downgrade incompatível para eslint-config-next 14.2.35, não aplicado. Normalização de termos é conservadora: trim/NFC/espaços/case-insensitive, sem fundir plurais ou conceitos por heurística.

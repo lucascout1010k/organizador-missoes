@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 
 import { SubjectDetail } from "@/components/faculty/subject-detail";
 import { getSubjectAcademicMemory } from "@/lib/academic/subject-memory";
+import { getSubjectSemanticStatus } from "@/lib/academic/semantic/service";
 import { readId } from "@/lib/academic/validation";
 
 export default async function SubjectPage({ params }: { params: Promise<{ id: string }> }) {
@@ -10,5 +11,6 @@ export default async function SubjectPage({ params }: { params: Promise<{ id: st
   if (!id) notFound();
 
   const memory = await getSubjectAcademicMemory(id);
-  return <SubjectDetail {...memory} memory={memory} materials={{ items: memory.materials, unavailable: false }} />;
+  const semantic = await getSubjectSemanticStatus(id).catch(() => null);
+  return <SubjectDetail {...memory} memory={memory} semanticUnavailable={semantic === null} searchableMaterials={semantic?.filter(item => item.status === "ready").length ?? 0} materials={{ items: memory.materials, unavailable: false }} />;
 }

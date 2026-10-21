@@ -1,5 +1,11 @@
 # Faculdade
 
+## Atualização — 2026-10-21 / 2E.2 — recuperação semântica validada
+
+Perguntar à matéria mostra cobertura indexada/total, resposta com título/páginas e limitações. Adicionar à memória pesquisável exige consentimento separado no detalhe de qualquer PDF próprio READY; análise anterior preservada. Janelas 4 páginas/overlap1, até 120 páginas/40 chunks e 6 MiB. Perguntas até 600 caracteres, contexto até 12 páginas, sem histórico. UI integrada desktop/mobile, upload → ready, indexação, pergunta e exclusão aprovados com fixture independente; dados reais mostram 0/6 pesquisáveis.
+
+Evidências, arquitetura, custo, segurança e limites em [2E.2 — validação](../2e2-validacao.md). Entradas anteriores são históricas; esta atualização define o estado atual.
+
 ## Atualização — 2026-10-21 / 2E.1 — memória acadêmica da matéria
 
 A matéria agora prioriza Memória acadêmica, contadores reais de materiais/analisados/tópicos/pendências, O que você já viu, último conteúdo, palavras-chave limitadas e materiais aguardando análise. Análises completas saem da listagem e ficam em /faculdade/materias/[id]/materiais/[materialId], com PDF, resumo, tópicos, keywords, exercícios, sugestões, limitações e missões criadas. Lista compacta navega por material e exibe estado de arquivo e análise. Upload começa recolhido (+ Enviar PDF), recolhe em ready e mantém aula relacionada opcional. Aulas exibem links dos PDFs efetivamente vinculados. Próxima aula deriva somente de class_sessions planned futura.

@@ -1,5 +1,11 @@
 # Segurança
 
+## Atualização — 2026-10-21 / 2E.2 — recuperação semântica validada
+
+Tabelas vetoriais sem CRUD para browser/validator, RLS/FORCE e executor NOLOGIN/NOBYPASSRLS. Claims/ownership nas RPCs; settlement privado por token/geração/lease. Corretiva de grants aplicada pela role dona das funções; anon efetivamente negado. A/B remoto em roles SQL e runtime TLS autenticado aprovados. PDF hostil real não induziu nota, secrets, tools ou ações. Nenhuma service_role nova, vetor/path/secret no DTO, nem histórico persistente.
+
+Evidências, arquitetura, custo, segurança e limites em [2E.2 — validação](../2e2-validacao.md). Entradas anteriores são históricas; esta atualização define o estado atual.
+
 ## Atualização — 2026-10-20 / 3A concluída, publicação autorizada
 
 Conclusão recebe somente objeto estrito {missionId}; valida UUID, reexecuta getClaims, deriva userId e inclui owner em leitura e UPDATE condicional. Payloads user_id/status/completed_at/extra falham. RLS/FORCE e grants próprios preexistentes foram auditados remotamente e preservados. Não owner/anon/inexistente negados; sem service_role nova ou secrets no DTO. A fronteira segura é a Server Action; CRUD REST próprio anterior continua existindo e não se afirma timestamp inviolável global.

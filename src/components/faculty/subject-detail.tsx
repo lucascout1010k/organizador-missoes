@@ -10,6 +10,7 @@ import type { MaterialItem } from "@/lib/academic/materials/management";
 import type { AnalysisView } from "@/lib/academic/materials/analysis-schema";
 import type { SubjectAcademicMemory, MemoryMaterial } from "@/lib/academic/subject-memory";
 import { SubjectMemory } from "./subject-memory";
+import { AskSubjectMemory } from "@/components/academic/semantic-memory";
 import { StatusBadge } from "@/components/academic/status-badge";
 import { AppIcon, type AppIconName } from "@/components/ui/app-icon";
 import type { AcademicPeriod, ClassSession, Exam, Subject } from "@/lib/academic/types";
@@ -359,6 +360,8 @@ function SubjectActions({ subject }: { subject: Subject }) {
 }
 
 export function SubjectDetail({
+  searchableMaterials = 0,
+  semanticUnavailable = false,
   memory,
   materials = { items: [], unavailable: false },
   classes,
@@ -369,6 +372,8 @@ export function SubjectDetail({
   subject,
 }: {
   memory?: SubjectAcademicMemory;
+  searchableMaterials?: number;
+  semanticUnavailable?: boolean;
   materials?: { items: (MaterialItem | MemoryMaterial)[]; unavailable: boolean; analyses?: Record<string, AnalysisView> };
   classes: ClassSession[];
   courseName: string;
@@ -390,6 +395,7 @@ export function SubjectDetail({
       <SubjectHeader courseName={courseName} period={period} subject={subject} />
       <SubjectTabs classesCount={classes.length} examsCount={exams.length} />
       {memory ? <SubjectMemory memory={memory} /> : null}
+      {memory ? <AskSubjectMemory subjectId={subject.id} indexed={searchableMaterials} total={memory.stats.materials} unavailable={semanticUnavailable} /> : null}
       <div className={styles.dashboardGrid}>
         <SubjectSummary classes={classes} exams={exams} nextClass={nextClass} />
         <SubjectClasses classes={classes} currentTime={currentTime} nextClass={nextClass} materials={memory?.materials} />

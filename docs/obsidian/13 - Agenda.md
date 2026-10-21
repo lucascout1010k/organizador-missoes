@@ -1,5 +1,11 @@
 # Agenda
 
+## Atualização — 2026-10-21 / 2E.2 — recuperação semântica validada
+
+2E.2 permanece limitada à matéria escolhida. Sem Agenda 3B, recorrência, push, replanejamento, pesquisa cruzada ou alterações em aulas/provas/missões. Sources apontam somente para materiais próprios recuperados.
+
+Evidências, arquitetura, custo, segurança e limites em [2E.2 — validação](../2e2-validacao.md). Entradas anteriores são históricas; esta atualização define o estado atual.
+
 ## Atualização — 2026-10-21 / 2E.1 — memória acadêmica da matéria
 
 A próxima aula da memória acadêmica usa somente data e status persistidos de class_sessions, sem recorrência inferida ou criação por filename. Sem aula futura cadastrada, o painel informa a ausência. Pendências relacionadas aparecem em resumo; a matéria não implementa uma nova Agenda. Recorrência semanal continua fora da 2E.1.

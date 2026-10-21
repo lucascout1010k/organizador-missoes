@@ -1,5 +1,11 @@
 # Histórico
 
+## Atualização — 2026-10-21 / 2E.2 — recuperação semântica validada
+
+2026-10-21 — 2E.2 validada: schema/pgvector, indexação explícita, perguntas, fontes e cobertura. 629 testes; Supabase reconectado, duas migrations aplicadas, A/B/anon/leases/atomicidade/deletion e retrieval real aprovados. gemini-3.8-flash passou grounding/not_found/hostile após 503; UI integrada com PDF fictício também passou. Desktop/mobile, gates e cleanup zero conferidos; nenhum PDF real reenviado, analisado ou indexado. Arquitetura/modelo preservados.
+
+Evidências, arquitetura, custo, segurança e limites em [2E.2 — validação](../2e2-validacao.md). Entradas anteriores são históricas; esta atualização define o estado atual.
+
 ## Atualização — 2026-10-21 / 2E.1 — memória acadêmica da matéria
 
 2026-10-21 — 2E.1: memória acadêmica da matéria derivada de analyses completed persistidas, DTO mínimo server-side, tópicos/keywords acumulados, último conteúdo, métricas honestas e pendências com proveniência real. Lista compacta, rota própria de material, upload recolhível e navegação de aulas para PDFs vinculados. Sem migration ou custo de provider em page load. Dados reais usados somente em leitura; fixtures SQL com rollback e fixture visual temporária removida. 2E.2 permanece recuperação semântica futura.

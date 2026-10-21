@@ -1,5 +1,11 @@
 # Banco de Dados
 
+## Atualização — 2026-10-21 / 2E.2 — recuperação semântica validada
+
+pgvector 0.8.2 em extensions; migrations 20261021213831_memoria_semantica_materia e 20261021214012_corrigir_grants_memoria_semantica aplicadas e alinhadas ao histórico remoto. academic_material_semantic_indexes/chunks armazenam metadados/páginas/vector(768), sem texto integral. question_gates privado guarda hashes/timestamps. RPC cosseno exata top6 e trigger de cleanup; RLS/FORCE/grants conferidos. Leases, geração antiga, plano incompleto e rollback remoto aprovados. Zero fixtures após cleanup.
+
+Evidências, arquitetura, custo, segurança e limites em [2E.2 — validação](../2e2-validacao.md). Entradas anteriores são históricas; esta atualização define o estado atual.
+
 ## Atualização — 2026-10-21 / 2E.1 — memória acadêmica da matéria
 
 Nenhuma migration ou tabela nova. getSubjectAcademicMemory usa subjects/class_sessions/exams e as tabelas existentes academic_materials, academic_material_analyses, academic_analysis_mission_links e missions. Todas as consultas são autenticadas e filtradas por proprietário; materiais excluídos ficam ocultos. Resultados completed de schema_version=1 são revalidados por Zod. class_session_id permanece opcional e compatível por FK; nenhum vínculo é inferido de filename. RLS/FORCE/grants foram preservados e conferidos no banco real.

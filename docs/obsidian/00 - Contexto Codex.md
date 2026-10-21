@@ -1,5 +1,11 @@
 # Contexto Codex
 
+## Atualização — 2026-10-21 / 2E.2 — recuperação semântica validada
+
+2E.2 implementa memória consultável por matéria: PDF privado → janelas 4/overlap1 → gemini-embedding-2 (768) → pgvector → pergunta → páginas relevantes → gemini-3.8-flash com fontes. Consentimento semantic-memory-consent-v1 separado, sem reupload nem reanálise. Migrations e runtime remoto aprovados; grounding/not_found/hostile reais e smoke integrado passaram após 503 temporários. Seis PDFs reais preservados, zero indexados automaticamente.
+
+Evidências, arquitetura, custo, segurança e limites em [2E.2 — validação](../2e2-validacao.md). Entradas anteriores são históricas; esta atualização define o estado atual.
+
 ## Atualização — 2026-10-21 / 2E.1 — memória acadêmica da matéria
 
 2E.1 implementa a memória acadêmica persistente por matéria: PDF individual = fonte; analysis completed validada = conhecimento persistido; subject memory = visão acumulada determinística. A página lê o banco e não chama Gemini no carregamento/refresh. Detalhes completos ficam no material; a memória cobre somente o que foi analisado. Sem migration, cache, embeddings ou criação automática de aulas/missões. A 2E.2 continua reservada à recuperação semântica futura.

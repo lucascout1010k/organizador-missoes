@@ -1,5 +1,11 @@
 # Dashboard Hoje
 
+## Atualização — 2026-10-21 / 2E.2 — recuperação semântica validada
+
+2E.2 acrescenta perguntas dentro de uma matéria. Dashboard Hoje, foco diário e transições de missions permanecem no fluxo 3A. Cobertura pesquisável é separada da quantidade analisada/concluída. Navegação e refresh não chamam o provider; resposta fica apenas na sessão React.
+
+Evidências, arquitetura, custo, segurança e limites em [2E.2 — validação](../2e2-validacao.md). Entradas anteriores são históricas; esta atualização define o estado atual.
+
 ## Atualização — 2026-10-21 / 2E.1 — memória acadêmica da matéria
 
 A memória da matéria apenas oferece navegação ao foco de hoje; não substitui nem duplica sua lógica. Dashboard, conclusão idempotente e classificação America/Sao_Paulo foram preservados. Missões relacionadas sem data continuam visíveis na memória acadêmica, mesmo quando ficam fora do foco diário.

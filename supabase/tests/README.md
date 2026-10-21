@@ -45,3 +45,7 @@ Executar runtime uma vez; ele insere apenas missões de namespace controlado `3a
 Após os testes, encerrar sessões, remover as duas contas somente depois de conferir UUID **e** e-mail fictícios e verificar ausência em users/identities/sessions/missions/dados acadêmicos/materials/analyses/links/Storage. Apagar o arquivo temporário com credenciais. Não versionar fixtures ou capturas. Detalhes e limites em [3A — validação](../../docs/3a-validacao.md).
 
 ---
+
+## Memória semântica — 2E.2
+
+`semantic-memory-rollback.sql` é um teste remoto explícito, executado inteiro pelo administrador de migrations após as duas migrations 2E.2. Cria dois auth.users fictícios em transação e simula claims/roles SQL A/B/anon; não cria sessões GoTrue nem chama provider. Testa consentimento, isolamento nos dois sentidos, ausência de vetores/CRUD/settlement no browser, leases/retry/geração antiga, plano incompleto atômico, estado failed, matching e exclusão. Settlement lógico roda como o executor dono; grants do validator foram conferidos separadamente e a conexão TLS real foi exercitada no smoke pela UI. IDs sintéticos colidentes falham no INSERT; todos os dados sofrem ROLLBACK. Não executar trechos isolados. Evidências e limites em [2E.2 — validação](../../docs/2e2-validacao.md).
