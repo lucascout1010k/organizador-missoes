@@ -1,5 +1,11 @@
 # Contexto Codex
 
+## Atualização — 2026-10-21 / 2E.1 — memória acadêmica da matéria
+
+2E.1 implementa a memória acadêmica persistente por matéria: PDF individual = fonte; analysis completed validada = conhecimento persistido; subject memory = visão acumulada determinística. A página lê o banco e não chama Gemini no carregamento/refresh. Detalhes completos ficam no material; a memória cobre somente o que foi analisado. Sem migration, cache, embeddings ou criação automática de aulas/missões. A 2E.2 continua reservada à recuperação semântica futura.
+
+Validação e limites da rodada em [2E.1 — validação](../2e1-validacao.md). As entradas anteriores abaixo são históricas; esta atualização define o estado atual.
+
 ## Atualização — 2026-10-20 / 3A concluída, publicação autorizada
 
 3A implementada e validada: a home agora consome public.missions, com grupos Atrasadas/Hoje/Concluídas hoje, progresso real e conclusão segura/idempotente sem F5. America/Sao_Paulo preserva a estratégia existente. Backlog sem data e missões futuras ficam fora do foco diário; 2D.4 continua criando somente missões sem datas automáticas. Faculdade/PDF/IA, Auth e RLS permanecem intactos. Nenhuma migration.

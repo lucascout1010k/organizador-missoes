@@ -1,5 +1,11 @@
 # Faculdade
 
+## Atualização — 2026-10-21 / 2E.1 — memória acadêmica da matéria
+
+A matéria agora prioriza Memória acadêmica, contadores reais de materiais/analisados/tópicos/pendências, O que você já viu, último conteúdo, palavras-chave limitadas e materiais aguardando análise. Análises completas saem da listagem e ficam em /faculdade/materias/[id]/materiais/[materialId], com PDF, resumo, tópicos, keywords, exercícios, sugestões, limitações e missões criadas. Lista compacta navega por material e exibe estado de arquivo e análise. Upload começa recolhido (+ Enviar PDF), recolhe em ready e mantém aula relacionada opcional. Aulas exibem links dos PDFs efetivamente vinculados. Próxima aula deriva somente de class_sessions planned futura.
+
+Validação e limites da rodada em [2E.1 — validação](../2e1-validacao.md). As entradas anteriores abaixo são históricas; esta atualização define o estado atual.
+
 ## Atualização — 2026-10-20 / 2D.4 concluída
 
 A seção Sugestões de estudo agora oferece seleção real, revisão de quatro campos, confirmação e feedback por item. Carregar/selecionar/revisar não cria missão nem chama Gemini. Depois de converter, o DTO carrega vínculos próprios e a UI mantém Adicionada às missões após refresh. Material deleted/deleting ou análise não completed falham de forma fechada. Layout desktop/mobile, labels, teclado, foco e ausência de overflow foram verificados no build de produção; nenhum PDF acadêmico real foi usado como fixture.

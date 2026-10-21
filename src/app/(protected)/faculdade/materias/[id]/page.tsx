@@ -1,9 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { SubjectDetail } from "@/components/faculty/subject-detail";
-import { getSubjectPage } from "@/lib/academic/data";
-import { listOwnedMaterials } from "@/lib/academic/materials/management";
-import { listAcademicAnalysisViews } from "@/lib/academic/materials/analysis";
+import { getSubjectAcademicMemory } from "@/lib/academic/subject-memory";
 import { readId } from "@/lib/academic/validation";
 
 export default async function SubjectPage({ params }: { params: Promise<{ id: string }> }) {
@@ -11,8 +9,6 @@ export default async function SubjectPage({ params }: { params: Promise<{ id: st
   const id = readId(rawId);
   if (!id) notFound();
 
-  const [subjectPage, materials] = await Promise.all([getSubjectPage(id), listOwnedMaterials(id)]);
-
-  const analyses = await listAcademicAnalysisViews(materials.items.map(material => material.id));
-  return <SubjectDetail {...subjectPage} materials={{ ...materials, analyses }} />;
+  const memory = await getSubjectAcademicMemory(id);
+  return <SubjectDetail {...memory} memory={memory} materials={{ items: memory.materials, unavailable: false }} />;
 }

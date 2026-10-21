@@ -8,6 +8,8 @@ import { MaterialUploadForm } from "@/components/academic/material-upload-form";
 import { MaterialList } from "@/components/academic/material-list";
 import type { MaterialItem } from "@/lib/academic/materials/management";
 import type { AnalysisView } from "@/lib/academic/materials/analysis-schema";
+import type { SubjectAcademicMemory, MemoryMaterial } from "@/lib/academic/subject-memory";
+import { SubjectMemory } from "./subject-memory";
 import { StatusBadge } from "@/components/academic/status-badge";
 import { AppIcon, type AppIconName } from "@/components/ui/app-icon";
 import type { AcademicPeriod, ClassSession, Exam, Subject } from "@/lib/academic/types";
@@ -196,7 +198,14 @@ function SubjectSummary({
   );
 }
 
-function SubjectClasses({ classes, currentTime, nextClass }: { classes: ClassSession[]; currentTime: string; nextClass?: ClassSession }) {
+function SubjectClasses({ classes, currentTime, nextClass, materials = [] }: { classes: ClassSession[]; currentTime: string; nextClass?: ClassSession; materials?: MemoryMaterial[] }) {
+  const classMaterials = new Map<string, MemoryMaterial[]>();
+  for (const material of materials) {
+    if (!material.classSessionId) continue;
+    const group = classMaterials.get(material.classSessionId) ?? [];
+    group.push(material);
+    classMaterials.set(material.classSessionId, group);
+  }
   const nextTime = nextClass ? new Date(nextClass.class_date).getTime() : null;
   const currentTimestamp = new Date(currentTime).getTime();
   const orderedClasses = [...classes].sort((left, right) => {
@@ -236,8 +245,9 @@ function SubjectClasses({ classes, currentTime, nextClass }: { classes: ClassSes
                   {classSession.notes ? <p className={styles.notes}>{classSession.notes}</p> : <p className={styles.muted}>Sem notas cadastradas.</p>}
                   <div className={styles.futureMaterials}>
                     <span><AppIcon name="projects" size={14} />Materiais da aula</span>
-                    <small>Disponível em uma etapa futura</small>
+                    <small>{plural(classMaterials.get(classSession.id)?.length ?? 0, "material vinculado", "materiais vinculados")}</small>
                   </div>
+                  {classMaterials.has(classSession.id) ? <ul className={styles.topicList}>{classMaterials.get(classSession.id)!.map(material => <li key={material.id}><Link href={`/faculdade/materias/${classSession.subject_id}/materiais/${material.id}`}>{material.title}</Link></li>)}</ul> : null}
                   <details className={styles.inlineEdit}>
                     <summary>Editar aula <AppIcon name="chevron" size={13} /></summary>
                     <div className={styles.formArea}><ClassSessionForm classSession={classSession} subjectId={classSession.subject_id} /></div>
@@ -349,6 +359,7 @@ function SubjectActions({ subject }: { subject: Subject }) {
 }
 
 export function SubjectDetail({
+  memory,
   materials = { items: [], unavailable: false },
   classes,
   courseName,
@@ -357,7 +368,8 @@ export function SubjectDetail({
   period,
   subject,
 }: {
-  materials?: { items: MaterialItem[]; unavailable: boolean; analyses?: Record<string, AnalysisView> };
+  memory?: SubjectAcademicMemory;
+  materials?: { items: (MaterialItem | MemoryMaterial)[]; unavailable: boolean; analyses?: Record<string, AnalysisView> };
   classes: ClassSession[];
   courseName: string;
   currentTime: string;
@@ -377,9 +389,10 @@ export function SubjectDetail({
     <main className={styles.page}>
       <SubjectHeader courseName={courseName} period={period} subject={subject} />
       <SubjectTabs classesCount={classes.length} examsCount={exams.length} />
+      {memory ? <SubjectMemory memory={memory} /> : null}
       <div className={styles.dashboardGrid}>
         <SubjectSummary classes={classes} exams={exams} nextClass={nextClass} />
-        <SubjectClasses classes={classes} currentTime={currentTime} nextClass={nextClass} />
+        <SubjectClasses classes={classes} currentTime={currentTime} nextClass={nextClass} materials={memory?.materials} />
         <SubjectUpcomingExam currentTime={currentTime} exam={nextExam} subjectId={subject.id} />
         <SubjectActions subject={subject} />
         <SubjectExams exams={exams} nextExam={nextExam} subjectId={subject.id} />
@@ -394,7 +407,7 @@ export function SubjectDetail({
           reportFailureAction={reportMaterialUploadFailure}
           subjectId={subject.id}
         />
-        <MaterialList {...materials} />
+        <MaterialList {...materials} subjectId={subject.id} />
       </section>
     </main>
   );

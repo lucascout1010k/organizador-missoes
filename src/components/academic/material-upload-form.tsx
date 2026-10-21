@@ -37,6 +37,8 @@ export function MaterialUploadForm({
   const router = useRouter();
   const id = useId();
   const [file, setFile] = useState<File | null>(null);
+  const [expanded, setExpanded] = useState(false);
+  const uploadTrigger = useRef<HTMLButtonElement>(null);
   const [title, setTitle] = useState("");
   const [classSessionId, setClassSessionId] = useState("");
   const [feedback, setFeedback] = useState<MaterialUploadFeedback>({
@@ -58,7 +60,13 @@ export function MaterialUploadForm({
         reportFailure: reportFailureAction,
         finalize: finalizeAction,
         createClient,
-        onFeedback: setFeedback,
+        onFeedback: (value) => {
+          setFeedback(value);
+          if (value.state === "ready") {
+            setExpanded(false);
+            requestAnimationFrame(() => uploadTrigger.current?.focus());
+          }
+        },
       });
     }
     const flow = controller.current;
@@ -68,8 +76,18 @@ export function MaterialUploadForm({
     });
   }
 
+  function resetUpload() {
+    form.current?.reset(); controller.current = null; setFile(null); setTitle(""); setClassSessionId("");
+    setFeedback({ state: "idle", message: "Selecione um PDF de até 6 MiB.", blocked: false });
+  }
+
   return (
-    <form aria-label="Enviar PDF da matéria" aria-busy={busy} className={styles.form} onSubmit={handleSubmit} ref={form}>
+    <div>
+    <button aria-expanded={expanded} aria-controls={`${id}-upload`} className={styles.button} disabled={busy} ref={uploadTrigger} onClick={() => {
+      if (!expanded && feedback.state === "ready") resetUpload();
+      setExpanded(value => !value);
+    }} type="button">{expanded ? "Recolher envio" : "+ Enviar PDF"}</button>
+    <form hidden={!expanded} id={`${id}-upload`} aria-label="Enviar PDF da matéria" aria-busy={busy} className={styles.form} onSubmit={handleSubmit} ref={form}>
       <p className={styles.notice} id={`${id}-notice`}>
         Após o envio, o servidor confere o tamanho e a assinatura do PDF antes de liberar o material.
       </p>
@@ -96,7 +114,7 @@ export function MaterialUploadForm({
         </label>
         {classes.length > 0 ? (
           <label className={styles.field} htmlFor={`${id}-class`}>
-            Aula (opcional)
+            Aula relacionada (opcional)
             <select id={`${id}-class`} onChange={(event) => setClassSessionId(event.currentTarget.value)} value={classSessionId}>
               <option value="">Sem aula específica</option>
               {classes.map((classSession) => <option key={classSession.id} value={classSession.id}>{classSession.title}</option>)}
@@ -116,5 +134,7 @@ export function MaterialUploadForm({
         {feedback.state === "auth_required" ? <Link href="/login">Entrar novamente</Link> : null}
       </div>
     </form>
+    {!expanded && feedback.state === "ready" ? <p role="status">{feedback.message}</p> : null}
+    </div>
   );
 }

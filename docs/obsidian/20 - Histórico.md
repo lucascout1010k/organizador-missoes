@@ -1,5 +1,11 @@
 # Histórico
 
+## Atualização — 2026-10-21 / 2E.1 — memória acadêmica da matéria
+
+2026-10-21 — 2E.1: memória acadêmica da matéria derivada de analyses completed persistidas, DTO mínimo server-side, tópicos/keywords acumulados, último conteúdo, métricas honestas e pendências com proveniência real. Lista compacta, rota própria de material, upload recolhível e navegação de aulas para PDFs vinculados. Sem migration ou custo de provider em page load. Dados reais usados somente em leitura; fixtures SQL com rollback e fixture visual temporária removida. 2E.2 permanece recuperação semântica futura.
+
+Validação e limites da rodada em [2E.1 — validação](../2e1-validacao.md). As entradas anteriores abaixo são históricas; esta atualização define o estado atual.
+
 ## Atualização — 2026-10-20 / 3A concluída, publicação autorizada
 
 2026-10-20 — 3A implementada e validada: missions na home, fuso diário explícito, atrasadas/hoje/concluídas, prioridade/origem/duração, progresso real, conclusão segura/idempotente, feedback/refresh, mobile/teclado. 547 testes locais (51 novos), 42 checks runtime A/B e 53 Chrome finais. Cleanup remoto zero; nenhuma migration. Publicação em origin/main autorizada explicitamente pelo usuário, com exceção documentada para os 5 HIGH DEV preexistentes e não resolvidos; audit de produção zero.

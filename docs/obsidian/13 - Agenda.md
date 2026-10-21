@@ -1,5 +1,11 @@
 # Agenda
 
+## Atualização — 2026-10-21 / 2E.1 — memória acadêmica da matéria
+
+A próxima aula da memória acadêmica usa somente data e status persistidos de class_sessions, sem recorrência inferida ou criação por filename. Sem aula futura cadastrada, o painel informa a ausência. Pendências relacionadas aparecem em resumo; a matéria não implementa uma nova Agenda. Recorrência semanal continua fora da 2E.1.
+
+Validação e limites da rodada em [2E.1 — validação](../2e1-validacao.md). As entradas anteriores abaixo são históricas; esta atualização define o estado atual.
+
 ## Atualização — 2026-10-20 / 3A concluída, publicação autorizada
 
 A 3A implementa somente o consumidor diário na home; WeekAgenda continua visualização de provas. Agenda completa, planejamento de datas, backlog, reabertura, calendário, drag/drop e replanejamento ficam para 3B/etapas autorizadas. scheduled_for e due_at existentes alimentam o foco diário; conversões 2D.4 continuam sem data. Não há estrutura paralela de compromissos.

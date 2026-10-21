@@ -1,5 +1,11 @@
 # Missões
 
+## Atualização — 2026-10-21 / 2E.1 — memória acadêmica da matéria
+
+A memória da matéria lista pendências pelos vínculos reais analysis → material → mission da 2D.4 e pelas origens subject/class_session/exam compatíveis. Não compara títulos. Mostra contadores de pendentes/concluídas e até cinco pendências; completed não é pendente. Tombstones sem mission_id não recriam missões. Sugestões e sua revisão/confirmação continuam no detalhe do material; nenhuma missão é criada ao abrir matéria ou material.
+
+Validação e limites da rodada em [2E.1 — validação](../2e1-validacao.md). As entradas anteriores abaixo são históricas; esta atualização define o estado atual.
+
 ## Atualização — 2026-10-20 / 3A concluída, publicação autorizada
 
 Dashboard é consumidor real de missions. planned/in_progress/postponed podem ser concluídas; missed fica no histórico e não entra no foco/transição. Conclusão grava completed_at server-side e é idempotente. Não havia fluxo seguro de reabertura: desfazer fica para etapa própria. Missões sem data, inclusive conversões 2D.4, permanecem backlog; nenhuma data automática ou cópia no Dashboard.

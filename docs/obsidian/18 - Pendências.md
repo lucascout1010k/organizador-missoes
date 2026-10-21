@@ -1,5 +1,11 @@
 # Pendências
 
+## Atualização — 2026-10-21 / 2E.1 — memória acadêmica da matéria
+
+2E.1 não adiciona embeddings, pgvector, RAG, chat, análise em lote/automática, resumo global recorrente ou agenda recorrente. A 2E.2 será recuperação semântica futura, dependente de nova autorização. Permanecem cinco HIGH DEV preexistentes (cadeia ESLint/fast-glob/micromatch/braces); audit de produção zero. npm sugere downgrade incompatível para eslint-config-next 14.2.35, não aplicado. Normalização de termos é conservadora: trim/NFC/espaços/case-insensitive, sem fundir plurais ou conceitos por heurística.
+
+Validação e limites da rodada em [2E.1 — validação](../2e1-validacao.md). As entradas anteriores abaixo são históricas; esta atualização define o estado atual.
+
 ## Atualização — 2026-10-20 / 3A concluída, publicação autorizada
 
 3A implementada e validada. Publicação da 3A em origin/main autorizada explicitamente pelo usuário em 2026-10-20, com exceção somente para os mesmos 5 HIGH DEV preexistentes. Os avisos DEV permanecem pendentes e não resolvidos; produção zero. Nenhum upgrade incompatível ou supressão foi aplicado. Cleanup remoto zerado. Permanecem Agenda/backlog/reabertura, Vercel e melhorias Auth anteriores. Chrome emulado passou; não houve iPhone físico/WebKit.

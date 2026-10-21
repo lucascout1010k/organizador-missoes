@@ -93,19 +93,20 @@ export async function analyzeOwnedAcademicMaterial(input: unknown, dependencies:
   }
 }
 
-export async function listAcademicAnalysisViews(materialIds: string[]): Promise<Record<string, AnalysisView>> {
+export async function listAcademicAnalysisViews(materialIds: string[], options: { throwOnError?: boolean } = {}): Promise<Record<string, AnalysisView>> {
   if (!materialIds.length) return {};
   try {
     const context = await getAuthenticatedMaterialsClient();
-    if (!context.ok) return {};
+    if (!context.ok) throw new Error("Analysis unavailable");
     const found = await context.supabase.from("academic_material_analyses")
       .select("id,material_id,status,result").eq("user_id", context.userId).eq("schema_version", 1)
       .in("material_id", materialIds).order("created_at", { ascending: false }).order("id", { ascending: false });
-    if (found.error || !Array.isArray(found.data)) return {};
+    if (found.error || !Array.isArray(found.data)) throw new Error("Analysis unavailable");
+    if (!found.data.length) return {};
     const links = await context.supabase.from("academic_analysis_mission_links")
       .select("analysis_id,suggestion_index,mission_id").eq("user_id", context.userId)
       .in("analysis_id", found.data.map(row => row.id));
-    if (links.error || !Array.isArray(links.data)) return {};
+    if (links.error || !Array.isArray(links.data)) throw new Error("Analysis links unavailable");
     const views: Record<string, AnalysisView> = {};
     for (const row of found.data) {
       if (views[row.material_id] || !["processing", "completed", "failed"].includes(row.status)) continue;
@@ -113,5 +114,8 @@ export async function listAcademicAnalysisViews(materialIds: string[]): Promise<
         suggestionLinks: links.data.filter(link => link.analysis_id === row.id).map(link => ({ suggestionIndex: link.suggestion_index, missionId: link.mission_id })) };
     }
     return views;
-  } catch { return {}; }
+  } catch {
+    if (options.throwOnError) throw new Error("Não foi possível carregar a análise persistida. Tente novamente.");
+    return {};
+  }
 }

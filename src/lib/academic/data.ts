@@ -3,6 +3,7 @@ import "server-only";
 import { notFound, redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
+import { readId } from "./validation";
 
 import type {
   AcademicCourse,
@@ -17,7 +18,7 @@ export async function getAuthenticatedAcademicClient() {
   const { data, error } = await supabase.auth.getClaims();
   const userId = data?.claims?.sub;
 
-  if (error || typeof userId !== "string") redirect("/login");
+  if (error || !readId(userId)) redirect("/login");
   return { supabase, userId };
 }
 
@@ -218,8 +219,8 @@ export async function getPeriodPage(periodId: string) {
   };
 }
 
-export async function getSubjectPage(subjectId: string) {
-  const { supabase, userId } = await getAuthenticatedAcademicClient();
+export async function getSubjectPage(subjectId: string, context?: Awaited<ReturnType<typeof getAuthenticatedAcademicClient>>) {
+  const { supabase, userId } = context ?? await getAuthenticatedAcademicClient();
   const currentTime = new Date().toISOString();
   const [subjectResult, classesResult, examsResult] = await Promise.all([
     supabase

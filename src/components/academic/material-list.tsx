@@ -19,7 +19,7 @@ export function formatMaterialSize(bytes: number) {
   return `${(bytes / (unit === "KiB" ? 1024 : 1048576)).toLocaleString("pt-BR", { maximumFractionDigits: 2 })} ${unit}`;
 }
 
-function MaterialRow({ item, analysis }: { item: MaterialItem; analysis?: AnalysisView }) {
+function MaterialRow({ item, analysis, subjectId, analysisStatus, classTitle }: { item: MaterialItem; analysis?: AnalysisView; subjectId?: string; analysisStatus?: string; classTitle?: string | null }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [confirmation, setConfirmation] = useState(false);
@@ -70,9 +70,12 @@ function MaterialRow({ item, analysis }: { item: MaterialItem; analysis?: Analys
       <p className={styles.filename}>{item.originalFilename}</p>
       <p className={styles.meta}>{formatMaterialSize(item.sizeBytes)} · <time dateTime={item.createdAt}>{new Date(item.createdAt).toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" })}</time></p>
       <span className={styles.badge} data-state={item.fileStatus}>{materialStatusLabels[item.fileStatus]}</span>
+      {ready && subjectId ? <span className={styles.badge}>{analysisStatus === "completed" ? "Analisado" : analysisStatus === "processing" ? "Analisando" : analysisStatus === "failed" ? "Falha na análise" : "Não analisado"}</span> : null}
+      {classTitle ? <p className={styles.meta}>Aula relacionada: {classTitle}</p> : null}
       {item.fileStatus === "upload_failed" ? <p className={styles.hint}>Confira o envio novamente. Se o arquivo não for encontrado, envie um novo PDF.</p> : null}
       {deleting ? <p className={styles.hint}>A remoção está pendente de confirmação.</p> : null}
       <div className={styles.actions}>
+        {ready && subjectId ? <a href={`/faculdade/materias/${subjectId}/materiais/${item.id}`}>{analysisStatus === "completed" ? "Ver análise" : analysisStatus === "processing" ? "Ver andamento" : "Analisar"}</a> : null}
         {ready ? <><button disabled={pending} onClick={() => act("open")} type="button">Abrir</button><button disabled={pending} onClick={() => act("download")} type="button">Baixar</button></> : null}
         {!ready && !deleting ? <button disabled={pending} onClick={() => act("retry")} type="button">Tentar novamente</button> : null}
         {deleting ? <button disabled={pending} onClick={() => act("delete")} type="button">Concluir exclusão</button> : <button className={styles.delete} disabled={pending || confirmation} ref={deleteButton} onClick={() => { setConfirmation(true); requestAnimationFrame(() => cancelButton.current?.focus()); }} type="button">Excluir</button>}
@@ -82,16 +85,16 @@ function MaterialRow({ item, analysis }: { item: MaterialItem; analysis?: Analys
         <div className={styles.actions}><button disabled={pending} onClick={cancel} ref={cancelButton} type="button">Cancelar</button><button className={styles.delete} disabled={pending} onClick={() => act("delete")} type="button">{pending ? "Excluindo…" : "Confirmar exclusão"}</button></div>
       </div> : null}
       <p aria-live="polite" className={styles.feedback} role="status">{pending ? "Aguarde…" : message}</p>
-      {ready ? <MaterialAnalysis analysis={analysis} materialId={item.id} /> : null}
+      {ready && !subjectId ? <MaterialAnalysis analysis={analysis} materialId={item.id} /> : null}
     </div>
   </li>;
 }
 
-export function MaterialList({ items, unavailable, analyses = {} }: { items: MaterialItem[]; unavailable: boolean; analyses?: Record<string, AnalysisView> }) {
+export function MaterialList({ items, unavailable, analyses = {}, subjectId, heading }: { items: (MaterialItem & { analysisStatus?: string; classTitle?: string | null })[]; unavailable: boolean; analyses?: Record<string, AnalysisView>; subjectId?: string; heading?: string }) {
   return <div className={styles.container}>
-    <h2>Seus materiais <span className={styles.count}>{items.length}</span></h2>
+    <h2>{heading ?? <>Seus materiais <span className={styles.count}>{items.length}</span></>}</h2>
     {unavailable ? <p role="status">Não foi possível carregar os materiais. Tente novamente em instantes.</p>
       : items.length === 0 ? <p className={styles.empty}>Seus PDFs aparecerão aqui após o envio. Apenas arquivos validados podem ser abertos.</p>
-      : <ul aria-label="Materiais da matéria" className={styles.list}>{items.map(item => <MaterialRow analysis={analyses[item.id]} item={item} key={item.id} />)}</ul>}
+      : <ul aria-label="Materiais da matéria" className={styles.list}>{items.map(item => <MaterialRow subjectId={subjectId} analysisStatus={item.analysisStatus} classTitle={item.classTitle} analysis={analyses[item.id]} item={item} key={item.id} />)}</ul>}
   </div>;
 }

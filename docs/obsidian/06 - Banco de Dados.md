@@ -1,5 +1,11 @@
 # Banco de Dados
 
+## Atualização — 2026-10-21 / 2E.1 — memória acadêmica da matéria
+
+Nenhuma migration ou tabela nova. getSubjectAcademicMemory usa subjects/class_sessions/exams e as tabelas existentes academic_materials, academic_material_analyses, academic_analysis_mission_links e missions. Todas as consultas são autenticadas e filtradas por proprietário; materiais excluídos ficam ocultos. Resultados completed de schema_version=1 são revalidados por Zod. class_session_id permanece opcional e compatível por FK; nenhum vínculo é inferido de filename. RLS/FORCE/grants foram preservados e conferidos no banco real.
+
+Validação e limites da rodada em [2E.1 — validação](../2e1-validacao.md). As entradas anteriores abaixo são históricas; esta atualização define o estado atual.
+
 ## Atualização — 2026-10-20 / 3A concluída, publicação autorizada
 
 Schema remoto de missions conferido contra migrations: scheduled_for/due_at/completed_at timestamptz, status/priority/category reais, FKs de origem por proprietário, completion_check, índices, trigger, RLS/FORCE e grants. Nenhuma migration/RPC/role/policy/grant nova. Query por owner reúne abertas até fim do dia e completed_at no dia; páginas de 500 evitam truncamento. UPDATE atômico por owner/id/estado/completed_at null preserva primeiro timestamp concorrente.

@@ -1,5 +1,11 @@
 # Decisões Técnicas
 
+## Atualização — 2026-10-21 / 2E.1 — memória acadêmica da matéria
+
+PDF individual = fonte; analysis = conhecimento persistido; subject memory = visão acumulada. DTO explícito server-only, derivações determinísticas e nenhuma chamada ao provider durante renderização. Consultas em lote por matéria/material/análise/vínculo, sem N+1; até sete consultas de dados na visão preenchida, quantidade independente do número de materiais. Resumo limitado a 420 caracteres, cinco tópicos no último conteúdo, 12 tópicos iniciais e 16 keywords; demais tópicos por expansão. Resultados inválidos não alimentam conhecimento. Falhas de leitura não simulam memória vazia. Detalhe do material revalida ownership e pertencimento à matéria antes de carregar a análise completa.
+
+Validação e limites da rodada em [2E.1 — validação](../2e1-validacao.md). As entradas anteriores abaixo são históricas; esta atualização define o estado atual.
+
 ## Atualização — 2026-10-20 / 3A concluída, publicação autorizada
 
 Reutilizar America/Sao_Paulo em vez de inventar sistema de fuso; usar OR entre agendamento/prazo e precedência de atraso; excluir backlog/futuras/missed e concluir somente planned/in_progress/postponed. Denominador inclui atrasadas e trabalho concluído hoje para estabilizar o progresso após concluir. Uma coleta paginada por owner para todos os grupos/contadores; sem joins/N+1. Server Action estrita com compare-and-set e releitura do vencedor resolve retry/duas abas sem migration. Não introduzir reabertura, XP ou Agenda completa.

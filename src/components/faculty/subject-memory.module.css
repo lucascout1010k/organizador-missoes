@@ -1,0 +1,22 @@
+.memory { min-width: 0; margin: 20px 0; color: #ecf3ff; }
+.detail { max-width: 1180px; margin: 0 auto; padding: 28px 20px 90px; overflow-wrap: anywhere; }
+.detail h1 { font-size: clamp(22px, 3vw, 32px); margin: 20px 0 10px; }
+.memory h2 { font-size: 24px; margin: 4px 0; }
+.memory p { color: #a8bad0; font-size: 14px; line-height: 1.65; }
+.eyebrow { color: #83bbff !important; font-size: 11px !important; text-transform: uppercase; letter-spacing: .12em; }
+.metrics { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 12px; margin: 20px 0; }
+.metrics div, .card { background: linear-gradient(130deg,#12253c,#0b1b2d); border: 1px solid #293c55; border-radius: 14px; padding: 20px; min-width: 0; }
+.metrics dt { color: #a8bad0; font-size: 12px; }
+.metrics dd { color: #9de5cd; font-size: 30px; font-weight: 700; margin: 10px 0 0; }
+.grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; }
+.card { overflow-wrap: anywhere; }
+.card h3 { font-size: 17px; margin: 0 0 12px; }
+.card h4 { font-size: 13px; margin: 20px 0 10px; }
+.card ul { padding-left: 20px; line-height: 1.8; font-size: 14px; }
+.card a { color: #95c9ff; display: inline-block; padding: 10px 0; }
+.card summary { color: #b1cef0; cursor: pointer; padding: 12px 0; }
+.card a:focus-visible,.card summary:focus-visible { outline: 2px solid #83bbff; outline-offset: 3px; }
+.card .terms { display: flex; gap: 7px; flex-wrap: wrap; padding: 0; list-style: none; }
+.terms li { padding: 4px 10px; border: 1px solid #304861; background: #152e46; border-radius: 7px; color: #c4def4; font-size: 12px; }
+.date { margin-top: 0; font-size: 12px !important; }
+@media(max-width:640px) { .metrics { grid-template-columns: repeat(2,minmax(0,1fr)); } .grid { grid-template-columns: minmax(0,1fr); } .card,.metrics div { padding: 16px; } }

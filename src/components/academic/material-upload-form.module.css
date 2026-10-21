@@ -1,3 +1,4 @@
+.form[hidden] { display: none; }
 .form { min-width: 0; padding: 16px; }
 .notice { margin: 0 0 16px; color: #a4b6cd; font-size: 13px; line-height: 1.6; }
 .fields { display: grid; min-width: 0; gap: 14px; border: 0; margin: 0; padding: 0; }

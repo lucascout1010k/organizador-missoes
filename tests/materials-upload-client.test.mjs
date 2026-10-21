@@ -316,7 +316,9 @@ test("form: local server render has one file input, no native upload action and 
   assert.ok(markup.includes('aria-live="polite"'));
   assert.ok(markup.includes('role="status"'));
   assert.ok(markup.includes('data-state="idle"'));
-  const submitButton = markup.match(/<button\b[^>]*>/)?.[0];
+  assert.ok(markup.includes('aria-expanded="false"'));
+  assert.match(markup, /<form[^>]*hidden=""/);
+  const submitButton = markup.match(/<button\b[^>]*type="submit"[^>]*>/)?.[0];
   assert.ok(submitButton?.includes('type="submit"'));
   assert.ok(submitButton?.includes('disabled=""'));
   assert.ok(markup.includes("Aula fictícia"));

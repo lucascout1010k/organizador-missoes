@@ -22,4 +22,7 @@
 .confirmation p { font-size: 13px; line-height: 1.5; }
 .feedback { margin: 8px 0 0; overflow-wrap: anywhere; }
 .feedback:empty { display: none; }
+.actions a { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 14px; border: 1px solid #385478; border-radius: 8px; color: #9bcfff; text-decoration: none; font-size: 14px; }
+.actions a:focus-visible { outline: 2px solid #78b9ff; outline-offset: 3px; }
+.badge + .badge { margin-left: 8px; }
 @media (max-width: 480px) { .container { padding: 12px; } .row { gap: 10px; padding: 12px; } .pdf { width: 32px; height: 40px; } .actions button { flex: 1 1 auto; } }

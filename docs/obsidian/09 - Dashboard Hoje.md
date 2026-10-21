@@ -1,5 +1,11 @@
 # Dashboard Hoje
 
+## Atualização — 2026-10-21 / 2E.1 — memória acadêmica da matéria
+
+A memória da matéria apenas oferece navegação ao foco de hoje; não substitui nem duplica sua lógica. Dashboard, conclusão idempotente e classificação America/Sao_Paulo foram preservados. Missões relacionadas sem data continuam visíveis na memória acadêmica, mesmo quando ficam fora do foco diário.
+
+Validação e limites da rodada em [2E.1 — validação](../2e1-validacao.md). As entradas anteriores abaixo são históricas; esta atualização define o estado atual.
+
 ## Atualização — 2026-10-20 / 3A concluída, publicação autorizada
 
 3A funcional. Dia em America/Sao_Paulo, meia-noite inclusiva/próxima exclusiva. Atrasada: aberta com agendamento OU prazo anterior ao dia; Hoje: agendamento OU prazo no dia, sem atraso anterior; concluída hoje: completed_at no dia. Sem data/futuras/missed/conclusões antigas excluídas. Grupos nessa ordem, prioridade high/medium/low, menor instante, created_at/id. Progresso: concluídas hoje / (abertas hoje + atrasadas abertas + concluídas hoje). DTO mínimo, prioridade/origem/duração/datas/estado, conclusão/loading/erro/vazio reais e refresh sem F5, preservando dark premium e cards existentes.
